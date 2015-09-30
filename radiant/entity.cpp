@@ -386,6 +386,37 @@ void Entity_createFromSelection( const char* name, const Vector3& origin ){
 			Node_getEntity( node )->setKeyValue( "model", model );
 		}
 	}
+
+	//setting default shader, ie "trigger_*" entities will get the shader "textures/common/trigger"
+	for( unsigned int i = 0; i < 3; i++ )
+	{
+		StringOutputStream matchKey( 256 );
+		matchKey << "EntityDefaultShaderMatch" << ( i + 1 );
+		const char* match = g_pGameDescription->getKeyValue( matchKey.c_str() );
+		if ( string_empty( match ) ) {
+			break;
+		}
+		StringOutputStream shaderKey( 256 );
+		shaderKey << "EntityDefaultShaderName" << ( i + 1 );
+		const char* shader = g_pGameDescription->getKeyValue( shaderKey.c_str() );
+		if ( string_empty( shader ) ) {
+			break;
+		}
+		if( g_pattern_match_simple( match, item ) )
+		{
+			brush_s *b;
+			
+			for( b = Node_getEntity( node )->brushes.onext; b != &Node_getEntity( node )->brushes; b = b->onext )
+			{
+				face_t *f;
+				for ( f = b->brush_faces ; f; f = f->next )
+				{
+					Face_SetShader( f, shader );
+				}
+			}
+			break;
+		}
+	}
 }
 
 #if 0
