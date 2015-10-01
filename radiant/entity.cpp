@@ -411,7 +411,7 @@ void Entity_createFromSelection( const char* name, const Vector3& origin ){
 				face_t *f;
 				for ( f = b->brush_faces ; f; f = f->next )
 				{
-					Face_SetShader( f, shader );
+					f->SetShader( shader );
 				}
 			}
 			break;
