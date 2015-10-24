@@ -38,6 +38,8 @@
 #include "gtkutil/filechooser.h"
 #include "gtkmisc.h"
 #include "select.h"
+#include "brushmanip.h"
+#include "patchmanip.h"
 #include "map.h"
 #include "preferences.h"
 #include "gtkdlgs.h"
@@ -402,18 +404,10 @@ void Entity_createFromSelection( const char* name, const Vector3& origin ){
 		if ( string_empty( shader ) ) {
 			break;
 		}
-		if( g_pattern_match_simple( match, item ) )
+		if( g_pattern_match_simple( match, name ) )
 		{
-			brush_s *b;
-			
-			for( b = Node_getEntity( node )->brushes.onext; b != &Node_getEntity( node )->brushes; b = b->onext )
-			{
-				face_t *f;
-				for ( f = b->brush_faces ; f; f = f->next )
-				{
-					f->SetShader( shader );
-				}
-			}
+			Scene_PatchSetShader_Selected( GlobalSceneGraph(), shader );
+			Scene_BrushSetShader_Selected( GlobalSceneGraph(), shader );
 			break;
 		}
 	}
