@@ -109,11 +109,11 @@ ifeq ($(OS),Windows_NT)
 	OS = Win32
 endif
 
-CFLAGS_COMMON = -MMD -W -Wall -Wcast-align -Wcast-qual -Wno-unused-parameter -fno-strict-aliasing
+CFLAGS_COMMON = -MMD -W -Wall -Wcast-align -Wno-cast-qual -Wno-unused-parameter -Wno-unknown-pragmas -Wno-empty-body -Wno-maybe-uninitialized -Wno-write-strings -fno-strict-aliasing
 CPPFLAGS_COMMON =
 LDFLAGS_COMMON =
 LIBS_COMMON =
-CXXFLAGS_COMMON = -Wno-non-virtual-dtor -Wreorder -fno-exceptions -fno-rtti
+CXXFLAGS_COMMON = -Wno-non-virtual-dtor -Wno-reorder -Wno-unknown-pragmas -Wno-empty-body -Wno-maybe-uninitialized -Wno-write-strings -fno-exceptions -fno-rtti
 
 ifeq ($(BUILD),debug)
 ifeq ($(findstring $(CFLAGS),-g),)
@@ -238,6 +238,28 @@ else
 $(error Unsupported build OS: $(OS))
 endif
 endif
+endif
+
+# MSYS2
+UNAME_S := $(shell uname -s)
+UNAME_O := $(shell uname -o)
+
+ifneq "$(filter MINGW32_NT%,$(UNAME_S))" ""
+	OS = Win32
+	ifeq ($(UNAME_O),Msys)
+		DLLINSTALL = install-dlls-msys2-mingw32.sh
+		CFLAGS_COMMON += -O0
+		CPPFLAGS_COMMON += -O0
+	endif
+endif
+
+ifneq "$(filter MINGW64_NT%,$(UNAME_S))" ""
+	OS = Win32
+	ifeq ($(UNAME_O),Msys)
+		DLLINSTALL = install-dlls-msys2-mingw64.sh
+		CFLAGS_COMMON += -O0
+		CPPFLAGS_COMMON += -O0
+	endif
 endif
 
 # VERSION!
