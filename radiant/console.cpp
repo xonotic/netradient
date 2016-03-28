@@ -136,6 +136,9 @@ GtkWidget* Console_constructWindow( GtkWindow* toplevel ){
 	return scr;
 }
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+
 class GtkTextBufferOutputStream : public TextOutputStream
 {
 GtkTextBuffer* textBuffer;
@@ -149,6 +152,8 @@ std::size_t write( const char* buffer, std::size_t length ){
 	return length;
 }
 };
+
+#pragma GCC pop_options
 
 std::size_t Sys_Print( int level, const char* buf, std::size_t length ){
 	bool contains_newline = std::find( buf, buf + length, '\n' ) != buf + length;

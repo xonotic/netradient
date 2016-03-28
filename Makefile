@@ -247,18 +247,14 @@ UNAME_O := $(shell uname -o)
 ifneq "$(filter MINGW32_NT%,$(UNAME_S))" ""
 	OS = Win32
 	ifeq ($(UNAME_O),Msys)
-		DLLINSTALL = install-dlls-msys2-mingw32.sh
-		CFLAGS_COMMON += -O0
-		CPPFLAGS_COMMON += -O0
+		DLLINSTALL = install-dlls-msys2-mingw.sh
 	endif
 endif
 
 ifneq "$(filter MINGW64_NT%,$(UNAME_S))" ""
 	OS = Win32
 	ifeq ($(UNAME_O),Msys)
-		DLLINSTALL = install-dlls-msys2-mingw64.sh
-		CFLAGS_COMMON += -O0
-		CPPFLAGS_COMMON += -O0
+		DLLINSTALL = install-dlls-msys2-mingw.sh
 	endif
 endif
 
@@ -467,8 +463,8 @@ binaries-q3map2: \
 
 .PHONY: clean
 clean:
-	$(RM_R) $(INSTALLDIR_BASE)/
 	$(FIND) . \( -name \*.o -o -name \*.d -o -name \*.$(DLL) -o -name \*.$(A) -o -name \*.$(EXE) \) -exec $(RM) {} \;
+	$(RM_R) $(INSTALLDIR_BASE)/
 	$(RM) icons/*.rc
 
 %.$(EXE):
