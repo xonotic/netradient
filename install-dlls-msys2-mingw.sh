@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
 # set -ex
 
-INSTALLDIR=$(pwd)/install
+INSTALLDIR=`pwd`/install
 
-if [[ $(file $INSTALLDIR/radiant.exe) == *"x86-64"* ]]; then
+if [[ `file $INSTALLDIR/radiant.exe` == *"x86-64"* ]]; then
     MINGWDIR=/mingw64
 else
     MINGWDIR=/mingw32
@@ -12,12 +12,12 @@ fi
 
 function dependencies_single_target_no_depth {
     local TARGET=$1
-    
+
     local DEPENDENCIESFILTER="| grep 'DLL Name' | sed -r 's/\s+DLL\s+Name\:\s+//' | xargs -i{} which {} | grep $MINGWDIR/bin"
     local COMMAND="objdump -x $TARGET $DEPENDENCIESFILTER | xargs -i{} echo {}"
-    
-    local DEPENDENCIES=$(eval "$COMMAND")
-    
+
+    local DEPENDENCIES=`eval "$COMMAND"`
+
     if [ "$DEPENDENCIES" != "" ]; then
         echo "$DEPENDENCIES"
     fi
@@ -25,37 +25,45 @@ function dependencies_single_target_no_depth {
 
 function dependencies {
     local TARGETS=$@
-    
-    local CURRENTDEPENDENCIES=""
+
+    local TEMPORARYFILEA="install-dlls-msys2-mingw.alldependencies.tmp"
+    local TEMPORARYFILEB="install-dlls-msys2-mingw.dependencies.tmp"
+
+    local ALLDEPENDENCIES=""
 
     for TARGET in $TARGETS; do
-        local CURRENTDEPENDENCIES=$(dependencies_single_target_no_depth "$TARGET" && echo "$CURRENTDEPENDENCIES")
+        local ALLDEPENDENCIES=`dependencies_single_target_no_depth "$TARGET" && echo "$ALLDEPENDENCIES"`
     done
-    
-    local CURRENTDEPENDENCIES=$(echo "$CURRENTDEPENDENCIES" | sort -u)
-    
-    local NEWDEPENDENCIES="$CURRENTDEPENDENCIES"
-    
+
+    local ALLDEPENDENCIES=`echo "$ALLDEPENDENCIES" | sort -u`
+
+    local NEWDEPENDENCIES="$ALLDEPENDENCIES"
+
     while [ "$NEWDEPENDENCIES" != "" ]; do
         local DEPENDENCIES=""
-    
+
         for DEPENDENCY in $NEWDEPENDENCIES; do
-            DEPENDENCIES=$(dependencies_single_target_no_depth "$DEPENDENCY" && echo "$DEPENDENCIES")
+            DEPENDENCIES=`dependencies_single_target_no_depth "$DEPENDENCY" && echo "$DEPENDENCIES"`
         done
 
-        local NEWDEPENDENCIES=$(comm -13 <(echo "$CURRENTDEPENDENCIES") <(echo "$DEPENDENCIES" | sort -u))
+        echo "$ALLDEPENDENCIES" > "$TEMPORARYFILEA"
+        echo "$DEPENDENCIES" | sort -u > "$TEMPORARYFILEB"
+
+        local NEWDEPENDENCIES=`comm -13 "$TEMPORARYFILEA" "$TEMPORARYFILEB"`
 
         if [ "$NEWDEPENDENCIES" != "" ]; then
-            local CURRENTDEPENDENCIES=$(printf '%s\n' "$CURRENTDEPENDENCIES" "$NEWDEPENDENCIES" | sort)
+            local ALLDEPENDENCIES=`printf '%s\n' "$ALLDEPENDENCIES" "$NEWDEPENDENCIES" | sort`
         fi
+
+        rm "$TEMPORARYFILEA" "$TEMPORARYFILEB"
     done
-    
-    if [ "$CURRENTDEPENDENCIES" != "" ]; then
-        echo "$CURRENTDEPENDENCIES"
+
+    if [ "$ALLDEPENDENCIES" != "" ]; then
+        echo "$ALLDEPENDENCIES"
     fi
 }
 
-for DEPENDENCY in $(dependencies ./install/*.exe); do
+for DEPENDENCY in `dependencies ./install/*.exe`; do
     cp -v "$DEPENDENCY" "$INSTALLDIR"
 done
 
