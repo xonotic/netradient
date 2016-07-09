@@ -415,7 +415,11 @@ void CreateEntityLights( void ){
 			}
 		}
 		else{
-			light->color[ 0 ] = light->color[ 1 ] = light->color[ 2 ] = 1.0f;
+			light->color[ 0 ] = 1.0f;
+			if ( colorsRGB ) {
+				light->color[ 0 ] = Image_LinearFloatFromsRGBFloat( light->color[ 0 ] );
+			}
+			light->color[ 1 ] = light->color[ 2 ] = light->color[ 0 ];
 		}
 
 		light->extraDist = FloatForKey( e, "_extradist" );
