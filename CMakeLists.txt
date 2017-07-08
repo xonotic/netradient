@@ -64,6 +64,12 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -fno-strict-aliasing")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing -fno-exceptions -fno-rtti")
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 
+option(SAVE_TEMPORARY_FILES "Save compiler's temporary files" OFF)
+if (SAVE_TEMPORARY_FILES)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -save-temps")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps")
+endif ()
+
 #-----------------------------------------------------------------------
 # Defs
 #-----------------------------------------------------------------------
