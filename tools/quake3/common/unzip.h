@@ -82,8 +82,6 @@ typedef struct unz_file_info_internal_s
 typedef void* ( *alloc_func )( void* opaque, unsigned int items, unsigned int size );
 typedef void ( *free_func )( void* opaque, void* address );
 
-struct internal_state;
-
 /* file_in_zip_read_info_s contain internal information about a file in zipfile,
     when reading and decompress it */
 typedef struct
