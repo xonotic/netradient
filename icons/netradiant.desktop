@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.5.0
+Name=NetRadiant
+GenericName=Level editor
+Comment=3D level editor for id Tech based games
+Icon=netradiant
+Exec=netradiant %f
+Terminal=false
+Type=Application
+MimeType=application/x-map;
+Categories=Game;Graphics;3DGraphics;
+Keywords=darkplaces,nexuiz,openarena,osirion,quake1,quake2,quake3,quetoo,tremulous,ufoai,unvanquished,warsow,xonotic,idtech;level;map;game development;
