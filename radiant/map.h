@@ -162,7 +162,4 @@ void Map_mergeClonedNames();
 
 const char* getMapsPath();
 
-void BindMapFileObservers();
-void UnBindMapFileObservers();
-
 #endif

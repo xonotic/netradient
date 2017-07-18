@@ -250,12 +250,10 @@ Radiant(){
 	MapRoot_construct();
 
 	EnginePath_verify();
-	BindMapFileObservers();
 	EnginePath_Realise();
 }
 ~Radiant(){
 	EnginePath_Unrealise();
-	UnBindMapFileObservers();
 
 	MapRoot_destroy();
 	NullModel_destroy();
