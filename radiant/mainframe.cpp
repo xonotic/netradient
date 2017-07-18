@@ -116,7 +116,7 @@
 #include "renderstate.h"
 #include "feedback.h"
 #include "referencecache.h"
-
+#include "texwindow.h"
 
 
 struct layout_globals_t
@@ -166,6 +166,8 @@ void VFS_Refresh(){
 	QE_InitVFS();
 	GlobalFileSystem().refresh();
 	g_vfsInitialized = true;
+	// also refresh texture browser
+	TextureBrowser_RefreshShaders();
 }
 void VFS_Restart(){
 	VFS_Shutdown();

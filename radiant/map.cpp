@@ -978,6 +978,10 @@ void Map_LoadFile( const char *filename ){
 	Map_StartPosition();
 
 	g_currentMap = &g_map;
+
+	// restart VFS to apply new pak filtering based on mapname
+	// needed for daemon DPK VFS
+	VFS_Restart();
 }
 
 class Excluder
@@ -1186,6 +1190,9 @@ void Map_RenameAbsolute( const char* absolute ){
 	Map_UpdateTitle( g_map );
 
 	g_map.m_resource->attach( g_map );
+	// refresh VFS to apply new pak filtering based on mapname
+	// needed for daemon DPK VFS
+	VFS_Refresh();
 }
 
 void Map_Rename( const char* filename ){
@@ -1233,6 +1240,10 @@ void Map_New(){
 	FocusViews( g_vector3_identity, 0 );
 
 	g_currentMap = &g_map;
+
+	// restart VFS to apply new pak filtering based on mapname
+	// needed for daemon DPK VFS
+	VFS_Restart();
 }
 
 extern void ConstructRegionBrushes( scene::Node * brushes[6], const Vector3 &region_mins, const Vector3 &region_maxs );
@@ -1583,7 +1594,13 @@ tryDecompile:
  */
 bool Map_SaveFile( const char* filename ){
 	ScopeDisableScreenUpdates disableScreenUpdates( "Processing...", "Saving Map" );
-	return MapResource_saveFile( MapFormat_forFile( filename ), GlobalSceneGraph().root(), Map_Traverse, filename );
+	bool success = MapResource_saveFile( MapFormat_forFile( filename ), GlobalSceneGraph().root(), Map_Traverse, filename );
+	if ( success ) {
+		// refresh VFS to apply new pak filtering based on mapname
+		// needed for daemon DPK VFS
+		VFS_Refresh();
+	}
+	return success;
 }
 
 //

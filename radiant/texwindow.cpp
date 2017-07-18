@@ -2359,9 +2359,8 @@ void TextureBrowser_pasteTag(){
 	BuildStoreAvailableTags( g_TextureBrowser.m_available_store, g_TextureBrowser.m_assigned_store, g_TextureBrowser.m_all_tags, &g_TextureBrowser );
 }
 
-void RefreshShaders(){
+void TextureBrowser_RefreshShaders(){
 	ScopeDisableScreenUpdates disableScreenUpdates( "Processing...", "Loading Shaders" );
-	VFS_Refresh();
 	GlobalShaderSystem().refresh();
 	UpdateAllWindows();
 	GtkTreeSelection* selection = gtk_tree_view_get_selection((GtkTreeView*)GlobalTextureBrowser().m_treeViewTree);
@@ -2567,7 +2566,7 @@ void TextureBrowser_Construct(){
 	GlobalCommands_insert( "DeleteTag", FreeCaller<TextureBrowser_deleteTag>() );
 	GlobalCommands_insert( "CopyTag", FreeCaller<TextureBrowser_copyTag>() );
 	GlobalCommands_insert( "PasteTag", FreeCaller<TextureBrowser_pasteTag>() );
-	GlobalCommands_insert( "RefreshShaders", FreeCaller<RefreshShaders>() );
+	GlobalCommands_insert( "RefreshShaders", FreeCaller<VFS_Refresh>() );
 	GlobalToggles_insert( "ShowInUse", FreeCaller<TextureBrowser_ToggleHideUnused>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_hideunused_item ), Accelerator( 'U' ) );
 	GlobalCommands_insert( "ShowAllTextures", FreeCaller<TextureBrowser_showAll>(), Accelerator( 'A', (GdkModifierType)GDK_CONTROL_MASK ) );
 	GlobalCommands_insert( "ToggleTextures", FreeCaller<TextureBrowser_toggleShow>(), Accelerator( 'T' ) );
