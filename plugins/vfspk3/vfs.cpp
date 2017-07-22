@@ -59,6 +59,7 @@ ArchiveModules& FileSystemQ3API_getArchiveModules();
 #include "os/path.h"
 #include "moduleobservers.h"
 #include "filematch.h"
+#include "dpkdeps.h"
 
 
 #define VFS_MAXDIRS 64
@@ -322,60 +323,6 @@ void AddDpkPak( const char* name, const char* fullpath, bool is_pakfile ){
 	g_pakfile_paths.insert( PakfilePathsKV( name, pakfile_path ) );
 }
 
-// Comparaison function for version numbers
-// Implementation is based on dpkg's version comparison code (verrevcmp() and order())
-// http://anonscm.debian.org/gitweb/?p=dpkg/dpkg.git;a=blob;f=lib/dpkg/version.c;hb=74946af470550a3295e00cf57eca1747215b9311
-static int char_weight(char c){
-	if (std::isdigit(c))
-		return 0;
-	else if (std::isalpha(c))
-		return c;
-	else if (c == '~')
-		return -1;
-	else if (c)
-		return c + 256;
-	else
-		return 0;
-}
-
-static int VersionCmp(const char* a, const char* b){
-	while (*a || *b) {
-		int firstDiff = 0;
-
-		while ((*a && !std::isdigit(*a)) || (*b && !std::isdigit(*b))) {
-			int ac = char_weight(*a);
-			int bc = char_weight(*b);
-
-			if (ac != bc)
-				return ac - bc;
-
-			a++;
-			b++;
-		}
-
-		while (*a == '0')
-			a++;
-		while (*b == '0')
-			b++;
-
-		while (std::isdigit(*a) && std::isdigit(*b)) {
-			if (firstDiff == 0)
-				firstDiff = *a - *b;
-			a++;
-			b++;
-		}
-
-		if (std::isdigit(*a))
-			return 1;
-		if (std::isdigit(*b))
-			return -1;
-		if (firstDiff)
-			return firstDiff;
-	}
-
-	return false;
-}
-
 // takes name without ext, returns without ext
 static const char* GetLatestDpkPakVersion( const char* name ){
 	const char* maxversion = 0;
@@ -389,7 +336,7 @@ static const char* GetLatestDpkPakVersion( const char* name ){
 		pakname = i->first.c_str();
 		if ( strncmp( pakname, name, namelen ) != 0 || pakname[namelen] != '_' ) continue;
 		pakversion = pakname + (namelen + 1);
-		if ( maxversion == 0 || VersionCmp( pakversion, maxversion ) > 0 ){
+		if ( maxversion == 0 || DpkPakVersionCmp( pakversion, maxversion ) > 0 ){
 			maxversion = pakversion;
 			result = pakname;
 		}
@@ -452,40 +399,22 @@ static void LoadDpkPakWithDeps( const char* pakname ){
 		TextLinesInputStream<TextInputStream> istream = depsFile->getInputStream();
 
 		CopiedString line;
-		const char* c;
-		const char* p_name;
-		const char* p_name_end;
-		const char* p_version;
-		const char* p_version_end;
+		char *p_name;
+		char *p_version;
 		while ( line = istream.readLine(), string_length( line.c_str() ) ) {
-			c = line.c_str();
-			while ( std::isspace( *c ) && *c != '\0' ) ++c;
-			p_name = c;
-			while ( !std::isspace( *c ) && *c != '\0' ) ++c;
-			p_name_end = c;
-			while ( std::isspace( *c ) && *c != '\0' ) ++c;
-			p_version = c;
-			while ( !std::isspace( *c ) && *c != '\0' ) ++c;
-			p_version_end = c;
-
-			if ( p_name_end - p_name == 0 ) continue;
-			if ( p_version_end - p_version == 0 ) {
-				const char* p_pakname;
-				CopiedString name_final = CopiedString( StringRange( p_name, p_name_end ) );
-				p_pakname = GetLatestDpkPakVersion( name_final.c_str() );
-				if ( p_pakname != NULL ) {
-					LoadDpkPakWithDeps( p_pakname );
-				}
+			if ( !DpkReadDepsLine( line.c_str(), &p_name, &p_version ) ) continue;
+			if ( !p_version ) {
+				const char* p_latest = GetLatestDpkPakVersion( p_name );
+				if ( p_latest ) LoadDpkPakWithDeps( p_latest );
 			} else {
-				int len = ( p_name_end - p_name ) + ( p_version_end - p_version ) + 1;
+				int len = string_length( p_name ) + string_length( p_version ) + 1;
 				char* p_pakname = string_new( len );
-				strncpy( p_pakname, p_name, p_name_end - p_name );
-				p_pakname[ p_name_end - p_name ] = '\0';
-				strcat( p_pakname, "_" );
-				strncat( p_pakname, p_version, p_version_end - p_version );
+				sprintf( p_pakname, "%s_%s", p_name, p_version );
 				LoadDpkPakWithDeps( p_pakname );
 				string_release( p_pakname, len );
 			}
+			string_release( p_name, string_length( p_name ) );
+			if ( p_version ) string_release( p_version, string_length( p_version ) );
 		}
 	}
 

@@ -1,6 +1,7 @@
 add_library(includes
         aboutmsg.h
         cullable.cpp cullable.h
+        dpkdeps.h
         editable.cpp editable.h
         iarchive.cpp iarchive.h
         ibrush.cpp ibrush.h
