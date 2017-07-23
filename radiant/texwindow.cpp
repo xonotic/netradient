@@ -89,6 +89,9 @@
 #include "shaders.h"
 #include "commands.h"
 
+#define NOTEX_BASENAME "notex"
+#define SHADERNOTEX_BASENAME "shadernotex"
+
 bool TextureBrowser_showWads(){
 	return !string_empty( g_pGameDescription->getKeyValue( "show_wads" ) );
 }
@@ -113,8 +116,53 @@ void TextureGroups_addWad( TextureGroups& groups, const char* archive ){
 }
 typedef ReferenceCaller1<TextureGroups, const char*, TextureGroups_addWad> TextureGroupsAddWadCaller;
 
+namespace
+{
+bool g_TextureBrowser_shaderlistOnly = false;
+bool g_TextureBrowser_fixedSize = true;
+bool g_TextureBrowser_filterMissing = false;
+bool g_TextureBrowser_filterFallback = true;
+bool g_TextureBrowser_enableAlpha = true;
+}
+
+CopiedString g_notex;
+CopiedString g_shadernotex;
+bool isMissing(const char* name);
+bool isNotex(const char* name);
+
+bool isMissing(const char* name){
+	if ( string_equal( g_notex.c_str(), name ) ) {
+		return true;
+	}
+	if ( string_equal( g_shadernotex.c_str(), name ) ) {
+		return true;
+	}
+	return false;
+}
+
+bool isNotex(const char* name){
+	if ( string_equal_suffix( name, "/" NOTEX_BASENAME ) ) {
+		return true;
+	}
+	if ( string_equal_suffix( name, "/" SHADERNOTEX_BASENAME ) ) {
+		return true;
+	}
+	return false;
+}
+
 void TextureGroups_addShader( TextureGroups& groups, const char* shaderName ){
 	const char* texture = path_make_relative( shaderName, "textures/" );
+
+	// hide notex / shadernotex images
+	if ( g_TextureBrowser_filterFallback ) {
+		if ( isNotex( shaderName ) ) {
+			return;
+		}
+		if ( isNotex( texture ) ) {
+			return;
+		}
+	}
+
 	if ( texture != shaderName ) {
 		const char* last = path_remove_directory( texture );
 		if ( !string_empty( last ) ) {
@@ -128,14 +176,6 @@ void TextureGroups_addDirectory( TextureGroups& groups, const char* directory ){
 	groups.insert( directory );
 }
 typedef ReferenceCaller1<TextureGroups, const char*, TextureGroups_addDirectory> TextureGroupsAddDirectoryCaller;
-
-namespace
-{
-bool g_TextureBrowser_shaderlistOnly = false;
-bool g_TextureBrowser_fixedSize = true;
-bool g_TextureBrowser_filterNotex = false;
-bool g_TextureBrowser_enableAlpha = true;
-}
 
 class DeferredAdjustment
 {
@@ -201,8 +241,11 @@ typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_showShaderlistOnly
 void TextureBrowser_fixedSize( const BoolImportCallback& importer );
 typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_fixedSize> TextureBrowserFixedSizeExport;
 
-void TextureBrowser_filterNotex( const BoolImportCallback& importer );
-typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_filterNotex> TextureBrowserFilterNotexExport;
+void TextureBrowser_filterMissing( const BoolImportCallback& importer );
+typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_filterMissing> TextureBrowserFilterMissingExport;
+
+void TextureBrowser_filterFallback( const BoolImportCallback& importer );
+typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_filterFallback> TextureBrowserFilterFallbackExport;
 
 void TextureBrowser_enableAlpha( const BoolImportCallback& importer );
 typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_enableAlpha> TextureBrowserEnableAlphaExport;
@@ -238,6 +281,7 @@ std::vector<CopiedString> m_copied_tags;
 std::set<CopiedString> m_found_shaders;
 
 ToggleItem m_hideunused_item;
+ToggleItem m_hidenotex_item;
 ToggleItem m_showshaders_item;
 ToggleItem m_showshaderlistonly_item;
 ToggleItem m_fixedsize_item;
@@ -311,7 +355,8 @@ TextureBrowser() :
 	m_showshaders_item( TextureBrowserShowShadersExport() ),
 	m_showshaderlistonly_item( TextureBrowserShowShaderlistOnlyExport() ),
 	m_fixedsize_item( TextureBrowserFixedSizeExport() ),
-	m_filternotex_item( TextureBrowserFilterNotexExport() ),
+	m_filternotex_item( TextureBrowserFilterMissingExport() ),
+	m_hidenotex_item( TextureBrowserFilterFallbackExport() ),
 	m_enablealpha_item( TextureBrowserEnableAlphaExport() ),
 	m_heightChanged( true ),
 	m_originInvalid( true ),
@@ -463,14 +508,23 @@ bool TextureSearch_IsShown( const char* name ){
 	}
 }
 
-CopiedString g_notex;
-CopiedString g_shadernotex;
-
 // if texture_showinuse jump over non in-use textures
 bool Texture_IsShown( IShader* shader, bool show_shaders, bool hideUnused ){
-	// filter notex / shadernotex images
-	if ( g_TextureBrowser_filterNotex && ( string_equal( g_notex.c_str(), shader->getTexture()->name ) || string_equal( g_shadernotex.c_str(), shader->getTexture()->name ) ) ) {
-		return false;
+	// filter missing shaders
+	// ugly: filter on built-in fallback name after substitution
+	if ( g_TextureBrowser_filterMissing ) {
+		if ( isMissing( shader->getTexture()->name ) ) {
+			return false;
+		}
+	}
+	// filter the fallback (notex/shadernotex) for missing shaders or editor image
+	if ( g_TextureBrowser_filterFallback ) {
+		if ( isNotex( shader->getName() ) ) {
+			return false;
+		}
+		if ( isNotex( shader->getTexture()->name ) ) {
+			return false;
+		}
 	}
 
 	if ( g_TextureBrowser_currentDirectory == "Untagged" ) {
@@ -832,10 +886,15 @@ void TextureBrowser_fixedSize( const BoolImportCallback& importer ){
 }
 typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_fixedSize> TextureBrowser_FixedSizeExport;
 
-void TextureBrowser_filterNotex( const BoolImportCallback& importer ){
-	importer( g_TextureBrowser_filterNotex );
+void TextureBrowser_filterMissing( const BoolImportCallback& importer ){
+	importer( g_TextureBrowser_filterMissing );
 }
-typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_filterNotex> TextureBrowser_filterNotexExport;
+typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_filterMissing> TextureBrowser_filterMissingExport;
+
+void TextureBrowser_filterFallback( const BoolImportCallback& importer ){
+	importer( g_TextureBrowser_filterFallback );
+}
+typedef FreeCaller1<const BoolImportCallback&, TextureBrowser_filterFallback> TextureBrowser_filterFallbackExport;
 
 void TextureBrowser_enableAlpha( const BoolImportCallback& importer ){
 	importer( g_TextureBrowser_enableAlpha );
@@ -1611,8 +1670,12 @@ GtkMenuItem* TextureBrowser_constructViewMenu( GtkMenu* menu ){
 
 	create_check_menu_item_with_mnemonic( menu, "Hide _Unused", "ShowInUse" );
 	if ( string_empty( g_pGameDescription->getKeyValue( "show_wads" ) ) ) {
-		create_check_menu_item_with_mnemonic( menu, "Hide Image Missing", "FilterNotex" );
+		create_check_menu_item_with_mnemonic( menu, "Hide Image Missing", "FilterMissing" );
 	}
+
+	// hide notex and shadernotex on texture browser: no one wants to apply them
+	create_check_menu_item_with_mnemonic( menu, "Hide Fallback", "FilterFallback" );
+
 	menu_separator( menu );
 
 	create_menu_item_with_mnemonic( menu, "Show All", "ShowAllTextures" );
@@ -1930,11 +1993,11 @@ void TextureBrowser_checkTagFile(){
 
 void TextureBrowser_SetNotex(){
 	StringOutputStream name( 256 );
-	name << GlobalRadiant().getAppPath() << "bitmaps/notex.png";
+	name << GlobalRadiant().getAppPath() << "bitmaps/" NOTEX_BASENAME ".png";
 	g_notex = name.c_str();
 
 	name = NULL;
-	name << GlobalRadiant().getAppPath() << "bitmaps/shadernotex.png";
+	name << GlobalRadiant().getAppPath() << "bitmaps/" SHADERNOTEX_BASENAME " .png";
 	g_shadernotex = name.c_str();
 }
 
@@ -2436,10 +2499,18 @@ void TextureBrowser_FixedSize(){
 	TextureBrowser_activeShadersChanged( GlobalTextureBrowser() );
 }
 
-void TextureBrowser_FilterNotex(){
-	g_TextureBrowser_filterNotex ^= 1;
+void TextureBrowser_FilterMissing(){
+	g_TextureBrowser_filterMissing ^= 1;
 	GlobalTextureBrowser().m_filternotex_item.update();
 	TextureBrowser_activeShadersChanged( GlobalTextureBrowser() );
+	RefreshShaders();
+}
+
+void TextureBrowser_FilterFallback(){
+	g_TextureBrowser_filterFallback ^= 1;
+	GlobalTextureBrowser().m_hidenotex_item.update();
+	TextureBrowser_activeShadersChanged( GlobalTextureBrowser() );
+	RefreshShaders();
 }
 
 void TextureBrowser_EnableAlpha(){
@@ -2574,7 +2645,8 @@ void TextureBrowser_Construct(){
 	GlobalToggles_insert( "ToggleShowShaders", FreeCaller<TextureBrowser_ToggleShowShaders>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_showshaders_item ) );
 	GlobalToggles_insert( "ToggleShowShaderlistOnly", FreeCaller<TextureBrowser_ToggleShowShaderListOnly>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_showshaderlistonly_item ) );
 	GlobalToggles_insert( "FixedSize", FreeCaller<TextureBrowser_FixedSize>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_fixedsize_item ) );
-	GlobalToggles_insert( "FilterNotex", FreeCaller<TextureBrowser_FilterNotex>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_filternotex_item ) );
+	GlobalToggles_insert( "FilterMissing", FreeCaller<TextureBrowser_FilterMissing>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_filternotex_item ) );
+	GlobalToggles_insert( "FilterFallback", FreeCaller<TextureBrowser_FilterFallback>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_hidenotex_item ) );
 	GlobalToggles_insert( "EnableAlpha", FreeCaller<TextureBrowser_EnableAlpha>(), ToggleItem::AddCallbackCaller( g_TextureBrowser.m_enablealpha_item ) );
 
 	GlobalPreferenceSystem().registerPreference( "TextureScale",
@@ -2591,7 +2663,7 @@ void TextureBrowser_Construct(){
 	GlobalPreferenceSystem().registerPreference( "ShowShaders", BoolImportStringCaller( GlobalTextureBrowser().m_showShaders ), BoolExportStringCaller( GlobalTextureBrowser().m_showShaders ) );
 	GlobalPreferenceSystem().registerPreference( "ShowShaderlistOnly", BoolImportStringCaller( g_TextureBrowser_shaderlistOnly ), BoolExportStringCaller( g_TextureBrowser_shaderlistOnly ) );
 	GlobalPreferenceSystem().registerPreference( "FixedSize", BoolImportStringCaller( g_TextureBrowser_fixedSize ), BoolExportStringCaller( g_TextureBrowser_fixedSize ) );
-	GlobalPreferenceSystem().registerPreference( "FilterNotex", BoolImportStringCaller( g_TextureBrowser_filterNotex ), BoolExportStringCaller( g_TextureBrowser_filterNotex ) );
+	GlobalPreferenceSystem().registerPreference( "FilterMissing", BoolImportStringCaller( g_TextureBrowser_filterMissing ), BoolExportStringCaller( g_TextureBrowser_filterMissing ) );
 	GlobalPreferenceSystem().registerPreference( "EnableAlpha", BoolImportStringCaller( g_TextureBrowser_enableAlpha ), BoolExportStringCaller( g_TextureBrowser_enableAlpha ) );
 	GlobalPreferenceSystem().registerPreference( "LoadShaders", IntImportStringCaller( reinterpret_cast<int&>( GlobalTextureBrowser().m_startupShaders ) ), IntExportStringCaller( reinterpret_cast<int&>( GlobalTextureBrowser().m_startupShaders ) ) );
 	GlobalPreferenceSystem().registerPreference( "WheelMouseInc", SizeImportStringCaller( GlobalTextureBrowser().m_mouseWheelScrollIncrement ), SizeExportStringCaller( GlobalTextureBrowser().m_mouseWheelScrollIncrement ) );
