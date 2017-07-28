@@ -136,8 +136,8 @@ if (BUILD_RADIANT)
     add_subdirectory(radiant build)
 endif ()
 
-if (CMAKE_EXECUTABLE_SUFFIX)
-    set(RADIANT_EXECUTABLE ${CMAKE_EXECUTABLE_SUFFIX})
+if (WIN32)
+    set(RADIANT_EXECUTABLE "exe")
 else ()
     execute_process(
             COMMAND uname -m
