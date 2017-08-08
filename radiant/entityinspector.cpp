@@ -1015,7 +1015,7 @@ void EntityInspector_applySpawnflags(){
 		f |= v << spawn_table[i];
 	}
 
-	sprintf( sz, "%i", f );
+	sz.sprintf( "%i", f );
 	const char* value = ( f == 0 ) ? "" : sz;
 
 	{

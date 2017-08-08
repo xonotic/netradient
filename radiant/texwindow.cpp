@@ -1572,13 +1572,13 @@ void TreeView_onRowActivated( GtkTreeView* treeview, GtkTreePath* path, GtkTreeV
 
 		gchar* buffer;
 		gtk_tree_model_get( model, &iter, 0, &buffer, -1 );
-		strcpy( dirName, buffer );
+		dirName.copy(buffer);
 		g_free( buffer );
 
 		g_TextureBrowser.m_searchedTags = false;
 
 		if ( !TextureBrowser_showWads() ) {
-			strcat( dirName, "/" );
+			strcat( dirName.mut(), "/" );
 		}
 
 		ScopeDisableScreenUpdates disableScreenUpdates( dirName, "Loading Textures" );
@@ -1857,8 +1857,8 @@ void TextureBrowser_searchTags(){
 	gtk_tree_selection_selected_foreach( selection, (GtkTreeSelectionForeachFunc)TextureBrowser_tagMoveHelper, &selected );
 
 	if ( selected != NULL ) {
-		strcpy( buffer, "/root/*/*[tag='" );
-		strcpy( tags_searched, "[TAGS] " );
+		buffer.copy( "/root/*/*[tag='" );
+		tags_searched.copy( "[TAGS] " );
 
 		for ( node = selected; node != NULL; node = node->next )
 		{
@@ -1870,17 +1870,17 @@ void TextureBrowser_searchTags(){
 				if ( gtk_tree_model_get_iter( GTK_TREE_MODEL( g_TextureBrowser.m_all_tags_list ), &iter, path ) ) {
 					gtk_tree_model_get( GTK_TREE_MODEL( g_TextureBrowser.m_all_tags_list ), &iter, TAG_COLUMN, &tag, -1 );
 
-					strcat( buffer, tag );
-					strcat( tags_searched, tag );
+					strcat( buffer.mut(), tag );
+					strcat( tags_searched.mut(), tag );
 					if ( node != g_slist_last( node ) ) {
-						strcat( buffer, "' and tag='" );
-						strcat( tags_searched, ", " );
+						strcat( buffer.mut(), "' and tag='" );
+						strcat( tags_searched.mut(), ", " );
 					}
 				}
 			}
 		}
 
-		strcat( buffer, "']" );
+		strcat( buffer.mut(), "']" );
 
 		g_slist_foreach( selected, (GFunc)gtk_tree_row_reference_free, NULL );
 
@@ -2429,10 +2429,10 @@ void TextureBrowser_RefreshShaders(){
 
 		gchar* buffer;
 		gtk_tree_model_get( model, &iter, 0, &buffer, -1 );
-		strcpy( dirName, buffer );
+        dirName.copy( buffer );
 		g_free( buffer );
 		if ( !TextureBrowser_showWads() ) {
-			strcat( dirName, "/" );
+			strcat( dirName.mut(), "/" );
 		}
 		TextureBrowser_ShowDirectory( GlobalTextureBrowser(), dirName );
 		TextureBrowser_queueDraw( GlobalTextureBrowser() );

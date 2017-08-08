@@ -93,10 +93,10 @@ const char* findModuleName( IFileTypeRegistry* registry, const char* moduleType,
 public:
 	SearchFileTypeList( const char* ext )
 		: m_moduleName( "" ){
-		m_pattern[0] = '*';
-		m_pattern[1] = '.';
-		strncpy( m_pattern + 2, ext, 125 );
-		m_pattern[127] = '\0';
+		m_pattern.mut()[0] = '*';
+		m_pattern.mut()[1] = '.';
+		m_pattern.copy(ext, 2);
+		m_pattern.terminate();
 	}
 	void addType( const char* moduleName, filetype_t type ){
 		if ( extension_equal( m_pattern, type.pattern ) ) {

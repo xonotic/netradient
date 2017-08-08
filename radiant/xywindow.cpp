@@ -1439,9 +1439,9 @@ void XYWnd::XY_LoadBackgroundImage( const char *name ){
 	}
 
 	auto fileNameWithoutExt = u::buffer<512>();
-	strncpy( fileNameWithoutExt, relative, sizeof( fileNameWithoutExt ) - 1 );
-	fileNameWithoutExt[512 - 1] = '\0';
-	fileNameWithoutExt[strlen( fileNameWithoutExt ) - 4] = '\0';
+	fileNameWithoutExt.copy(relative);
+	fileNameWithoutExt.terminate();
+	fileNameWithoutExt.mut()[fileNameWithoutExt.strlen() - 4] = '\0';
 
 	Image *image = QERApp_LoadImage( 0, fileNameWithoutExt );
 	if ( !image ) {
@@ -1718,12 +1718,12 @@ void XYWnd::XY_DrawGrid( void ) {
 		float offy = m_vOrigin[nDim1] - w +  4                                            / m_fScale;
 		for ( x = xb - fmod( xb, stepx ); x <= xe ; x += stepx ) {
 			glRasterPos2f( x, offx );
-			sprintf( text, "%g", x );
+			text.sprintf( "%g", x );
 			GlobalOpenGL().drawString( text );
 		}
 		for ( y = yb - fmod( yb, stepy ); y <= ye ; y += stepy ) {
 			glRasterPos2f( offy, y );
-			sprintf( text, "%g", y );
+			text.sprintf( "%g", y );
 			GlobalOpenGL().drawString( text );
 		}
 
@@ -1847,7 +1847,7 @@ void XYWnd::XY_DrawBlockGrid(){
 			for ( y = yb ; y < ye ; y += g_xywindow_globals_private.blockSize )
 			{
 				glRasterPos2f( x + ( g_xywindow_globals_private.blockSize / 2 ), y + ( g_xywindow_globals_private.blockSize / 2 ) );
-				sprintf( text, "%i,%i",(int)floor( x / g_xywindow_globals_private.blockSize ), (int)floor( y / g_xywindow_globals_private.blockSize ) );
+                text.sprintf( "%i,%i",(int)floor( x / g_xywindow_globals_private.blockSize ), (int)floor( y / g_xywindow_globals_private.blockSize ) );
 				GlobalOpenGL().drawString( text );
 			}
 	}

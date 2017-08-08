@@ -530,8 +530,8 @@ CLoadModule( const char* path ) : m_path( path ){
 void operator()( const char* name ) const {
 	auto fullname = u::buffer<1024>();
 	ASSERT_MESSAGE( strlen( m_path ) + strlen( name ) < 1024, "" );
-	strcpy( fullname, m_path );
-	strcat( fullname, name );
+	fullname.copy(m_path);
+	strcat( fullname.mut(), name );
 	globalOutputStream() << "Found '" << fullname << "'\n";
 	GlobalModuleServer_loadModule( fullname );
 }

@@ -678,10 +678,10 @@ EMessageBoxReturn DoTextureLayout( float *fx, float *fy ){
 	// Initialize with last used values
 	auto buf = u::buffer<16>();
 
-	sprintf( buf, "%f", last_used_texture_layout_scale_x );
+	buf.sprintf( "%f", last_used_texture_layout_scale_x );
 	x.text( buf );
-	
-	sprintf( buf, "%f", last_used_texture_layout_scale_y );
+
+	buf.sprintf( "%f", last_used_texture_layout_scale_y );
 	y.text( buf );
 
 	// Set focus after intializing the values
@@ -901,7 +901,7 @@ EMessageBoxReturn DoLightIntensityDlg( int *intensity ){
 	}
 
 	auto buf = u::buffer<16>();
-	sprintf( buf, "%d", *intensity );
+	buf.sprintf( "%d", *intensity );
 	intensity_entry.text(buf);
 
 	EMessageBoxReturn ret = modal_dialog_show( window, dialog );

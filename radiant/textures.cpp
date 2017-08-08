@@ -141,9 +141,10 @@ ETexturesMode g_texture_mode = eTextures_LINEAR_MIPMAP_LINEAR;
 u::BufferVal<256> g_gammatable;
 void ResampleGamma( float fGamma ){
 	int i,inf;
-	if ( fGamma == 1.0 ) {
+	auto buf = g_gammatable.mut();
+	if (fGamma == 1.0 ) {
 		for ( i = 0; i < 256; i++ )
-			g_gammatable[i] = i;
+			buf[i] = i;
 	}
 	else
 	{
@@ -156,7 +157,7 @@ void ResampleGamma( float fGamma ){
 			if ( inf > 255 ) {
 				inf = 255;
 			}
-			g_gammatable[i] = inf;
+			buf[i] = inf;
 		}
 	}
 }

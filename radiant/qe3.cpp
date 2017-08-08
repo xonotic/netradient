@@ -120,7 +120,7 @@ int g_numentities = 0;
 
 void QE_UpdateStatusBar(){
 	auto buffer = u::buffer<128>();
-	sprintf( buffer, "Brushes: %d Entities: %d", g_numbrushes, g_numentities );
+	buffer.sprintf( "Brushes: %d Entities: %d", g_numbrushes, g_numentities );
 	g_pParentWnd->SetStatusText( g_pParentWnd->m_brushcount_status, buffer );
 }
 

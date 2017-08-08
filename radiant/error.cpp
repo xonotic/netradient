@@ -60,10 +60,10 @@ void Error( const char *error, ... ){
 	auto text = u::buffer<4096>();
 
 	va_start( argptr,error );
-	vsprintf( text, error,argptr );
+	vsprintf( text.mut(), error,argptr );
 	va_end( argptr );
 
-	strcat( text, "\n" );
+	strcat( text.mut(), "\n" );
 
 #ifdef WIN32
 	if ( GetLastError() != 0 ) {
@@ -103,9 +103,9 @@ void Error( const char *error, ... ){
 	}
 #else
 	if ( errno != 0 ) {
-		strcat( text, "errno: " );
-		strcat( text, strerror( errno ) );
-		strcat( text, "\n" );
+		strcat( text.mut(), "errno: " );
+		strcat( text.mut(), strerror( errno ) );
+		strcat( text.mut(), "\n" );
 	}
 #endif
 
@@ -126,7 +126,7 @@ void Error( const char *error, ... ){
 	}
 #endif
 
-	strcat( text, "An unrecoverable error has occured.\n" );
+	strcat( text.mut(), "An unrecoverable error has occured.\n" );
 
 	ERROR_MESSAGE( text );
 

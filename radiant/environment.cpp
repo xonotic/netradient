@@ -66,7 +66,7 @@ void gamedetect_found_game( const char *game, char *path ){
 
 	globalOutputStream() << "Detected game " << game << " in " << path << "\n";
 
-	sprintf( buf, "-%s-EnginePath", game );
+	buf.sprintf( "-%s-EnginePath", game );
 	argc = 0;
 	gamedetect_argv_buffer[argc++] = "-global-gamefile";
 	gamedetect_argv_buffer[argc++] = game;
@@ -116,13 +116,13 @@ void gamedetect(){
 		}
 	if ( !nogamedetect ) {
 		static auto buf = u::buffer<1024 + 64>();
-		strncpy( buf, environment_get_app_path(), sizeof( buf ) );
-		buf[sizeof( buf ) - 1 - 64] = 0;
-		if ( !strlen( buf ) ) {
+		buf.copy(environment_get_app_path());
+		buf.terminate(-64);
+		if ( !buf.strlen() ) {
 			return;
 		}
 
-		char *p = buf + strlen( buf ) - 1; // point directly on the slash of get_app_path
+		char *p = buf.mut() + buf.strlen() - 1; // point directly on the slash of get_app_path
 		while ( p != buf )
 		{
 			// TODO add more games to this
@@ -133,17 +133,17 @@ void gamedetect(){
 #elif defined( __APPLE__ )
 			if ( gamedetect_check_game( "nexuiz.game", "data/common-spog.pk3", "Nexuiz.app/Contents/Info.plist", buf, p - buf ) )
 #else
-			if ( gamedetect_check_game( "nexuiz.game", "data/common-spog.pk3", "nexuiz-linux-glx.sh", buf, p - buf ) )
+			if ( gamedetect_check_game( "nexuiz.game", "data/common-spog.pk3", "nexuiz-linux-glx.sh", buf.mut(), p - buf.c_str() ) )
 #endif
 			{ return; }
 
 			// try to detect Quetoo installs
-			if ( gamedetect_check_game( "quetoo.game", "default/icons/quetoo.png", NULL, buf, p - buf ) ) {
+			if ( gamedetect_check_game( "quetoo.game", "default/icons/quetoo.png", NULL, buf.mut(), p - buf.c_str() ) ) {
 				return;
 			}
 
 			// try to detect Warsow installs
-			if ( gamedetect_check_game( "warsow.game", "basewsw/dedicated_autoexec.cfg", NULL, buf, p - buf ) ) {
+			if ( gamedetect_check_game( "warsow.game", "basewsw/dedicated_autoexec.cfg", NULL, buf.mut(), p - buf.c_str() ) ) {
 				return;
 			}
 

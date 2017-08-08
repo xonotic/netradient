@@ -1080,7 +1080,7 @@ void PatchInspector::GetPatchInfo(){
 			for ( std::size_t i = 0; i < m_countRows; ++i )
 			{
 				auto buffer = u::buffer<16>();
-				sprintf( buffer, "%u", Unsigned( i ) );
+				buffer.sprintf( "%u", Unsigned( i ) );
 				gtk_combo_box_text_append_text( m_pRowCombo, buffer );
 			}
 
@@ -1099,7 +1099,7 @@ void PatchInspector::GetPatchInfo(){
 			for ( std::size_t i = 0; i < m_countCols; ++i )
 			{
 				auto buffer = u::buffer<16>();
-				sprintf( buffer, "%u", Unsigned( i ) );
+				buffer.sprintf( "%u", Unsigned( i ) );
 				gtk_combo_box_text_append_text( m_pColCombo, buffer );
 			}
 

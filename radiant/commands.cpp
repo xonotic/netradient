@@ -539,7 +539,7 @@ ReadCommandMap( const char* filename ) : m_filename( filename ), m_count( 0 ){
 }
 void visit( const char* name, Accelerator& accelerator ){
 	auto value = u::buffer<1024>();
-	if ( read_var( m_filename, "Commands", name, value ) ) {
+	if ( read_var( m_filename, "Commands", name, value.mut() ) ) {
 		if ( string_empty( value ) ) {
 			accelerator.key = 0;
 			accelerator.modifiers = (GdkModifierType)0;
@@ -577,7 +577,7 @@ void LoadCommandMap( const char* path ){
 
 		{
 			auto value = u::buffer<1024>();
-			if ( read_var( strINI.c_str(), "Version", "number", value ) ) {
+			if ( read_var( strINI.c_str(), "Version", "number", value.mut() ) ) {
 				dataVersion = version_parse( value );
 			}
 		}

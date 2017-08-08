@@ -82,10 +82,10 @@ bool com_eof;
  */
 const char *COM_Parse( const char *data ){
 	int c;
-	int len;
 
-	len = 0;
-	com_token[0] = 0;
+	int len = 0;
+	auto buf = com_token.mut();
+	buf[0] = 0;
 
 	if ( !data ) {
 		return 0;
@@ -117,26 +117,26 @@ skipwhite:
 		{
 			c = *data++;
 			if ( c == '\"' ) {
-				com_token[len] = 0;
+				buf[len] = 0;
 				return data;
 			}
-			com_token[len] = c;
+			buf[len] = c;
 			len++;
 		} while ( 1 );
 	}
 
 // parse single characters
 	if ( c == '{' || c == '}' || c == ')' || c == '(' || c == '\'' || c == ':' ) {
-		com_token[len] = c;
+		buf[len] = c;
 		len++;
-		com_token[len] = 0;
+		buf[len] = 0;
 		return data + 1;
 	}
 
 // parse a regular word
 	do
 	{
-		com_token[len] = c;
+		buf[len] = c;
 		data++;
 		len++;
 		c = *data;
@@ -145,7 +145,7 @@ skipwhite:
 		}
 	} while ( c > 32 );
 
-	com_token[len] = 0;
+	buf[len] = 0;
 	return data;
 }
 
@@ -253,7 +253,7 @@ EntityClass *Eclass_InitFromText( const char *text ){
 	// get the flags
 	{
 		// copy to the first /n
-		char* p = parms;
+		char* p = parms.mut();
 		while ( *text && *text != '\n' )
 			*p++ = *text++;
 		*p = 0;

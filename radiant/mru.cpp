@@ -144,7 +144,7 @@ void MRU_AddWidget( GtkMenuItem *widget, std::size_t pos ){
 
 void MRU_Activate( std::size_t index ){
 	auto text = u::buffer<1024>();
-	strcpy( text, MRU_GetText( index ) );
+	text.copy( MRU_GetText( index ) );
 
 	if ( file_readable( text ) ) { //\todo Test 'map load succeeds' instead of 'file is readable'.
 		MRU_AddFile( text );

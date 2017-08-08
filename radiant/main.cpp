@@ -112,61 +112,61 @@ void error_redirect( const gchar *domain, GLogLevelFlags log_level, const gchar 
 	}
 
 	if ( domain ) {
-		strcpy( buf, domain );
+        buf.copy(domain);
 	}
 	else{
-		strcpy( buf, "**" );
+        buf.copy("**");
 	}
-	strcat( buf, "-" );
+	strcat( buf.mut(), "-" );
 
 	switch ( log_level )
 	{
 	case G_LOG_LEVEL_ERROR:
 		if ( in_recursion ) {
-			strcat( buf, "ERROR (recursed) **: " );
+			strcat( buf.mut(), "ERROR (recursed) **: " );
 		}
 		else{
-			strcat( buf, "ERROR **: " );
+			strcat( buf.mut(), "ERROR **: " );
 		}
 		break;
 	case G_LOG_LEVEL_CRITICAL:
 		if ( in_recursion ) {
-			strcat( buf, "CRITICAL (recursed) **: " );
+			strcat( buf.mut(), "CRITICAL (recursed) **: " );
 		}
 		else{
-			strcat( buf, "CRITICAL **: " );
+			strcat( buf.mut(), "CRITICAL **: " );
 		}
 		break;
 	case G_LOG_LEVEL_WARNING:
 		if ( in_recursion ) {
-			strcat( buf, "WARNING (recursed) **: " );
+			strcat( buf.mut(), "WARNING (recursed) **: " );
 		}
 		else{
-			strcat( buf, "WARNING **: " );
+			strcat( buf.mut(), "WARNING **: " );
 		}
 		break;
 	case G_LOG_LEVEL_MESSAGE:
 		if ( in_recursion ) {
-			strcat( buf, "Message (recursed): " );
+			strcat( buf.mut(), "Message (recursed): " );
 		}
 		else{
-			strcat( buf, "Message: " );
+			strcat( buf.mut(), "Message: " );
 		}
 		break;
 	case G_LOG_LEVEL_INFO:
 		if ( in_recursion ) {
-			strcat( buf, "INFO (recursed): " );
+			strcat( buf.mut(), "INFO (recursed): " );
 		}
 		else{
-			strcat( buf, "INFO: " );
+			strcat( buf.mut(), "INFO: " );
 		}
 		break;
 	case G_LOG_LEVEL_DEBUG:
 		if ( in_recursion ) {
-			strcat( buf, "DEBUG (recursed): " );
+			strcat( buf.mut(), "DEBUG (recursed): " );
 		}
 		else{
-			strcat( buf, "DEBUG: " );
+			strcat( buf.mut(), "DEBUG: " );
 		}
 		break;
 	default:
@@ -174,10 +174,10 @@ void error_redirect( const gchar *domain, GLogLevelFlags log_level, const gchar 
 		 * try to make the best out of it.
 		 */
 		if ( in_recursion ) {
-			strcat( buf, "LOG (recursed:" );
+			strcat( buf.mut(), "LOG (recursed:" );
 		}
 		else{
-			strcat( buf, "LOG (" );
+			strcat( buf.mut(), "LOG (" );
 		}
 		if ( log_level ) {
 			gchar string[] = "0x00): ";
@@ -192,19 +192,19 @@ void error_redirect( const gchar *domain, GLogLevelFlags log_level, const gchar 
 				*p += 'A' - '9' - 1;
 			}
 
-			strcat( buf, string );
+			strcat( buf.mut(), string );
 		}
 		else{
-			strcat( buf, "): " );
+			strcat( buf.mut(), "): " );
 		}
 	}
 
-	strcat( buf, message );
+	strcat( buf.mut(), message );
 	if ( is_fatal ) {
-		strcat( buf, "\naborting...\n" );
+		strcat( buf.mut(), "\naborting...\n" );
 	}
 	else{
-		strcat( buf, "\n" );
+		strcat( buf.mut(), "\n" );
 	}
 
 	// spam it...
@@ -350,15 +350,16 @@ bool check_version_file( const char* filename, const char* version ){
 	TextFileInputStream file( filename );
 	if ( !file.failed() ) {
 		auto buf = u::buffer<10>();
-		buf[file.read( buf, 9 )] = '\0';
+        auto mut_buf = buf.mut();
+        mut_buf[file.read(mut_buf, 9 )] = '\0';
 
 		// chomp it (the hard way)
 		int chomp = 0;
-		while ( buf[chomp] >= '0' && buf[chomp] <= '9' )
+		while (mut_buf[chomp] >= '0' && mut_buf[chomp] <= '9' )
 			chomp++;
-		buf[chomp] = '\0';
+		mut_buf[chomp] = '\0';
 
-		return string_equal( buf, version );
+		return string_equal(mut_buf, version );
 	}
 	return false;
 }

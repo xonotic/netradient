@@ -806,8 +806,8 @@ void exportXML( XMLImporter& importer ){
 	{
 		auto width = u::buffer<16>();
 		auto height = u::buffer<16>();
-		sprintf( width, "%u", Unsigned( m_width ) );
-		sprintf( height, "%u", Unsigned( m_height ) );
+		width.sprintf( "%u", Unsigned( m_width ) );
+		height.sprintf( "%u", Unsigned( m_height ) );
 		StaticElement element( "matrix" );
 		element.insertAttribute( "width", width );
 		element.insertAttribute( "height", height );

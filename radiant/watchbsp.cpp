@@ -405,7 +405,7 @@ static void saxWarning( void *ctx, const char *msg, ... ){
 	va_list args;
 
 	va_start( args, msg );
-	vsprintf( saxMsgBuffer, msg, args );
+	vsprintf( saxMsgBuffer.mut(), msg, args );
 	va_end( args );
 	globalOutputStream() << "XML warning: " << saxMsgBuffer << "\n";
 }
@@ -415,7 +415,7 @@ static void saxError( void *ctx, const char *msg, ... ){
 	va_list args;
 
 	va_start( args, msg );
-	vsprintf( saxMsgBuffer, msg, args );
+	vsprintf( saxMsgBuffer.mut(), msg, args );
 	va_end( args );
 	globalErrorStream() << "XML error: " << saxMsgBuffer << "\n";
 }
@@ -426,7 +426,7 @@ static void saxFatal( void *ctx, const char *msg, ... ){
 	va_list args;
 
 	va_start( args, msg );
-	vsprintf( buffer, msg, args );
+	vsprintf( buffer.mut(), msg, args );
 	va_end( args );
 	globalErrorStream() << "XML fatal error: " << buffer << "\n";
 }

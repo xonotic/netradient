@@ -153,7 +153,7 @@ void detach( const NameCallback& setName, const NameCallbackCallback& detachObse
 
 void makeUnique( const char* name, const NameCallback& setName ) const {
 	auto buffer = u::buffer<1024>();
-	name_write( buffer, m_uniqueNames.make_unique( name_read( name ) ) );
+	name_write( buffer.mut(), m_uniqueNames.make_unique( name_read( name ) ) );
 	setName( buffer );
 }
 
@@ -175,7 +175,7 @@ void mergeNames( const BasicNamespace& other ) const {
 		uniqueNames.insert( uniqueName );
 
 		auto buffer = u::buffer<1024>();
-		name_write( buffer, uniqueName );
+		name_write( buffer.mut(), uniqueName );
 
 		//globalOutputStream() << "renaming " << makeQuoted((*i).first.c_str()) << " to " << makeQuoted(buffer) << "\n";
 
@@ -879,7 +879,7 @@ void DoMapInfo(){
 		for ( EntityBreakdown::iterator i = entitymap.begin(); i != entitymap.end(); ++i )
 		{
 			auto tmp = u::buffer<16>();
-			sprintf( tmp, "%u", Unsigned( ( *i ).second ) );
+			tmp.sprintf( "%u", Unsigned( ( *i ).second ) );
 			GtkTreeIter iter;
 			gtk_list_store_append( GTK_LIST_STORE( EntityBreakdownWalker ), &iter );
 			gtk_list_store_set( GTK_LIST_STORE( EntityBreakdownWalker ), &iter, 0, ( *i ).first.c_str(), 1, tmp, -1 );
@@ -889,9 +889,9 @@ void DoMapInfo(){
 	EntityBreakdownWalker.unref();
 
 	auto tmp = u::buffer<16>();
-	sprintf( tmp, "%u", Unsigned( g_brushCount.get() ) );
+    tmp.sprintf( "%u", Unsigned( g_brushCount.get() ) );
 	brushes_entry.text(tmp);
-	sprintf( tmp, "%u", Unsigned( g_entityCount.get() ) );
+    tmp.sprintf( "%u", Unsigned( g_entityCount.get() ) );
 	entities_entry.text(tmp);
 
 	modal_dialog_show( window, dialog );
@@ -1269,9 +1269,9 @@ void ConstructRegionStartpoint( scene::Node* startpoint, const Vector3& region_m
 
 	// write the info_playerstart
 	auto sTmp = u::buffer<1024>();
-	sprintf( sTmp, "%d %d %d", (int)vOrig[0], (int)vOrig[1], (int)vOrig[2] );
+	sTmp.sprintf( "%d %d %d", (int)vOrig[0], (int)vOrig[1], (int)vOrig[2] );
 	Node_getEntity( *startpoint )->setKeyValue( "origin", sTmp );
-	sprintf( sTmp, "%d", (int)Camera_getAngles( *g_pParentWnd->GetCamWnd() )[CAMERA_YAW] );
+	sTmp.sprintf( "%d", (int)Camera_getAngles( *g_pParentWnd->GetCamWnd() )[CAMERA_YAW] );
 	Node_getEntity( *startpoint )->setKeyValue( "angle", sTmp );
 }
 
@@ -2106,9 +2106,9 @@ void DoFind(){
 	int ent, br;
 
 	GetSelectionIndex( &ent, &br );
-	sprintf( buf, "%i", ent );
+	buf.sprintf( "%i", ent );
 	entity.text(buf);
-	sprintf( buf, "%i", br );
+	buf.sprintf( "%i", br );
 	brush.text(buf);
 
 	if ( modal_dialog_show( window, dialog ) == eIDOK ) {
