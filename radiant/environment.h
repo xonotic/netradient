@@ -22,11 +22,11 @@
 #if !defined( INCLUDED_ENVIRONMENT_H )
 #define INCLUDED_ENVIRONMENT_H
 
-void environment_init( int argc, char const* argv[] );
+void environment_init( int argc, const char* argv[] );
 const char* environment_get_home_path();
 const char* environment_get_app_path();
 
 extern int g_argc;
-extern char const** g_argv;
+extern const char** g_argv;
 
 #endif

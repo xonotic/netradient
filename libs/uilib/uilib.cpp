@@ -11,11 +11,11 @@
 
 namespace ui {
 
-    bool init(int *argc, char **argv[], char const *parameter_string, char const **error)
+    bool init(int *argc, char **argv[], const char *parameter_string, const char **error)
     {
         gtk_disable_setlocale();
         static GOptionEntry entries[] = {{}};
-        char const *translation_domain = NULL;
+        const char *translation_domain = NULL;
         GError *gerror = NULL;
         bool ret = gtk_init_with_args(argc, argv, parameter_string, entries, translation_domain, &gerror) != 0;
         if (!ret) {
@@ -274,7 +274,7 @@ namespace ui {
     TextView::TextView(ui::New_t) : TextView(GTK_TEXT_VIEW(gtk_text_view_new()))
     {}
 
-    void ITextView::text(char const *str)
+    void ITextView::text(const char *str)
     {
         GtkTextBuffer *buffer = gtk_text_view_get_buffer(this);
         gtk_text_buffer_set_text(buffer, str, -1);
@@ -291,7 +291,7 @@ namespace ui {
     Label::Label(const char *label) : Label(GTK_LABEL(gtk_label_new(label)))
     {}
 
-    void ILabel::text(char const *str)
+    void ILabel::text(const char *str)
     {
         gtk_label_set_text(this, str);
     }
@@ -311,12 +311,12 @@ namespace ui {
         gtk_entry_set_max_length(this, static_cast<gint>(max_length));
     }
 
-    char const *IEntry::text()
+    const char *IEntry::text()
     {
         return gtk_entry_get_text(this);
     }
 
-    void IEntry::text(char const *str)
+    void IEntry::text(const char *str)
     {
         return gtk_entry_set_text(this, str);
     }

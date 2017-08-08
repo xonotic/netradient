@@ -64,7 +64,7 @@ void DoAboutDlg(){
 	dlg.add(hbox);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 10);
 
-	char const *label_text = "Version 1.000\n\n"
+	const char *label_text = "Version 1.000\n\n"
 			"Gtk port by Leonardo Zide\nleo@lokigames.com\n\n"
 			"Written by Geoffrey DeWan\ngdewan@prairienet.org\n\n"
 			"Built against NetRadiant " RADIANT_VERSION "\n"

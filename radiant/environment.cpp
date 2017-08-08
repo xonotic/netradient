@@ -30,9 +30,9 @@
 #include "cmdlib.h"
 
 int g_argc;
-char const** g_argv;
+const char** g_argv;
 
-void args_init( int argc, char const* argv[] ){
+void args_init( int argc, const char* argv[] ){
 	int i, j, k;
 
 	for ( i = 1; i < argc; i++ )
@@ -54,8 +54,8 @@ void args_init( int argc, char const* argv[] ){
 	g_argv = argv;
 }
 
-char const *gamedetect_argv_buffer[1024];
-void gamedetect_found_game( char const *game, char *path ){
+const char *gamedetect_argv_buffer[1024];
+void gamedetect_found_game( const char *game, char *path ){
 	int argc;
 	static char buf[128];
 
@@ -79,7 +79,7 @@ void gamedetect_found_game( char const *game, char *path ){
 	g_argv = gamedetect_argv_buffer;
 }
 
-bool gamedetect_check_game( char const *gamefile, const char *checkfile1, const char *checkfile2, char *buf /* must have 64 bytes free after bufpos */, int bufpos ){
+bool gamedetect_check_game( const char *gamefile, const char *checkfile1, const char *checkfile2, char *buf /* must have 64 bytes free after bufpos */, int bufpos ){
 	buf[bufpos] = '/';
 
 	strcpy( buf + bufpos + 1, checkfile1 );
@@ -196,7 +196,7 @@ const char* LINK_NAME =
 ;
 
 /// brief Returns the filename of the executable belonging to the current process, or 0 if not found.
-char const* getexename( char *buf ){
+const char* getexename( char *buf ){
 	/* Now read the symbolic link */
 	int ret = readlink( LINK_NAME, buf, PATH_MAX );
 
@@ -224,7 +224,7 @@ char const* getexename( char *buf ){
 	return buf;
 }
 
-void environment_init( int argc, char const* argv[] ){
+void environment_init( int argc, const char* argv[] ){
 	// Give away unnecessary root privileges.
 	// Important: must be done before calling gtk_init().
 	char *loginname;
@@ -256,7 +256,7 @@ void environment_init( int argc, char const* argv[] ){
 
 #include <windows.h>
 
-void environment_init( int argc, char const* argv[] ){
+void environment_init( int argc, const char* argv[] ){
 	args_init( argc, argv );
 
 	{

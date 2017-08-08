@@ -76,7 +76,7 @@ struct ModalDialog;
 
 namespace ui {
 
-    bool init(int *argc, char **argv[], char const *parameter_string, char const **error);
+    bool init(int *argc, char **argv[], const char *parameter_string, const char **error);
 
     void main();
 
@@ -189,10 +189,10 @@ namespace ui {
         { g_object_unref(_handle); }
 
         template<class Lambda>
-        gulong connect(char const *detailed_signal, Lambda &&c_handler, void *data);
+        gulong connect(const char *detailed_signal, Lambda &&c_handler, void *data);
 
         template<class Lambda>
-        gulong connect(char const *detailed_signal, Lambda &&c_handler, Object data);
+        gulong connect(const char *detailed_signal, Lambda &&c_handler, Object data);
     };
     static_assert(sizeof(Object) == sizeof(Object::native), "object slicing");
 
@@ -434,7 +434,7 @@ namespace ui {
 
     WRAP(TextView, Container, _GtkTextView, (),
     ,
-         void text(char const *str);
+         void text(const char *str);
     );
 
     WRAP(Toolbar, Container, _GtkToolbar, (),
@@ -454,7 +454,7 @@ namespace ui {
     WRAP(Label, Widget, _GtkLabel, (),
          explicit Label(const char *label);
     ,
-         void text(char const *str);
+         void text(const char *str);
     );
 
     WRAP(Image, Widget, _GtkImage, (),
@@ -464,8 +464,8 @@ namespace ui {
     WRAP(Entry, Widget, _GtkEntry, (IEditable, ICellEditable),
          explicit Entry(std::size_t max_length);
     ,
-        char const *text();
-        void text(char const *str);
+        const char *text();
+        void text(const char *str);
     );
 
     class Adjustment;
@@ -558,13 +558,13 @@ namespace ui {
 #define this (*static_cast<self>(this))
 
     template<class Lambda>
-    gulong Object::connect(char const *detailed_signal, Lambda &&c_handler, void *data)
+    gulong Object::connect(const char *detailed_signal, Lambda &&c_handler, void *data)
     {
         return g_signal_connect(G_OBJECT(this), detailed_signal, c_handler, data);
     }
 
     template<class Lambda>
-    gulong Object::connect(char const *detailed_signal, Lambda &&c_handler, Object data)
+    gulong Object::connect(const char *detailed_signal, Lambda &&c_handler, Object data)
     {
         return g_signal_connect(G_OBJECT(this), detailed_signal, c_handler, (_GtkObject *) data);
     }

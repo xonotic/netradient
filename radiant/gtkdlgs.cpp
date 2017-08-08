@@ -466,7 +466,7 @@ void DoAbout(){
 			}
 
 			{
-				char const *label_text = "NetRadiant " RADIANT_VERSION "\n"
+				const char *label_text = "NetRadiant " RADIANT_VERSION "\n"
 										__DATE__ "\n\n"
                                         RADIANT_ABOUTMSG "\n\n"
 										"This program is free software\n"

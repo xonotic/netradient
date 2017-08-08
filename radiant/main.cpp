@@ -552,7 +552,7 @@ int main( int argc, char* argv[] ){
 #endif
 
 	const char* mapname = NULL;
-    char const *error = NULL;
+    const char *error = NULL;
 	if ( !ui::init( &argc, &argv, "<filename.map>", &error) ) {
 		g_print( "%s\n", error );
 		return -1;
@@ -593,7 +593,7 @@ int main( int argc, char* argv[] ){
 
 	GlobalDebugMessageHandler::instance().setHandler( GlobalPopupDebugMessageHandler::instance() );
 
-	environment_init(argc, (char const **) argv);
+	environment_init(argc, (const char **) argv);
 
 	paths_init();
 
