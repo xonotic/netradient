@@ -1079,7 +1079,7 @@ void PatchInspector::GetPatchInfo(){
 			m_countRows = m_Patch->getHeight();
 			for ( std::size_t i = 0; i < m_countRows; ++i )
 			{
-				char buffer[16];
+				auto buffer = u::buffer<16>();
 				sprintf( buffer, "%u", Unsigned( i ) );
 				gtk_combo_box_text_append_text( m_pRowCombo, buffer );
 			}
@@ -1098,7 +1098,7 @@ void PatchInspector::GetPatchInfo(){
 			m_countCols = m_Patch->getWidth();
 			for ( std::size_t i = 0; i < m_countCols; ++i )
 			{
-				char buffer[16];
+				auto buffer = u::buffer<16>();
 				sprintf( buffer, "%u", Unsigned( i ) );
 				gtk_combo_box_text_append_text( m_pColCombo, buffer );
 			}

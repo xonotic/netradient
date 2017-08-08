@@ -22,6 +22,7 @@ add_subdirectory(splines)
 add_subdirectory(stream)
 add_subdirectory(string)
 add_subdirectory(uilib)
+add_subdirectory(util)
 add_subdirectory(xml)
 
 add_library(libs

@@ -44,6 +44,7 @@
 
 #include <set>
 #include <limits>
+#include <util/buffer.h>
 
 #include "math/frustum.h"
 #include "string/string.h"
@@ -803,7 +804,8 @@ void exportXML( XMLImporter& importer ){
 	}
 
 	{
-		char width[16], height[16];
+		auto width = u::buffer<16>();
+		auto height = u::buffer<16>();
 		sprintf( width, "%u", Unsigned( m_width ) );
 		sprintf( height, "%u", Unsigned( m_height ) );
 		StaticElement element( "matrix" );

@@ -19,6 +19,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <util/buffer.h>
 #include "environment.h"
 
 #include "stream/textstream.h"
@@ -57,7 +58,7 @@ void args_init( int argc, const char* argv[] ){
 const char *gamedetect_argv_buffer[1024];
 void gamedetect_found_game( const char *game, char *path ){
 	int argc;
-	static char buf[128];
+	static auto buf = u::buffer<128>();
 
 	if ( g_argv == gamedetect_argv_buffer ) {
 		return;
@@ -114,7 +115,7 @@ void gamedetect(){
 			++i;
 		}
 	if ( !nogamedetect ) {
-		static char buf[1024 + 64];
+		static auto buf = u::buffer<1024 + 64>();
 		strncpy( buf, environment_get_app_path(), sizeof( buf ) );
 		buf[sizeof( buf ) - 1 - 64] = 0;
 		if ( !strlen( buf ) ) {
@@ -261,7 +262,7 @@ void environment_init( int argc, const char* argv[] ){
 
 	{
 		// get path to the editor
-		char filename[MAX_PATH + 1];
+		auto filename = u::buffer<MAX_PATH + 1>();
 		GetModuleFileName( 0, filename, MAX_PATH );
 		char* last_separator = strrchr( filename, '\\' );
 		if ( last_separator != 0 ) {

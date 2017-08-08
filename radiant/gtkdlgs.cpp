@@ -48,6 +48,7 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <uilib/uilib.h>
+#include <util/buffer.h>
 
 #include "os/path.h"
 #include "math/aabb.h"
@@ -675,8 +676,8 @@ EMessageBoxReturn DoTextureLayout( float *fx, float *fy ){
 	}
 	
 	// Initialize with last used values
-	char buf[16];
-	
+	auto buf = u::buffer<16>();
+
 	sprintf( buf, "%f", last_used_texture_layout_scale_x );
 	x.text( buf );
 	
@@ -899,7 +900,7 @@ EMessageBoxReturn DoLightIntensityDlg( int *intensity ){
 		}
 	}
 
-	char buf[16];
+	auto buf = u::buffer<16>();
 	sprintf( buf, "%d", *intensity );
 	intensity_entry.text(buf);
 

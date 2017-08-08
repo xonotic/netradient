@@ -35,6 +35,7 @@
 #include <set>
 #include <gdk/gdkkeysyms.h>
 #include <uilib/uilib.h>
+#include <util/buffer.h>
 
 
 #include "os/path.h"
@@ -1005,7 +1006,7 @@ void EntityInspector_updateSpawnflags(){
 
 void EntityInspector_applySpawnflags(){
 	int f, i, v;
-	char sz[32];
+	auto sz = u::buffer<32>();
 
 	f = 0;
 	for ( i = 0; i < g_spawnflag_count; ++i )

@@ -44,6 +44,7 @@
 #include <map>
 
 #include <uilib/uilib.h>
+#include <util/buffer.h>
 
 #include "stream/textfilestream.h"
 #include "cmdlib.h"
@@ -118,7 +119,7 @@ int g_numbrushes = 0;
 int g_numentities = 0;
 
 void QE_UpdateStatusBar(){
-	char buffer[128];
+	auto buffer = u::buffer<128>();
 	sprintf( buffer, "Brushes: %d Entities: %d", g_numbrushes, g_numentities );
 	g_pParentWnd->SetStatusText( g_pParentWnd->m_brushcount_status, buffer );
 }

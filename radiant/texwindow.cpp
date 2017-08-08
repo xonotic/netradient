@@ -43,6 +43,7 @@
 #include <vector>
 
 #include <uilib/uilib.h>
+#include <util/buffer.h>
 
 #include "signal/signal.h"
 #include "math/vector.h"
@@ -1567,7 +1568,7 @@ void TreeView_onRowActivated( GtkTreeView* treeview, GtkTreePath* path, GtkTreeV
 	GtkTreeModel* model = gtk_tree_view_get_model( GTK_TREE_VIEW( treeview ) );
 
 	if ( gtk_tree_model_get_iter( model, &iter, path ) ) {
-		gchar dirName[1024];
+		auto dirName = u::buffer<1024>();
 
 		gchar* buffer;
 		gtk_tree_model_get( model, &iter, 0, &buffer, -1 );
@@ -1848,8 +1849,8 @@ void TextureBrowser_searchTags(){
 	GSList* selected = NULL;
 	GSList* node;
 	gchar* tag;
-	char buffer[256];
-	char tags_searched[256];
+	auto buffer = u::buffer<256>();
+	auto tags_searched = u::buffer<256>();
 
 	GtkTreeSelection* selection = gtk_tree_view_get_selection( GTK_TREE_VIEW( g_TextureBrowser.m_treeViewTags ) );
 
@@ -2424,7 +2425,7 @@ void TextureBrowser_RefreshShaders(){
 	GtkTreeIter iter;
 	if ( gtk_tree_selection_get_selected (selection, &model, &iter) )
 	{
-		gchar dirName[1024];
+		auto dirName = u::buffer<1024>();
 
 		gchar* buffer;
 		gtk_tree_model_get( model, &iter, 0, &buffer, -1 );

@@ -43,6 +43,7 @@
 
 #include <uilib/uilib.h>
 #include <gdk/gdkkeysyms.h>
+#include <util/buffer.h>
 
 #include "generic/callback.h"
 #include "string/string.h"
@@ -1437,7 +1438,7 @@ void XYWnd::XY_LoadBackgroundImage( const char *name ){
 		globalOutputStream() << "WARNING: could not extract the relative path, using full path instead\n";
 	}
 
-	char fileNameWithoutExt[512];
+	auto fileNameWithoutExt = u::buffer<512>();
 	strncpy( fileNameWithoutExt, relative, sizeof( fileNameWithoutExt ) - 1 );
 	fileNameWithoutExt[512 - 1] = '\0';
 	fileNameWithoutExt[strlen( fileNameWithoutExt ) - 4] = '\0';
@@ -1596,7 +1597,7 @@ void XYWnd::XY_DrawBackground( void ){
 void XYWnd::XY_DrawGrid( void ) {
 	float x, y, xb, xe, yb, ye;
 	float w, h, a;
-	char text[32];
+	auto text = u::buffer<32>();
 	float step, minor_step, stepx, stepy;
 	step = minor_step = stepx = stepy = GetGridSize();
 
@@ -1778,7 +1779,7 @@ void XYWnd::XY_DrawBlockGrid(){
 
 	float x, y, xb, xe, yb, ye;
 	float w, h;
-	char text[32];
+	auto text = u::buffer<32>();
 
 	glDisable( GL_TEXTURE_2D );
 	glDisable( GL_TEXTURE_1D );

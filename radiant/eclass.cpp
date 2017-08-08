@@ -24,6 +24,7 @@
 #include "debugging/debugging.h"
 
 #include <map>
+#include <util/buffer.h>
 
 #include "ifilesystem.h"
 
@@ -45,7 +46,7 @@ namespace
 typedef std::map<const char*, EntityClass*, RawStringLessNoCase> EntityClasses;
 EntityClasses g_entityClasses;
 EntityClass   *eclass_bad = 0;
-char eclass_directory[1024];
+u::BufferVal<1024> eclass_directory;
 typedef std::map<CopiedString, ListAttributeType> ListAttributeTypes;
 ListAttributeTypes g_listTypes;
 }

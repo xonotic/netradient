@@ -22,6 +22,7 @@
 #if !defined( INCLUDED_BRUSHXML_H )
 #define INCLUDED_BRUSHXML_H
 
+#include <util/buffer.h>
 #include "stream/stringstream.h"
 #include "xml/xmlelement.h"
 
@@ -233,7 +234,7 @@ inline void FacePlane_exportXML( const FacePlane& facePlane, XMLImporter& import
 inline void FacePolygon_exportXML( const Winding& w, const BasicVector3<double>& normal, XMLImporter& importer ){
 	DynamicElement element( "polygon" );
 
-	char tmp[32];
+	auto tmp = u::buffer<32>();
 
 	sprintf( tmp, "%f", normal.x() );
 	element.insertAttribute( "nx", tmp );

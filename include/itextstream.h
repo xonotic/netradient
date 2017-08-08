@@ -26,6 +26,7 @@
 /// \brief Text-stream interfaces.
 
 #include <cstddef>
+#include <util/buffer.h>
 #include "generic/static.h"
 
 /// \brief A read-only character-stream.
@@ -63,6 +64,10 @@ virtual std::size_t write( const char* buffer, std::size_t length ) = 0;
 template<typename T>
 inline TextOutputStream& operator<<( TextOutputStream& ostream, const T& t ){
 	return ostream_write( ostream, t );
+}
+
+inline TextOutputStream& ostream_write( TextOutputStream& ostream, const u::Buffer& b ){
+    return ostream << b.c_str();
 }
 
 class NullOutputStream : public TextOutputStream

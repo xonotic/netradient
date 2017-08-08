@@ -24,8 +24,9 @@
 #if defined( DEBUG_CULLING )
 
 #include <stdio.h>
+#include <util/buffer.h>
 
-char g_cull_stats[1024];
+u::BufferVal<1024> g_cull_stats;
 int g_count_dots;
 int g_count_planes;
 int g_count_oriented_planes;

@@ -30,6 +30,7 @@
 #include "stream/textfilestream.h"
 #include "modulesystem/moduleregistry.h"
 #include "os/path.h"
+#include <util/buffer.h>
 
 const char* EClass_GetExtension(){
 	return "def";
@@ -69,7 +70,7 @@ StaticRegisterModule staticRegisterEclassDef( StaticEclassDefModule::instance() 
 #include <stdlib.h>
 
 
-char com_token[1024];
+u::BufferVal<1024> com_token;
 bool com_eof;
 
 /*
@@ -248,7 +249,7 @@ EntityClass *Eclass_InitFromText( const char *text ){
 		}
 	}
 
-	char parms[256];
+	auto parms = u::buffer<256>();
 	// get the flags
 	{
 		// copy to the first /n

@@ -40,6 +40,7 @@
 #include <ctime>
 
 #include <gdk/gdkkeysyms.h>
+#include <util/buffer.h>
 
 
 #include "cmdlib.h"
@@ -527,7 +528,7 @@ public:
 CLoadModule( const char* path ) : m_path( path ){
 }
 void operator()( const char* name ) const {
-	char fullname[1024];
+	auto fullname = u::buffer<1024>();
 	ASSERT_MESSAGE( strlen( m_path ) + strlen( name ) < 1024, "" );
 	strcpy( fullname, m_path );
 	strcat( fullname, name );

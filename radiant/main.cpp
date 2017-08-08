@@ -89,6 +89,8 @@
 #include "referencecache.h"
 #include "stacktrace.h"
 
+#include <util/buffer.h>
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -99,7 +101,7 @@ void hide_splash();
 void error_redirect( const gchar *domain, GLogLevelFlags log_level, const gchar *message, gpointer user_data ){
 	gboolean in_recursion;
 	gboolean is_fatal;
-	char buf[256];
+	auto buf = u::buffer<256>();
 
 	in_recursion = ( log_level & G_LOG_FLAG_RECURSION ) != 0;
 	is_fatal = ( log_level & G_LOG_FLAG_FATAL ) != 0;
@@ -347,7 +349,7 @@ void paths_init(){
 bool check_version_file( const char* filename, const char* version ){
 	TextFileInputStream file( filename );
 	if ( !file.failed() ) {
-		char buf[10];
+		auto buf = u::buffer<10>();
 		buf[file.read( buf, 9 )] = '\0';
 
 		// chomp it (the hard way)

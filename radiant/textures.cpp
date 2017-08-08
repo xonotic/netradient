@@ -19,6 +19,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <util/buffer.h>
 #include "textures.h"
 
 #include "debugging/debugging.h"
@@ -137,7 +138,7 @@ ETexturesMode g_texture_mode = eTextures_LINEAR_MIPMAP_LINEAR;
 
 
 
-byte g_gammatable[256];
+u::BufferVal<256> g_gammatable;
 void ResampleGamma( float fGamma ){
 	int i,inf;
 	if ( fGamma == 1.0 ) {
@@ -274,7 +275,7 @@ void Texture_InitPalette( byte *pal ){
 	int r,g,b;
 	int i;
 	int inf;
-	byte gammatable[256];
+	auto gammatable = u::buffer<256>();
 	float gamma;
 
 	gamma = g_texture_globals.fGamma;

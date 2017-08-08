@@ -150,6 +150,7 @@ void connect_accelerator( const char *name ){
 
 #include <uilib/uilib.h>
 #include <gdk/gdkkeysyms.h>
+#include <util/buffer.h>
 
 #include "gtkutil/dialog.h"
 #include "mainframe.h"
@@ -537,7 +538,7 @@ public:
 ReadCommandMap( const char* filename ) : m_filename( filename ), m_count( 0 ){
 }
 void visit( const char* name, Accelerator& accelerator ){
-	char value[1024];
+	auto value = u::buffer<1024>();
 	if ( read_var( m_filename, "Commands", name, value ) ) {
 		if ( string_empty( value ) ) {
 			accelerator.key = 0;
@@ -575,7 +576,7 @@ void LoadCommandMap( const char* path ){
 		Version dataVersion = { 0, 0 };
 
 		{
-			char value[1024];
+			auto value = u::buffer<1024>();
 			if ( read_var( strINI.c_str(), "Version", "number", value ) ) {
 				dataVersion = version_parse( value );
 			}

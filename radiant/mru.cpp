@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <gtk/gtk.h>
+#include <util/buffer.h>
 
 #include "os/file.h"
 #include "generic/callback.h"
@@ -142,7 +143,7 @@ void MRU_AddWidget( GtkMenuItem *widget, std::size_t pos ){
 }
 
 void MRU_Activate( std::size_t index ){
-	char text[1024];
+	auto text = u::buffer<1024>();
 	strcpy( text, MRU_GetText( index ) );
 
 	if ( file_readable( text ) ) { //\todo Test 'map load succeeds' instead of 'file is readable'.

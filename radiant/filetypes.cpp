@@ -29,6 +29,7 @@
 #include "os/path.h"
 #include <vector>
 #include <map>
+#include <util/buffer.h>
 
 class RadiantFileTypeRegistry : public IFileTypeRegistry
 {
@@ -87,7 +88,7 @@ IFileTypeRegistry* GetFileTypeRegistry(){
 const char* findModuleName( IFileTypeRegistry* registry, const char* moduleType, const char* extension ){
 	class SearchFileTypeList : public IFileTypeList
 	{
-	char m_pattern[128];
+	u::BufferVal<128> m_pattern;
 	const char* m_moduleName;
 public:
 	SearchFileTypeList( const char* ext )

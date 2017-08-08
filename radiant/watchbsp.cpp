@@ -77,6 +77,7 @@ void message_print( message_info_t* self, const char* characters, std::size_t le
 
 #include <glib.h>
 #include <uilib/uilib.h>
+#include <util/buffer.h>
 #include "xmlstuff.h"
 
 class CWatchBSP
@@ -400,7 +401,7 @@ static void saxComment( void *ctx, const xmlChar *msg ){
 }
 
 static void saxWarning( void *ctx, const char *msg, ... ){
-	char saxMsgBuffer[4096];
+	auto saxMsgBuffer = u::buffer<4096>();
 	va_list args;
 
 	va_start( args, msg );
@@ -410,7 +411,7 @@ static void saxWarning( void *ctx, const char *msg, ... ){
 }
 
 static void saxError( void *ctx, const char *msg, ... ){
-	char saxMsgBuffer[4096];
+	auto saxMsgBuffer = u::buffer<4096>();
 	va_list args;
 
 	va_start( args, msg );
@@ -420,7 +421,7 @@ static void saxError( void *ctx, const char *msg, ... ){
 }
 
 static void saxFatal( void *ctx, const char *msg, ... ){
-	char buffer[4096];
+	auto buffer = u::buffer<4096>();
 
 	va_list args;
 

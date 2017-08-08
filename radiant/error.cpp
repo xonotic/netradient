@@ -35,6 +35,8 @@
 #else
 #include <errno.h>
 #include <unistd.h>
+#include <util/buffer.h>
+
 #endif
 
 
@@ -55,7 +57,7 @@
 
 void Error( const char *error, ... ){
 	va_list argptr;
-	char text[4096];
+	auto text = u::buffer<4096>();
 
 	va_start( argptr,error );
 	vsprintf( text, error,argptr );

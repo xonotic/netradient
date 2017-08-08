@@ -45,6 +45,7 @@ MapModules& ReferenceAPI_getMapModules();
 #include <set>
 
 #include <gdk/gdkkeysyms.h>
+#include <util/buffer.h>
 #include "uilib/uilib.h"
 
 #include "scenelib.h"
@@ -151,7 +152,7 @@ void detach( const NameCallback& setName, const NameCallbackCallback& detachObse
 }
 
 void makeUnique( const char* name, const NameCallback& setName ) const {
-	char buffer[1024];
+	auto buffer = u::buffer<1024>();
 	name_write( buffer, m_uniqueNames.make_unique( name_read( name ) ) );
 	setName( buffer );
 }
@@ -173,7 +174,7 @@ void mergeNames( const BasicNamespace& other ) const {
 		name_t uniqueName( uniqueNames.make_unique( name_read( ( *i ).first.c_str() ) ) );
 		uniqueNames.insert( uniqueName );
 
-		char buffer[1024];
+		auto buffer = u::buffer<1024>();
 		name_write( buffer, uniqueName );
 
 		//globalOutputStream() << "renaming " << makeQuoted((*i).first.c_str()) << " to " << makeQuoted(buffer) << "\n";
@@ -877,7 +878,7 @@ void DoMapInfo(){
 
 		for ( EntityBreakdown::iterator i = entitymap.begin(); i != entitymap.end(); ++i )
 		{
-			char tmp[16];
+			auto tmp = u::buffer<16>();
 			sprintf( tmp, "%u", Unsigned( ( *i ).second ) );
 			GtkTreeIter iter;
 			gtk_list_store_append( GTK_LIST_STORE( EntityBreakdownWalker ), &iter );
@@ -887,7 +888,7 @@ void DoMapInfo(){
 
 	EntityBreakdownWalker.unref();
 
-	char tmp[16];
+	auto tmp = u::buffer<16>();
 	sprintf( tmp, "%u", Unsigned( g_brushCount.get() ) );
 	brushes_entry.text(tmp);
 	sprintf( tmp, "%u", Unsigned( g_entityCount.get() ) );
@@ -1267,7 +1268,7 @@ void ConstructRegionStartpoint( scene::Node* startpoint, const Vector3& region_m
 	}
 
 	// write the info_playerstart
-	char sTmp[1024];
+	auto sTmp = u::buffer<1024>();
 	sprintf( sTmp, "%d %d %d", (int)vOrig[0], (int)vOrig[1], (int)vOrig[2] );
 	Node_getEntity( *startpoint )->setKeyValue( "origin", sTmp );
 	sprintf( sTmp, "%d", (int)Camera_getAngles( *g_pParentWnd->GetCamWnd() )[CAMERA_YAW] );
@@ -2101,7 +2102,7 @@ void DoFind(){
 	}
 
 	// Initialize dialog
-	char buf[16];
+	auto buf = u::buffer<16>();
 	int ent, br;
 
 	GetSelectionIndex( &ent, &br );

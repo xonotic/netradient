@@ -19,6 +19,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <util/buffer.h>
 #include "entity.h"
 
 #include "ientity.h"
@@ -354,7 +355,7 @@ void Entity_createFromSelection( const char* name, const Vector3& origin ){
 
 			if ( DoLightIntensityDlg( &intensity ) == eIDOK ) {
 				g_iLastLightIntensity = intensity;
-				char buf[30];
+				auto buf = u::buffer<30>();
 				sprintf( buf, "255 255 255 %d", intensity );
 				Node_getEntity( node )->setKeyValue( "_light", buf );
 			}
@@ -366,7 +367,7 @@ void Entity_createFromSelection( const char* name, const Vector3& origin ){
 
 			if ( DoLightIntensityDlg( &intensity ) == eIDOK ) {
 				g_iLastLightIntensity = intensity;
-				char buf[10];
+				auto buf = u::buffer<10>();
 				sprintf( buf, "%d", intensity );
 				Node_getEntity( node )->setKeyValue( "light", buf );
 			}
@@ -472,7 +473,7 @@ void Entity_normalizeColor(){
 					g_entity_globals.color_entity = rgb;
 					NormalizeColor( g_entity_globals.color_entity );
 
-					char buffer[128];
+					auto buffer = u::buffer<128>();
 					sprintf( buffer, "%g %g %g", g_entity_globals.color_entity[0],
 							 g_entity_globals.color_entity[1],
 							 g_entity_globals.color_entity[2] );
@@ -508,7 +509,7 @@ void Entity_setColour(){
 					NormalizeColor( g_entity_globals.color_entity );
 				}
 
-				char buffer[128];
+				auto buffer = u::buffer<128>();
 				sprintf( buffer, "%g %g %g", g_entity_globals.color_entity[0],
 						 g_entity_globals.color_entity[1],
 						 g_entity_globals.color_entity[2] );
