@@ -473,8 +473,8 @@ struct EnginePath {
 	}
 
 	static void Import(CopiedString &self, const char *value) {
-	setEnginePath( value );
-}
+		setEnginePath( value );
+	}
 };
 
 struct PakPath0 {
