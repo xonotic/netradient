@@ -28,7 +28,9 @@
 #if !defined( INCLUDED_POINTS_H )
 #define INCLUDED_POINTS_H
 
-void Pointfile_Clear();
+struct OpenGLBinding;
+
+void Pointfile_Clear(OpenGLBinding &GL);
 
 void Pointfile_Delete(void);
 

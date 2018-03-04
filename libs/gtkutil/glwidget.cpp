@@ -25,33 +25,33 @@
 
 #include "igl.h"
 
-void (*GLWidget_sharedContextCreated)() = 0;
+void (*GLWidget_sharedContextCreated)(OpenGLBinding &GL) = 0;
 
-void (*GLWidget_sharedContextDestroyed)() = 0;
+void (*GLWidget_sharedContextDestroyed)(OpenGLBinding &GL) = 0;
 
 unsigned int g_context_count = 0;
 
 ui::GLArea g_shared{ui::null};
 
-void _glwidget_context_created(ui::GLArea self, void *data)
+void _glwidget_context_created(OpenGLBinding &GL, ui::GLArea self)
 {
     if (++g_context_count == 1) {
         g_shared = self;
         g_object_ref(g_shared._handle);
 
         glwidget_make_current(g_shared);
-        GlobalOpenGL().contextValid = true;
+        GL.contextValid = true;
 
-        GLWidget_sharedContextCreated();
+        GLWidget_sharedContextCreated(GL);
     }
 }
 
-void _glwidget_context_destroyed(ui::GLArea self, void *data)
+void _glwidget_context_destroyed(OpenGLBinding &GL, ui::GLArea self)
 {
     if (--g_context_count == 0) {
-        GlobalOpenGL().contextValid = false;
+        GL.contextValid = false;
 
-        GLWidget_sharedContextDestroyed();
+        GLWidget_sharedContextDestroyed(GL);
 
         g_shared.unref();
         g_shared = ui::GLArea(ui::null);
@@ -92,7 +92,7 @@ bool glwidget_make_current(ui::GLArea self)
 //        glwidget_context_created(self);
 //    }
     gtk_gl_area_make_current(self);
-    auto valid = GlobalOpenGL().contextValid;
+    auto valid = GL.contextValid;
     return true;
 }
 
@@ -243,15 +243,15 @@ GdkGLConfig *glconfig_new_with_depth()
     return gdk_gl_config_new_by_mode((GdkGLConfigMode) (GDK_GL_MODE_RGBA | GDK_GL_MODE_DOUBLE | GDK_GL_MODE_DEPTH));
 }
 
-int glwidget_context_created(ui::GLArea self, void *data)
+int glwidget_context_created(ui::GLArea self, OpenGLBinding *data)
 {
-    _glwidget_context_created(self, data);
+    _glwidget_context_created(*data, self);
     return false;
 }
 
-int glwidget_context_destroyed(ui::GLArea self, void *data)
+int glwidget_context_destroyed(ui::GLArea self, OpenGLBinding *data)
 {
-    _glwidget_context_destroyed(self, data);
+    _glwidget_context_destroyed(*data, self);
     return false;
 }
 
@@ -274,7 +274,7 @@ bool glwidget_enable_gl(ui::GLArea self, ui::Widget root, gpointer data)
     return false;
 }
 
-ui::GLArea glwidget_new(bool zbuffer)
+ui::GLArea glwidget_new(OpenGLBinding &GL, bool zbuffer)
 {
     auto self = ui::GLArea::from(gtk_drawing_area_new());
 
@@ -282,8 +282,8 @@ ui::GLArea glwidget_new(bool zbuffer)
 
     self.connect("hierarchy-changed", G_CALLBACK(glwidget_enable_gl), 0);
 
-    self.connect("realize", G_CALLBACK(glwidget_context_created), 0);
-    self.connect("unrealize", G_CALLBACK(glwidget_context_destroyed), 0);
+    self.connect("realize", G_CALLBACK(glwidget_context_created), &GL);
+    self.connect("unrealize", G_CALLBACK(glwidget_context_destroyed), &GL);
 
     return self;
 }

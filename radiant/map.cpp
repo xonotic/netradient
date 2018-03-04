@@ -456,7 +456,8 @@ void RemoveRegionBrushes(void);
  */
 void Map_Free()
 {
-    Pointfile_Clear();
+    OpenGLBinding &GL = GlobalOpenGL();
+    Pointfile_Clear(GL);
 
     g_map.m_resource->detach(g_map);
     GlobalReferenceCache().release(g_map.m_name.c_str());
@@ -1294,7 +1295,8 @@ void Map_Rename(const char *filename)
 
 bool Map_Save()
 {
-    Pointfile_Clear();
+    OpenGLBinding &GL = GlobalOpenGL();
+    Pointfile_Clear(GL);
 
     ScopeTimer timer("map save");
     SaveReferences();

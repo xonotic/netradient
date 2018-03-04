@@ -34,8 +34,8 @@
 
 typedef int fileHandle_t;
 
-extern void glBox( idVec3 &color, idVec3 &point, float size );
-extern void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label );
+extern void glBox( OpenGLBinding &GL, idVec3 &color, idVec3 &point, float size );
+extern void glLabeledPoint( OpenGLBinding &GL, idVec3 &color, idVec3 &point, float size, const char *label );
 
 static idVec4 blue( 0, 0, 1, 1 );
 static idVec4 red( 1, 0, 0, 1 );
@@ -148,10 +148,10 @@ virtual void updateSelection( const idVec3 &move ) {
 	}
 }
 
-void drawSelection() {
+void drawSelection(OpenGLBinding &GL) {
 	int count = selectedPoints.Num();
 	for ( int i = 0; i < count; i++ ) {
-		glBox( red, *getPoint( selectedPoints[i] ), 4 );
+		glBox( GL, red, *getPoint( selectedPoints[i] ), 4 );
 	}
 }
 
@@ -213,7 +213,7 @@ void initPosition( long startTime, long totalTime );
 const idVec3 *getPosition( long time );
 
 
-void draw( bool editMode );
+void draw( OpenGLBinding &GL, bool editMode );
 void addToRenderer();
 
 void setSelectedPoint( idVec3 *p );
@@ -441,7 +441,7 @@ virtual const idVec3 *getPosition( long t ) {
 	return NULL;
 }
 
-virtual void draw( bool editMode ) {};
+virtual void draw( OpenGLBinding &GL, bool editMode ) {};
 
 virtual void parse( const char *( *text ) ) {};
 virtual void write( fileHandle_t file, const char *name );
@@ -533,8 +533,8 @@ virtual idVec3 *getPoint( int index ) {
 	return &pos;
 }
 
-virtual void draw( bool editMode ) {
-	glLabeledPoint( blue, pos, ( editMode ) ? 5 : 3, "Fixed point" );
+virtual void draw( OpenGLBinding &GL, bool editMode ) {
+	glLabeledPoint( GL, blue, pos, ( editMode ) ? 5 : 3, "Fixed point" );
 }
 
 protected:
@@ -603,9 +603,9 @@ virtual void addPoint( const idVec3 &v ) {
 	}
 }
 
-virtual void draw( bool editMode ) {
-	glLabeledPoint( blue, startPos, ( editMode ) ? 5 : 3, "Start interpolated" );
-	glLabeledPoint( blue, endPos, ( editMode ) ? 5 : 3, "End interpolated" );
+virtual void draw( OpenGLBinding &GL, bool editMode ) {
+	glLabeledPoint( GL, blue, startPos, ( editMode ) ? 5 : 3, "Start interpolated" );
+	glLabeledPoint( GL, blue, endPos, ( editMode ) ? 5 : 3, "End interpolated" );
 	glBegin( GL_LINES );
 	glVertex3fv( startPos );
 	glVertex3fv( endPos );
@@ -686,8 +686,8 @@ virtual void addPoint( const float x, const float y, const float z ) {
 	target.addPoint( x, y, z );
 }
 
-virtual void draw( bool editMode ) {
-	target.draw( editMode );
+virtual void draw( OpenGLBinding &GL, bool editMode ) {
+	target.draw( GL, editMode );
 }
 
 virtual void updateSelection( const idVec3 &move ) {
@@ -1012,14 +1012,14 @@ bool getCameraInfo( long time, float *origin, float *direction, float *fv ) {
 	return b;
 }
 
-void draw( bool editMode ) {
+void draw( OpenGLBinding &GL, bool editMode ) {
 	// gcc doesn't allow casting away from bools
 	// why?  I've no idea...
 	if ( cameraPosition ) {
-		cameraPosition->draw( (bool)( ( editMode || cameraRunning ) && cameraEdit ) );
+		cameraPosition->draw( GL, (bool)( ( editMode || cameraRunning ) && cameraEdit ) );
 		int count = targetPositions.Num();
 		for ( int i = 0; i < count; i++ ) {
-			targetPositions[i]->draw( (bool)( ( editMode || cameraRunning ) && i == activeTarget && !cameraEdit ) );
+			targetPositions[i]->draw( GL, (bool)( ( editMode || cameraRunning ) && i == activeTarget && !cameraEdit ) );
 		}
 	}
 }

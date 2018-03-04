@@ -73,7 +73,7 @@
 #include "grid.h"
 #include "windowobservers.h"
 
-void LoadTextureRGBA(qtexture_t *q, unsigned char *pPixels, int nWidth, int nHeight);
+void LoadTextureRGBA(OpenGLBinding &GL, qtexture_t *q, unsigned char *pPixels, int nWidth, int nHeight);
 
 // d1223m
 extern bool g_brush_always_caulk;
@@ -111,10 +111,10 @@ public:
     };
 
 /*! Draw clip/path point with rasterized number label */
-    void Draw(int num, float scale);
+    void Draw(OpenGLBinding &GL, int num, float scale);
 
 /*! Draw clip/path point with rasterized string label */
-    void Draw(const char *label, float scale);
+    void Draw(OpenGLBinding &GL, const char *label, float scale);
 };
 
 VIEWTYPE g_clip_viewtype;
@@ -126,14 +126,14 @@ ClipPoint g_Clip3;
 ClipPoint *g_pMovingClip = 0;
 
 /* Drawing clip points */
-void ClipPoint::Draw(int num, float scale)
+void ClipPoint::Draw(OpenGLBinding &GL, int num, float scale)
 {
     StringOutputStream label(4);
     label << num;
-    Draw(label.c_str(), scale);
+    Draw(GL, label.c_str(), scale);
 }
 
-void ClipPoint::Draw(const char *label, float scale)
+void ClipPoint::Draw(OpenGLBinding &GL, const char *label, float scale)
 {
     // draw point
     glPointSize(4);
@@ -194,17 +194,17 @@ inline ClipPoint *GlobalClipPoints_Find(const Vector3 &point, VIEWTYPE viewtype,
     return bestClip;
 }
 
-inline void GlobalClipPoints_Draw(float scale)
+inline void GlobalClipPoints_Draw(OpenGLBinding &GL, float scale)
 {
     // Draw clip points
     if (g_Clip1.Set()) {
-        g_Clip1.Draw(1, scale);
+        g_Clip1.Draw(GL, 1, scale);
     }
     if (g_Clip2.Set()) {
-        g_Clip2.Draw(2, scale);
+        g_Clip2.Draw(GL, 2, scale);
     }
     if (g_Clip3.Set()) {
-        g_Clip3.Draw(3, scale);
+        g_Clip3.Draw(GL, 3, scale);
     }
 }
 
@@ -811,6 +811,7 @@ gboolean xywnd_size_allocate(ui::Widget widget, GtkAllocation *allocation, XYWnd
 
 gboolean xywnd_expose(ui::Widget widget, GdkEventExpose *event, XYWnd *xywnd)
 {
+    OpenGLBinding &GL = xywnd->GL;
     if (glwidget_make_current(xywnd->GetWidget()) != FALSE) {
         if (Map_Valid(g_map) && ScreenUpdates_Enabled()) {
             GlobalOpenGL_debugAssertNoErrors();
@@ -832,8 +833,9 @@ void XYWnd_CameraMoved(XYWnd &xywnd)
     }
 }
 
-XYWnd::XYWnd() :
-        m_gl_widget(glwidget_new(FALSE)),
+XYWnd::XYWnd(OpenGLBinding &GL) :
+        GL(GL),
+        m_gl_widget(glwidget_new(GL, FALSE)),
         m_deferredDraw(WidgetQueueDrawCaller(m_gl_widget)),
         m_deferred_motion(xywnd_motion, this),
         m_parent(ui::null),
@@ -1526,7 +1528,7 @@ void XYWnd::XY_LoadBackgroundImage(const char *name)
         return;
     }
     g_pParentWnd->ActiveXY()->m_tex = (qtexture_t *) malloc(sizeof(qtexture_t));
-    LoadTextureRGBA(g_pParentWnd->ActiveXY()->XYWnd::m_tex, image->getRGBAPixels(), image->getWidth(),
+    LoadTextureRGBA(GL, g_pParentWnd->ActiveXY()->XYWnd::m_tex, image->getRGBAPixels(), image->getWidth(),
                     image->getHeight());
     globalOutputStream() << "Loaded background texture " << relative << "\n";
     g_pParentWnd->ActiveXY()->m_backgroundActivated = true;
@@ -1630,14 +1632,14 @@ void XYWnd::XY_DrawAxis(void)
         // now print axis symbols
         glColor3fv(vector3_to_array(colourX));
         glRasterPos2f(m_vOrigin[nDim1] - w + 55 / m_fScale, m_vOrigin[nDim2] + h - 55 / m_fScale);
-        GlobalOpenGL().drawChar(g_AxisName[nDim1]);
+        GL.drawChar(g_AxisName[nDim1]);
         glRasterPos2f(28 / m_fScale, -10 / m_fScale);
-        GlobalOpenGL().drawChar(g_AxisName[nDim1]);
+        GL.drawChar(g_AxisName[nDim1]);
         glColor3fv(vector3_to_array(colourY));
         glRasterPos2f(m_vOrigin[nDim1] - w + 25 / m_fScale, m_vOrigin[nDim2] + h - 30 / m_fScale);
-        GlobalOpenGL().drawChar(g_AxisName[nDim2]);
+        GL.drawChar(g_AxisName[nDim2]);
         glRasterPos2f(-10 / m_fScale, 28 / m_fScale);
-        GlobalOpenGL().drawChar(g_AxisName[nDim2]);
+        GL.drawChar(g_AxisName[nDim2]);
     }
 }
 
@@ -1800,17 +1802,17 @@ void XYWnd::XY_DrawGrid(void)
     // draw coordinate text if needed
     if (g_xywindow_globals_private.show_coordinates) {
         glColor4fv(vector4_to_array(Vector4(g_xywindow_globals.color_gridtext, 1.0f)));
-        float offx = m_vOrigin[nDim2] + h - (4 + GlobalOpenGL().m_font->getPixelAscent()) / m_fScale;
+        float offx = m_vOrigin[nDim2] + h - (4 + GL.m_font->getPixelAscent()) / m_fScale;
         float offy = m_vOrigin[nDim1] - w + 4 / m_fScale;
         for (x = xb - fmod(xb, stepx); x <= xe; x += stepx) {
             glRasterPos2f(x, offx);
             sprintf(text, "%g", x);
-            GlobalOpenGL().drawString(text);
+            GL.drawString(text);
         }
         for (y = yb - fmod(yb, stepy); y <= ye; y += stepy) {
             glRasterPos2f(offy, y);
             sprintf(text, "%g", y);
-            GlobalOpenGL().drawString(text);
+            GL.drawString(text);
         }
 
         if (Active()) {
@@ -1821,7 +1823,7 @@ void XYWnd::XY_DrawGrid(void)
         if (!g_xywindow_globals_private.show_axis) {
             glRasterPos2f(m_vOrigin[nDim1] - w + 35 / m_fScale, m_vOrigin[nDim2] + h - 20 / m_fScale);
 
-            GlobalOpenGL().drawString(ViewType_getTitle(m_viewType));
+            GL.drawString(ViewType_getTitle(m_viewType));
         }
     }
 
@@ -1935,7 +1937,7 @@ void XYWnd::XY_DrawBlockGrid()
                               y + (g_xywindow_globals_private.blockSize / 2));
                 sprintf(text, "%i,%i", (int) floor(x / g_xywindow_globals_private.blockSize),
                         (int) floor(y / g_xywindow_globals_private.blockSize));
-                GlobalOpenGL().drawString(text);
+                GL.drawString(text);
             }
         }
     }
@@ -2041,18 +2043,18 @@ void XYWnd::PaintSizeInfo(int nDim1, int nDim2, Vector3 &vMinBounds, Vector3 &vM
 
         glRasterPos3f(Betwixt(vMinBounds[nDim1], vMaxBounds[nDim1]), vMinBounds[nDim2] - 20.0f / m_fScale, 0.0f);
         dimensions << g_pDimStrings[nDim1] << vSize[nDim1];
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
         dimensions.clear();
 
         glRasterPos3f(vMaxBounds[nDim1] + 16.0f / m_fScale, Betwixt(vMinBounds[nDim2], vMaxBounds[nDim2]), 0.0f);
         dimensions << g_pDimStrings[nDim2] << vSize[nDim2];
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
         dimensions.clear();
 
         glRasterPos3f(vMinBounds[nDim1] + 4, vMaxBounds[nDim2] + 8 / m_fScale, 0.0f);
         dimensions << "(" << g_pOrgStrings[0][0] << vMinBounds[nDim1] << "  " << g_pOrgStrings[0][1]
                    << vMaxBounds[nDim2] << ")";
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
     } else if (m_viewType == XZ) {
         glBegin(GL_LINES);
 
@@ -2079,18 +2081,18 @@ void XYWnd::PaintSizeInfo(int nDim1, int nDim2, Vector3 &vMinBounds, Vector3 &vM
 
         glRasterPos3f(Betwixt(vMinBounds[nDim1], vMaxBounds[nDim1]), 0, vMinBounds[nDim2] - 20.0f / m_fScale);
         dimensions << g_pDimStrings[nDim1] << vSize[nDim1];
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
         dimensions.clear();
 
         glRasterPos3f(vMaxBounds[nDim1] + 16.0f / m_fScale, 0, Betwixt(vMinBounds[nDim2], vMaxBounds[nDim2]));
         dimensions << g_pDimStrings[nDim2] << vSize[nDim2];
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
         dimensions.clear();
 
         glRasterPos3f(vMinBounds[nDim1] + 4, 0, vMaxBounds[nDim2] + 8 / m_fScale);
         dimensions << "(" << g_pOrgStrings[1][0] << vMinBounds[nDim1] << "  " << g_pOrgStrings[1][1]
                    << vMaxBounds[nDim2] << ")";
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
     } else {
         glBegin(GL_LINES);
 
@@ -2117,18 +2119,18 @@ void XYWnd::PaintSizeInfo(int nDim1, int nDim2, Vector3 &vMinBounds, Vector3 &vM
 
         glRasterPos3f(0, Betwixt(vMinBounds[nDim1], vMaxBounds[nDim1]), vMinBounds[nDim2] - 20.0f / m_fScale);
         dimensions << g_pDimStrings[nDim1] << vSize[nDim1];
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
         dimensions.clear();
 
         glRasterPos3f(0, vMaxBounds[nDim1] + 16.0f / m_fScale, Betwixt(vMinBounds[nDim2], vMaxBounds[nDim2]));
         dimensions << g_pDimStrings[nDim2] << vSize[nDim2];
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
         dimensions.clear();
 
         glRasterPos3f(0, vMinBounds[nDim1] + 4.0f, vMaxBounds[nDim2] + 8 / m_fScale);
         dimensions << "(" << g_pOrgStrings[2][0] << vMinBounds[nDim1] << "  " << g_pOrgStrings[2][1]
                    << vMaxBounds[nDim2] << ")";
-        GlobalOpenGL().drawString(dimensions.c_str());
+        GL.drawString(dimensions.c_str());
     }
 }
 
@@ -2193,9 +2195,9 @@ public:
         }
     }
 
-    void render(const Matrix4 &modelview, const Matrix4 &projection)
+    void render(OpenGLBinding &GL, const Matrix4 &modelview, const Matrix4 &projection)
     {
-        GlobalShaderCache().render(m_globalstate, modelview, projection);
+        GlobalShaderCache().render(GL, m_globalstate, modelview, projection);
     }
 
 private:
@@ -2357,7 +2359,7 @@ void XYWnd::XY_Draw()
         Scene_Render(renderer, m_view);
 
         GlobalOpenGL_debugAssertNoErrors();
-        renderer.render(m_modelview, m_projection);
+        renderer.render(GL, m_modelview, m_projection);
         GlobalOpenGL_debugAssertNoErrors();
     }
 
@@ -2372,7 +2374,7 @@ void XYWnd::XY_Draw()
     GlobalOpenGL_debugAssertNoErrors();
     glLineWidth(1);
     GlobalOpenGL_debugAssertNoErrors();
-    if (GlobalOpenGL().GL_1_3()) {
+    if (GL.GL_1_3()) {
         glActiveTexture(GL_TEXTURE0);
         glClientActiveTexture(GL_TEXTURE0);
     }
@@ -2422,7 +2424,7 @@ void XYWnd::XY_Draw()
     }
 
     if (ClipMode()) {
-        GlobalClipPoints_Draw(m_fScale);
+        GlobalClipPoints_Draw(GL, m_fScale);
     }
 
     GlobalOpenGL_debugAssertNoErrors();
@@ -2434,7 +2436,7 @@ void XYWnd::XY_Draw()
 
     DrawCameraIcon(Camera_getOrigin(*g_pParentWnd->GetCamWnd()), Camera_getAngles(*g_pParentWnd->GetCamWnd()));
 
-    Feedback_draw2D(m_viewType);
+    Feedback_draw2D(GL, m_viewType);
 
     if (g_xywindow_globals_private.show_outline) {
         if (Active()) {

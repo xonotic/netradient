@@ -2449,7 +2449,7 @@ ui::MenuItem create_patch_menu()
     return patch_menu_item;
 }
 
-ui::MenuItem create_help_menu()
+ui::MenuItem create_help_menu(OpenGLBinding &GL)
 {
     // Help menu
     auto help_menu_item = new_sub_menu_item_with_mnemonic("_Help");
@@ -2466,12 +2466,14 @@ ui::MenuItem create_help_menu()
 
     create_menu_item_with_mnemonic(menu, "Bug report", makeCallbackF(OpenBugReportURL));
     create_menu_item_with_mnemonic(menu, "Shortcuts list", makeCallbackF(DoCommandListDlg));
-    create_menu_item_with_mnemonic(menu, "_About", makeCallbackF(DoAbout));
+    create_menu_item_with_mnemonic(menu, "_About", makeCallbackL(GL, [](OpenGLBinding &GL) {
+        DoAbout(GL);
+    }));
 
     return help_menu_item;
 }
 
-ui::MenuBar create_main_menu(MainFrame::EViewStyle style)
+ui::MenuBar create_main_menu(MainFrame::EViewStyle style, OpenGLBinding &GL)
 {
     auto menu_bar = ui::MenuBar::from(gtk_menu_bar_new());
     menu_bar.show();
@@ -2487,7 +2489,7 @@ ui::MenuBar create_main_menu(MainFrame::EViewStyle style)
     menu_bar.add(create_brush_menu());
     menu_bar.add(create_patch_menu());
     menu_bar.add(create_plugins_menu());
-    menu_bar.add(create_help_menu());
+    menu_bar.add(create_help_menu(GL));
 
     return menu_bar;
 }
@@ -2846,7 +2848,7 @@ ui::Window MainFrame_getWindow()
 
 std::vector<ui::Widget> g_floating_windows;
 
-MainFrame::MainFrame() : m_idleRedrawStatusText(RedrawStatusTextCaller(*this))
+MainFrame::MainFrame(OpenGLBinding &GL) : m_idleRedrawStatusText(RedrawStatusTextCaller(*this))
 {
     m_pXYWnd = 0;
     m_pCamWnd = 0;
@@ -2861,7 +2863,7 @@ MainFrame::MainFrame() : m_idleRedrawStatusText(RedrawStatusTextCaller(*this))
 
     m_bSleeping = false;
 
-    Create();
+    Create(GL);
 }
 
 MainFrame::~MainFrame()
@@ -3048,7 +3050,7 @@ static gint mainframe_delete(ui::Widget widget, GdkEvent *event, gpointer data)
     return TRUE;
 }
 
-void MainFrame::Create()
+void MainFrame::Create(OpenGLBinding &GL)
 {
     ui::Window window = ui::Window(ui::window_type::TOP);
 
@@ -3090,7 +3092,7 @@ void MainFrame::Create()
 
     register_shortcuts();
 
-    auto main_menu = create_main_menu(CurrentStyle());
+    auto main_menu = create_main_menu(CurrentStyle(), GL);
     vbox.pack_start(main_menu, FALSE, FALSE, 0);
 
     auto main_toolbar = create_main_toolbar(CurrentStyle());
@@ -3151,7 +3153,7 @@ void MainFrame::Create()
                 gtk_paned_add1(GTK_PANED(vsplit), hsplit);
 
                 // xy
-                m_pXYWnd = new XYWnd();
+                m_pXYWnd = new XYWnd(GL);
                 m_pXYWnd->SetViewType(XY);
                 ui::Widget xy_window = ui::Widget(create_framed_widget(m_pXYWnd->GetWidget()));
 
@@ -3170,7 +3172,7 @@ void MainFrame::Create()
 
 
                     // camera
-                    m_pCamWnd = NewCamWnd();
+                    m_pCamWnd = NewCamWnd(GL);
                     GlobalCamera_setCamWnd(*m_pCamWnd);
                     CamWnd_setParent(*m_pCamWnd, window);
                     auto camera_window = create_framed_widget(CamWnd_getWidget(*m_pCamWnd));
@@ -3178,7 +3180,7 @@ void MainFrame::Create()
                     gtk_paned_add1(GTK_PANED(vsplit2), camera_window);
 
                     // textures
-                    auto texture_window = create_framed_widget(TextureBrowser_constructWindow(window));
+                    auto texture_window = create_framed_widget(TextureBrowser_constructWindow(window, GL));
 
                     gtk_paned_add2(GTK_PANED(vsplit2), texture_window);
                 }
@@ -3202,7 +3204,7 @@ void MainFrame::Create()
 
             window.show();
 
-            m_pCamWnd = NewCamWnd();
+            m_pCamWnd = NewCamWnd(GL);
             GlobalCamera_setCamWnd(*m_pCamWnd);
 
             {
@@ -3219,7 +3221,7 @@ void MainFrame::Create()
             global_accel_connect_window(window);
             g_posXYWnd.connect(window);
 
-            m_pXYWnd = new XYWnd();
+            m_pXYWnd = new XYWnd(GL);
             m_pXYWnd->m_parent = window;
             m_pXYWnd->SetViewType(XY);
 
@@ -3238,7 +3240,7 @@ void MainFrame::Create()
             global_accel_connect_window(window);
             g_posXZWnd.connect(window);
 
-            m_pXZWnd = new XYWnd();
+            m_pXZWnd = new XYWnd(GL);
             m_pXZWnd->m_parent = window;
             m_pXZWnd->SetViewType(XZ);
 
@@ -3257,7 +3259,7 @@ void MainFrame::Create()
             global_accel_connect_window(window);
             g_posYZWnd.connect(window);
 
-            m_pYZWnd = new XYWnd();
+            m_pYZWnd = new XYWnd(GL);
             m_pYZWnd->m_parent = window;
             m_pYZWnd->SetViewType(YZ);
 
@@ -3272,30 +3274,30 @@ void MainFrame::Create()
         }
 
         {
-            auto frame = create_framed_widget(TextureBrowser_constructWindow(GroupDialog_getWindow()));
+            auto frame = create_framed_widget(TextureBrowser_constructWindow(GroupDialog_getWindow(), GL));
             g_page_textures = GroupDialog_addPage("Textures", frame, TextureBrowserExportTitleCaller());
         }
 
         GroupDialog_show();
     } else // 4 way
     {
-        m_pCamWnd = NewCamWnd();
+        m_pCamWnd = NewCamWnd(GL);
         GlobalCamera_setCamWnd(*m_pCamWnd);
         CamWnd_setParent(*m_pCamWnd, window);
 
         ui::Widget camera = CamWnd_getWidget(*m_pCamWnd);
 
-        m_pYZWnd = new XYWnd();
+        m_pYZWnd = new XYWnd(GL);
         m_pYZWnd->SetViewType(YZ);
 
         ui::Widget yz = m_pYZWnd->GetWidget();
 
-        m_pXYWnd = new XYWnd();
+        m_pXYWnd = new XYWnd(GL);
         m_pXYWnd->SetViewType(XY);
 
         ui::Widget xy = m_pXYWnd->GetWidget();
 
-        m_pXZWnd = new XYWnd();
+        m_pXZWnd = new XYWnd(GL);
         m_pXZWnd->SetViewType(XZ);
 
         ui::Widget xz = m_pXZWnd->GetWidget();
@@ -3304,7 +3306,7 @@ void MainFrame::Create()
         vbox.pack_start(split, TRUE, TRUE, 0);
 
         {
-            auto frame = create_framed_widget(TextureBrowser_constructWindow(window));
+            auto frame = create_framed_widget(TextureBrowser_constructWindow(window, GL));
             g_page_textures = GroupDialog_addPage("Textures", frame, TextureBrowserExportTitleCaller());
         }
     }
@@ -3440,7 +3442,7 @@ void GridStatus_onTextureLockEnabledChanged()
     }
 }
 
-void GlobalGL_sharedContextCreated()
+void GlobalGL_sharedContextCreated(OpenGLBinding &GL)
 {
     GLFont *g_font = NULL;
 
@@ -3451,12 +3453,12 @@ void GlobalGL_sharedContextCreated()
     const auto extensions = reinterpret_cast<const char *>( glGetString(GL_EXTENSIONS));
     globalOutputStream() << "GL_EXTENSIONS: " << (extensions ? extensions : "") << "\n";
 
-    QGL_sharedContextCreated(GlobalOpenGL());
+    QGL_sharedContextCreated(GL);
 
-    ShaderCache_extensionsInitialised();
+    ShaderCache_extensionsInitialised(GL);
 
     GlobalShaderCache().realise();
-    Textures_Realise();
+    Textures_Realise(GL);
 
 #if GDEF_OS_WINDOWS
                                                                                                                             /* win32 is dodgy here, just use courier new then */
@@ -3468,15 +3470,15 @@ void GlobalGL_sharedContextCreated()
     g_font = glfont_create(fontname);
 #endif
 
-    GlobalOpenGL().m_font = g_font;
+    GL.m_font = g_font;
 }
 
-void GlobalGL_sharedContextDestroyed()
+void GlobalGL_sharedContextDestroyed(OpenGLBinding &GL)
 {
-    Textures_Unrealise();
+    Textures_Unrealise(GL);
     GlobalShaderCache().unrealise();
 
-    QGL_sharedContextDestroyed(GlobalOpenGL());
+    QGL_sharedContextDestroyed(GL);
 }
 
 

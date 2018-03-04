@@ -22,8 +22,10 @@
 #if !defined( INCLUDED_RENDERSTATE_H )
 #define INCLUDED_RENDERSTATE_H
 
+struct OpenGLBinding;
+
 void ShaderCache_setBumpEnabled(bool enabled);
 
-void ShaderCache_extensionsInitialised();
+void ShaderCache_extensionsInitialised(OpenGLBinding &GL);
 
 #endif

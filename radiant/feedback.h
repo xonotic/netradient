@@ -34,6 +34,8 @@
 #include "dialog.h"
 #include "xywindow.h"
 
+struct OpenGLBinding;
+
 // we use these classes to let plugins draw inside the Radiant windows
 // 2D window like YZ XZ XY
 class IGL2DWindow {
@@ -46,7 +48,7 @@ public:
 // Decrement the reference count
     virtual void DecRef() = 0;
 
-    virtual void Draw2D(VIEWTYPE vt) = 0;
+    virtual void Draw2D(OpenGLBinding &GL, VIEWTYPE vt) = 0;
 };
 
 // 3D window
@@ -134,7 +136,7 @@ public:
         }
     }
 
-    void Draw2D(VIEWTYPE vt);
+    void Draw2D(OpenGLBinding &GL, VIEWTYPE vt);
 };
 
 class CWindingMsg : public ISAXHandler, public IGL2DWindow {
@@ -186,7 +188,7 @@ public:
         }
     }
 
-    void Draw2D(VIEWTYPE vt);
+    void Draw2D(OpenGLBinding &GL, VIEWTYPE vt);
 };
 
 
@@ -216,10 +218,10 @@ public:
 
     void DropHighlight();
 
-    void draw2D(VIEWTYPE viewType)
+    void draw2D(OpenGLBinding &GL, VIEWTYPE viewType)
     {
         if (m_pDraw2D != 0) {
-            m_pDraw2D->Draw2D(viewType);
+            m_pDraw2D->Draw2D(GL, viewType);
         }
     }
 
@@ -236,6 +238,6 @@ protected:
 
 extern CDbgDlg g_DbgDlg;
 
-void Feedback_draw2D(VIEWTYPE viewType);
+void Feedback_draw2D(OpenGLBinding &GL, VIEWTYPE viewType);
 
 #endif

@@ -25,14 +25,18 @@
 
 // generic string printing with call lists
 class GLFontCallList : public GLFont {
+    OpenGLBinding &GL;
     GLuint m_displayList;
     int m_pixelHeight;
     int m_pixelAscent;
     int m_pixelDescent;
 public:
-    GLFontCallList(GLuint displayList, int asc, int desc, int pixelHeight) : m_displayList(displayList),
-                                                                             m_pixelHeight(pixelHeight),
-                                                                             m_pixelAscent(asc), m_pixelDescent(desc)
+    GLFontCallList(OpenGLBinding &GL, GLuint displayList, int asc, int desc, int pixelHeight)
+            : GL(GL),
+              m_displayList(displayList),
+              m_pixelHeight(pixelHeight),
+              m_pixelAscent(asc),
+              m_pixelDescent(desc)
     {
     }
 
@@ -43,8 +47,8 @@ public:
 
     void printString(const char *s)
     {
-        GlobalOpenGL().m_glListBase(m_displayList);
-        GlobalOpenGL().m_glCallLists(GLsizei(strlen(s)), GL_UNSIGNED_BYTE, reinterpret_cast<const GLubyte *>( s ));
+        GL.m_glListBase(m_displayList);
+        GL.m_glCallLists(GLsizei(strlen(s)), GL_UNSIGNED_BYTE, reinterpret_cast<const GLubyte *>( s ));
     }
 
     virtual int getPixelAscent() const
@@ -264,7 +268,7 @@ public:
 // just a hair outside of the viewport (meaning the current raster position is invalid),
 // then no text will be rendered.  The solution to this is a very hacky one.  You can search
 // Google for "glDrawPixels clipping".
-    virtual void printString(const char *s)
+    virtual void printString(OpenGLBinding &GL, const char *s)
     {
         // The idea for this code initially came from the font-pangoft2.c example that comes with GtkGLExt.
 
@@ -298,41 +302,41 @@ public:
             bitmap.pixel_mode = FT_PIXEL_MODE_GRAY;
             pango_ft2_render_layout_subpixel(&bitmap, layout, -log_rect.x,
                                              y_offset_bitmap_render_pango_units);
-            GlobalOpenGL().m_glGetFloatv(GL_CURRENT_COLOR, color);
+            GL.m_glGetFloatv(GL_CURRENT_COLOR, color);
 
             // Save state.  I didn't see any OpenGL push/pop operations for these.
             // Question: Is saving/restoring this state necessary?  Being safe.
-            GlobalOpenGL().m_glGetIntegerv(GL_UNPACK_ALIGNMENT, &previous_unpack_alignment);
-            previous_blend_enabled = GlobalOpenGL().m_glIsEnabled(GL_BLEND);
-            GlobalOpenGL().m_glGetIntegerv(GL_BLEND_SRC, &previous_blend_func_src);
-            GlobalOpenGL().m_glGetIntegerv(GL_BLEND_DST, &previous_blend_func_dst);
-            GlobalOpenGL().m_glGetFloatv(GL_RED_BIAS, &previous_red_bias);
-            GlobalOpenGL().m_glGetFloatv(GL_GREEN_BIAS, &previous_green_bias);
-            GlobalOpenGL().m_glGetFloatv(GL_BLUE_BIAS, &previous_blue_bias);
-            GlobalOpenGL().m_glGetFloatv(GL_ALPHA_SCALE, &previous_alpha_scale);
+            GL.m_glGetIntegerv(GL_UNPACK_ALIGNMENT, &previous_unpack_alignment);
+            previous_blend_enabled = GL.m_glIsEnabled(GL_BLEND);
+            GL.m_glGetIntegerv(GL_BLEND_SRC, &previous_blend_func_src);
+            GL.m_glGetIntegerv(GL_BLEND_DST, &previous_blend_func_dst);
+            GL.m_glGetFloatv(GL_RED_BIAS, &previous_red_bias);
+            GL.m_glGetFloatv(GL_GREEN_BIAS, &previous_green_bias);
+            GL.m_glGetFloatv(GL_BLUE_BIAS, &previous_blue_bias);
+            GL.m_glGetFloatv(GL_ALPHA_SCALE, &previous_alpha_scale);
 
-            GlobalOpenGL().m_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            GlobalOpenGL().m_glEnable(GL_BLEND);
-            GlobalOpenGL().m_glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            GlobalOpenGL().m_glPixelTransferf(GL_RED_BIAS, color[0]);
-            GlobalOpenGL().m_glPixelTransferf(GL_GREEN_BIAS, color[1]);
-            GlobalOpenGL().m_glPixelTransferf(GL_BLUE_BIAS, color[2]);
-            GlobalOpenGL().m_glPixelTransferf(GL_ALPHA_SCALE, color[3]);
+            GL.m_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            GL.m_glEnable(GL_BLEND);
+            GL.m_glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            GL.m_glPixelTransferf(GL_RED_BIAS, color[0]);
+            GL.m_glPixelTransferf(GL_GREEN_BIAS, color[1]);
+            GL.m_glPixelTransferf(GL_BLUE_BIAS, color[2]);
+            GL.m_glPixelTransferf(GL_ALPHA_SCALE, color[3]);
 
-            GlobalOpenGL().m_glDrawPixels(bitmap.width, bitmap.rows,
+            GL.m_glDrawPixels(bitmap.width, bitmap.rows,
                                           GL_ALPHA, GL_UNSIGNED_BYTE, begin_bitmap_buffer);
             g_free(begin_bitmap_buffer);
 
             // Restore state in reverse order of how we set it.
-            GlobalOpenGL().m_glPixelTransferf(GL_ALPHA_SCALE, previous_alpha_scale);
-            GlobalOpenGL().m_glPixelTransferf(GL_BLUE_BIAS, previous_blue_bias);
-            GlobalOpenGL().m_glPixelTransferf(GL_GREEN_BIAS, previous_green_bias);
-            GlobalOpenGL().m_glPixelTransferf(GL_RED_BIAS, previous_red_bias);
-            GlobalOpenGL().m_glBlendFunc(previous_blend_func_src, previous_blend_func_dst);
+            GL.m_glPixelTransferf(GL_ALPHA_SCALE, previous_alpha_scale);
+            GL.m_glPixelTransferf(GL_BLUE_BIAS, previous_blue_bias);
+            GL.m_glPixelTransferf(GL_GREEN_BIAS, previous_green_bias);
+            GL.m_glPixelTransferf(GL_RED_BIAS, previous_red_bias);
+            GL.m_glBlendFunc(previous_blend_func_src, previous_blend_func_dst);
             if (!previous_blend_enabled) {
-                GlobalOpenGL().m_glDisable(GL_BLEND);
+                GL.m_glDisable(GL_BLEND);
             }
-            GlobalOpenGL().m_glPixelStorei(GL_UNPACK_ALIGNMENT, previous_unpack_alignment);
+            GL.m_glPixelStorei(GL_UNPACK_ALIGNMENT, previous_unpack_alignment);
         }
 
         g_object_unref(G_OBJECT(layout));

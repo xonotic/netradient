@@ -61,6 +61,7 @@
 
  */
 
+#include <igl.h>
 #include "main.h"
 #include "globaldefs.h"
 
@@ -650,8 +651,8 @@ int main(int argc, char *argv[])
 
     user_shortcuts_init();
 
-    g_pParentWnd = 0;
-    g_pParentWnd = new MainFrame();
+    OpenGLBinding &GL = GlobalOpenGLModule::getTable();
+    g_pParentWnd = new MainFrame(GL);
 
     hide_splash();
 

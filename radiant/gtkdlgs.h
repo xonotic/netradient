@@ -51,7 +51,8 @@ void DoFind();
 
 void DoSides(int type, int axis);
 
-void DoAbout();
+struct OpenGLBinding;
+void DoAbout(OpenGLBinding &GL);
 
 
 #if GDEF_OS_WINDOWS

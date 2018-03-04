@@ -209,7 +209,7 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         {
 #if NV_DRIVER_BUG
@@ -265,7 +265,7 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         glVertexPointer(3, GL_FLOAT, sizeof(ArbitraryMeshVertex), &m_tess.m_vertices.data()->vertex);
         const RenderIndex *strip_indices = m_tess.m_indices.data();
@@ -282,9 +282,9 @@ public:
     {
     }
 
-    void RenderNormals() const;
+    void RenderNormals(OpenGLBinding &GL) const;
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
 #if 0
                                                                                                                                 if ( ( state & RENDER_FILL ) == 0 ) {
@@ -324,7 +324,7 @@ public:
         }
 
 #if GDEF_DEBUG
-        RenderNormals();
+        RenderNormals(GL);
 #endif
     }
 };
@@ -762,7 +762,7 @@ public:
     }
 
 
-    void RenderDebug(RenderStateFlags state) const;
+    void RenderDebug(OpenGLBinding &GL, RenderStateFlags state) const;
 
     void RenderNormals(RenderStateFlags state) const;
 

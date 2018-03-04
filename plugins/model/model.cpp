@@ -101,7 +101,7 @@ public:
         ReleaseShader();
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         if ((state & RENDER_BUMP) != 0) {
             if (GlobalShaderCache().useShaderLanguage()) {

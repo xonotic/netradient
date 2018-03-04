@@ -25,6 +25,8 @@
 #include <uilib/uilib.h>
 #include "generic/constant.h"
 
+struct OpenGLBinding;
+
 template<class T>
 using func = T *;
 
@@ -32,7 +34,7 @@ struct _QERGtkGLTable {
     STRING_CONSTANT(Name, "gtkgl");
     INTEGER_CONSTANT(Version, 1);
 
-    func<ui::GLArea(bool zbufffer)> glwidget_new;
+    func<ui::GLArea(OpenGLBinding &GL, bool zbufffer)> glwidget_new;
     func<void(ui::GLArea self)> glwidget_swap_buffers;
     func<bool(ui::GLArea self)> glwidget_make_current;
     func<void(ui::GLArea self)> glwidget_destroy_context;

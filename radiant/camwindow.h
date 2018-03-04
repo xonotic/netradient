@@ -28,7 +28,9 @@
 
 class CamWnd;
 
-CamWnd *NewCamWnd();
+struct OpenGLBinding;
+
+CamWnd *NewCamWnd(OpenGLBinding &GL);
 
 void DeleteCamWnd(CamWnd *camwnd);
 

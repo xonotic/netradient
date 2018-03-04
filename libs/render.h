@@ -821,7 +821,7 @@ inline ArbitraryMeshVertex arbitrarymeshvertex_quantised( const ArbitraryMeshVer
 
 
 /// \brief Sets up the OpenGL colour and vertex arrays for \p array.
-inline void pointvertex_gl_array( const PointVertex* array ){
+inline void pointvertex_gl_array( OpenGLBinding &GL, const PointVertex* array ){
 	glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof( PointVertex ), &array->colour );
 	glVertexPointer( 3, GL_FLOAT, sizeof( PointVertex ), &array->vertex );
 }
@@ -834,14 +834,14 @@ public:
 RenderablePointArray( const Array<PointVertex>& array, GLenum mode )
 	: m_array( array ), m_mode( mode ){
 }
-void render( RenderStateFlags state ) const {
+void render( OpenGLBinding &GL, RenderStateFlags state ) const {
 #define NV_DRIVER_BUG 1
 #if NV_DRIVER_BUG
 	glColorPointer( 4, GL_UNSIGNED_BYTE, 0, 0 );
 	glVertexPointer( 3, GL_FLOAT, 0, 0 );
 	glDrawArrays( GL_TRIANGLE_FAN, 0, 0 );
 #endif
-	pointvertex_gl_array( m_array.data() );
+	pointvertex_gl_array( GL, m_array.data() );
 	glDrawArrays( m_mode, 0, GLsizei( m_array.size() ) );
 }
 };
@@ -855,8 +855,8 @@ RenderablePointVector( GLenum mode )
 	: m_mode( mode ){
 }
 
-void render( RenderStateFlags state ) const {
-	pointvertex_gl_array( &m_vector.front() );
+void render( OpenGLBinding &GL, RenderStateFlags state ) const {
+	pointvertex_gl_array( GL, &m_vector.front() );
 	glDrawArrays( m_mode, 0, GLsizei( m_vector.size() ) );
 }
 
@@ -887,8 +887,8 @@ RenderableVertexBuffer( GLenum mode, const VertexBuffer<PointVertex>& vertices )
 	: m_mode( mode ), m_vertices( vertices ){
 }
 
-void render( RenderStateFlags state ) const {
-	pointvertex_gl_array( m_vertices.data() );
+void render( OpenGLBinding &GL, RenderStateFlags state ) const {
+	pointvertex_gl_array( GL, m_vertices.data() );
 	glDrawArrays( m_mode, 0, m_vertices.size() );
 }
 };
@@ -903,9 +903,9 @@ RenderableIndexBuffer( GLenum mode, const IndexBuffer& indices, const VertexBuff
 	: m_mode( mode ), m_indices( indices ), m_vertices( vertices ){
 }
 
-void render( RenderStateFlags state ) const {
+void render( OpenGLBinding &GL, RenderStateFlags state ) const {
 #if 1
-	pointvertex_gl_array( m_vertices.data() );
+	pointvertex_gl_array( GL, m_vertices.data() );
 	glDrawElements( m_mode, GLsizei( m_indices.size() ), RenderIndexTypeID, m_indices.data() );
 #else
 	glBegin( m_mode );

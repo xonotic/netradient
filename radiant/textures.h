@@ -24,11 +24,11 @@
 
 #include "generic/callback.h"
 
-void Textures_Realise();
+struct OpenGLBinding;
 
-void Textures_Unrealise();
+void Textures_Realise(OpenGLBinding &GL);
 
-void Textures_sharedContextDestroyed();
+void Textures_Unrealise(OpenGLBinding &GL);
 
 void Textures_setModeChangedNotify(const Callback<void()> &notify);
 

@@ -1404,14 +1404,13 @@ void TextureClipboard_textureSelected(const char *shader)
 
 class TextureBrowser;
 
-extern TextureBrowser g_TextureBrowser;
-
 void TextureBrowser_SetSelectedShader(TextureBrowser &textureBrowser, const char *shader);
 
 const char *TextureBrowser_GetSelectedShader(TextureBrowser &textureBrowser);
 
 void Scene_copyClosestTexture(SelectionTest &test)
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     CopiedString shader;
     if (Scene_getClosestTexture(GlobalSceneGraph(), test, shader, g_faceTextureClipboard.m_projection,
                                 g_faceTextureClipboard.m_flags)) {
@@ -1421,6 +1420,7 @@ void Scene_copyClosestTexture(SelectionTest &test)
 
 void Scene_applyClosestTexture(SelectionTest &test)
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     UndoableCommand command("facePaintTexture");
 
     Scene_setClosestTexture(GlobalSceneGraph(), test, TextureBrowser_GetSelectedShader(g_TextureBrowser),
@@ -1437,12 +1437,14 @@ void SelectedFaces_copyTexture()
         face.GetTexdef(g_faceTextureClipboard.m_projection);
         g_faceTextureClipboard.m_flags = face.getShader().m_flags;
 
+        auto &g_TextureBrowser = GlobalTextureBrowser();
         TextureBrowser_SetSelectedShader(g_TextureBrowser, face.getShader().getShader());
     }
 }
 
 void FaceInstance_pasteTexture(FaceInstance &faceInstance)
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     faceInstance.getFace().SetTexdef(g_faceTextureClipboard.m_projection);
     faceInstance.getFace().SetShader(TextureBrowser_GetSelectedShader(g_TextureBrowser));
     faceInstance.getFace().SetFlags(g_faceTextureClipboard.m_flags);

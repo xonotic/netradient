@@ -76,7 +76,7 @@ public:
 
     void PushPoint(const Vector3 &v);
 
-    void GenerateDisplayList();
+    void GenerateDisplayList(OpenGLBinding &GL);
 
 // SAX interface
     void Release()
@@ -109,11 +109,11 @@ public:
         return m_displaylist != 0;
     }
 
-    void show(bool show)
+    void show(OpenGLBinding &GL, bool show)
     {
         if (show && !shown()) {
             Pointfile_Parse(*this);
-            GenerateDisplayList();
+            GenerateDisplayList(GL);
             SceneChangeNotify();
         } else if (!show && shown()) {
             glDeleteLists(m_displaylist, 1);
@@ -122,7 +122,7 @@ public:
         }
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         glCallList(m_displaylist);
     }
@@ -177,7 +177,7 @@ void CPointfile::PushPoint(const Vector3 &v)
 }
 
 // create the display list at the end
-void CPointfile::GenerateDisplayList()
+void CPointfile::GenerateDisplayList(OpenGLBinding &GL)
 {
     m_displaylist = glGenLists(1);
 
@@ -342,14 +342,15 @@ void Pointfile_Parse(CPointfile &pointfile)
     g_free(text);
 }
 
-void Pointfile_Clear()
+void Pointfile_Clear(OpenGLBinding &GL)
 {
-    s_pointfile.show(false);
+    s_pointfile.show(GL, false);
 }
 
 void Pointfile_Toggle()
 {
-    s_pointfile.show(!s_pointfile.shown());
+    OpenGLBinding &GL = GlobalOpenGL();
+    s_pointfile.show(GL, !s_pointfile.shown());
 
     s_check_point = s_pointfile.begin();
 }
@@ -391,7 +392,8 @@ void CPointfile::saxEndElement(message_info_t *ctx, const xmlChar *name)
 {
     if (string_equal(reinterpret_cast<const char *>( name ), "polyline")) {
         // we are done
-        GenerateDisplayList();
+        OpenGLBinding &GL = GlobalOpenGL();
+        GenerateDisplayList(GL);
         SceneChangeNotify();
         s_check_point = begin();
     } else if (string_equal(reinterpret_cast<const char *>( name ), "point")) {

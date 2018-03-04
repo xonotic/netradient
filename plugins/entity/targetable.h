@@ -52,7 +52,7 @@ public:
     Vector3 start;
     Vector3 end;
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         float s1[2], s2[2];
         Vector3 dir(vector3_subtracted(end, start));

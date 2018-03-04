@@ -722,6 +722,7 @@ void Camera_motionDelta(int x, int y, unsigned int state, void *data)
 }
 
 class CamWnd {
+    OpenGLBinding &GL;
     View m_view;
     camera_t m_Camera;
     RadiantCameraView m_cameraview;
@@ -756,7 +757,7 @@ public:
     guint m_sizeHandler;
     guint m_exposeHandler;
 
-    CamWnd();
+    CamWnd(OpenGLBinding &GL);
 
     ~CamWnd();
 
@@ -815,9 +816,9 @@ typedef MemberCaller<CamWnd, void(), &CamWnd::queue_draw> CamWndQueueDraw;
 Shader *CamWnd::m_state_select1 = 0;
 Shader *CamWnd::m_state_select2 = 0;
 
-CamWnd *NewCamWnd()
+CamWnd *NewCamWnd(OpenGLBinding &GL)
 {
-    return new CamWnd;
+    return new CamWnd(GL);
 }
 
 void DeleteCamWnd(CamWnd *camwnd)
@@ -1293,11 +1294,12 @@ void CamWnd_Remove_Handlers_FreeMove(CamWnd &camwnd)
     g_signal_handler_disconnect(G_OBJECT(camwnd.m_gl_widget), camwnd.m_freelook_button_press_handler);
 }
 
-CamWnd::CamWnd() :
+CamWnd::CamWnd(OpenGLBinding &GL) :
+        GL(GL),
         m_view(true),
         m_Camera(&m_view, CamWndQueueDraw(*this)),
         m_cameraview(m_Camera, &m_view, ReferenceCaller<CamWnd, void(), CamWnd_Update>(*this)),
-        m_gl_widget(glwidget_new(TRUE)),
+        m_gl_widget(glwidget_new(GL, TRUE)),
         m_window_observer(NewWindowObserver()),
         m_XORRectangle(m_gl_widget),
         m_deferredDraw(WidgetQueueDrawCaller(m_gl_widget)),
@@ -1562,9 +1564,9 @@ public:
         m_state_stack.back().m_state->addRenderable(renderable, world, m_state_stack.back().m_lights);
     }
 
-    void render(const Matrix4 &modelview, const Matrix4 &projection)
+    void render(OpenGLBinding &GL, const Matrix4 &modelview, const Matrix4 &projection)
     {
-        GlobalShaderCache().render(m_globalstate, modelview, projection, m_viewer);
+        GlobalShaderCache().render(GL, m_globalstate, modelview, projection, m_viewer);
     }
 };
 
@@ -1689,7 +1691,7 @@ void CamWnd::Cam_Draw()
 
         Scene_Render(renderer, m_view);
 
-        renderer.render(m_Camera.modelview, m_Camera.projection);
+        renderer.render(GL, m_Camera.modelview, m_Camera.projection);
     }
 
     // prepare for 2d stuff
@@ -1703,7 +1705,7 @@ void CamWnd::Cam_Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    if (GlobalOpenGL().GL_1_3()) {
+    if (GL.GL_1_3()) {
         glClientActiveTexture(GL_TEXTURE0);
         glActiveTexture(GL_TEXTURE0);
     }
@@ -1734,14 +1736,14 @@ void CamWnd::Cam_Draw()
     }
 
     if (g_camwindow_globals_private.m_showStats) {
-        glRasterPos3f(1.0f, static_cast<float>( m_Camera.height ) - GlobalOpenGL().m_font->getPixelDescent(), 0.0f);
+        glRasterPos3f(1.0f, static_cast<float>( m_Camera.height ) - GL.m_font->getPixelDescent(), 0.0f);
         extern const char *Renderer_GetStats();
-        GlobalOpenGL().drawString(Renderer_GetStats());
+        GL.drawString(Renderer_GetStats());
 
-        glRasterPos3f(1.0f, static_cast<float>( m_Camera.height ) - GlobalOpenGL().m_font->getPixelDescent() -
-                            GlobalOpenGL().m_font->getPixelHeight(), 0.0f);
+        glRasterPos3f(1.0f, static_cast<float>( m_Camera.height ) - GL.m_font->getPixelDescent() -
+                            GL.m_font->getPixelHeight(), 0.0f);
         extern const char *Cull_GetStats();
-        GlobalOpenGL().drawString(Cull_GetStats());
+        GL.drawString(Cull_GetStats());
     }
 
     // bind back to the default texture so that we don't have problems

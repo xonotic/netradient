@@ -452,7 +452,7 @@ void CPortalsRender::renderWireframe(Renderer &renderer, const VolumeTest &volum
     renderer.addRenderable(m_drawWireframe, g_matrix4_identity);
 }
 
-void CPortalsDrawWireframe::render(RenderStateFlags state) const
+void CPortalsDrawWireframe::render(OpenGLBinding &GL, RenderStateFlags state) const
 {
     unsigned int n, p;
 
@@ -510,7 +510,7 @@ void CPortalsRender::renderSolid(Renderer &renderer, const VolumeTest &volume) c
     }
 }
 
-void CPortalsDrawSolid::render(RenderStateFlags state) const
+void CPortalsDrawSolid::render(OpenGLBinding &GL, RenderStateFlags state) const
 {
     float trans = (100.0f - portals.trans_3d) / 100.0f;
 
@@ -601,7 +601,7 @@ void CPortalsDrawSolid::render(RenderStateFlags state) const
     }
 }
 
-void CPortalsDrawSolidOutline::render(RenderStateFlags state) const
+void CPortalsDrawSolidOutline::render(OpenGLBinding &GL, RenderStateFlags state) const
 {
     for (unsigned int n = 0; n < portals.portal_count; n++) {
         if (portals.lines == 2 && !portals.portal[n].hint) {

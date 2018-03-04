@@ -1432,7 +1432,7 @@ void Patch::ConstructPrefab(const AABB &aabb, EPatchPrefab eType, int axis, std:
     NaturalTexture();
 }
 
-void Patch::RenderDebug(RenderStateFlags state) const
+void Patch::RenderDebug(OpenGLBinding &GL, RenderStateFlags state) const
 {
     for (std::size_t i = 0; i < m_tess.m_numStrips; i++) {
         glBegin(GL_QUAD_STRIP);
@@ -1448,7 +1448,7 @@ void Patch::RenderDebug(RenderStateFlags state) const
     }
 }
 
-void RenderablePatchSolid::RenderNormals() const
+void RenderablePatchSolid::RenderNormals(OpenGLBinding &GL) const
 {
     const std::size_t width = m_tess.m_numStrips + 1;
     const std::size_t height = m_tess.m_lenStrips >> 1;

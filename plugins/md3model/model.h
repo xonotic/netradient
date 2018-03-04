@@ -168,7 +168,7 @@ public:
         }
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
 #if 1
         if ((state & RENDER_BUMP) != 0) {

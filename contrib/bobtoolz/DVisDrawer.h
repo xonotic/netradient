@@ -51,7 +51,7 @@ public:
 
     void SetList(std::list<DWinding *> *pointList);
 
-    void render(RenderStateFlags state) const;
+    void render(OpenGLBinding &GL, RenderStateFlags state) const;
 
     void renderSolid(Renderer &renderer, const VolumeTest &volume) const;
 

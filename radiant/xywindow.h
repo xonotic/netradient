@@ -66,7 +66,12 @@ inline const char *ViewType_getTitle(VIEWTYPE viewtype)
     return "";
 }
 
+struct OpenGLBinding;
+
 class XYWnd {
+public:
+    OpenGLBinding &GL;
+private:
     ui::GLArea m_gl_widget;
     guint m_sizeHandler;
     guint m_exposeHandler;
@@ -76,7 +81,7 @@ class XYWnd {
 public:
     ui::Window m_parent;
 
-    XYWnd();
+    XYWnd(OpenGLBinding &GL);
 
     ~XYWnd();
 

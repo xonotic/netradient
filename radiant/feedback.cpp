@@ -41,9 +41,9 @@
 
 CDbgDlg g_DbgDlg;
 
-void Feedback_draw2D(VIEWTYPE viewType)
+void Feedback_draw2D(OpenGLBinding &GL, VIEWTYPE viewType)
 {
-    g_DbgDlg.draw2D(viewType);
+    g_DbgDlg.draw2D(GL, viewType);
 }
 
 void CSelectMsg::saxStartElement(message_info_t *ctx, const xmlChar *name, const xmlChar **attrs)
@@ -127,7 +127,7 @@ void CPointMsg::DropHighlight()
 {
 }
 
-void CPointMsg::Draw2D(VIEWTYPE vt)
+void CPointMsg::Draw2D(OpenGLBinding &GL, VIEWTYPE vt)
 {
     int nDim1 = (vt == YZ) ? 1 : 0;
     int nDim2 = (vt == XY) ? 1 : 2;
@@ -197,7 +197,7 @@ void CWindingMsg::DropHighlight()
 {
 }
 
-void CWindingMsg::Draw2D(VIEWTYPE vt)
+void CWindingMsg::Draw2D(OpenGLBinding &GL, VIEWTYPE vt)
 {
     int i;
 

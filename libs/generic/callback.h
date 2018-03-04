@@ -346,4 +346,26 @@ inline Callback<R(Ts...)> makeCallbackF(R(*func)(Ts...)) {
     return BindFirstOpaque<detail::FreeCallerWrapper<R(Ts...)>>(pVoid);
 }
 
+template<typename Lambda>
+inline Callback<get_func<Lambda>> makeCallbackL(const Lambda &lambda) {
+	static_assert(sizeof(Lambda) == 1, "lambda must not capture");
+	return makeCallbackF(+lambda);
+}
+
+template<typename Lambda>
+inline Callback<detail::ArgShift<get_func<Lambda>>> makeCallbackL(get_argument<Lambda, 0> env, const Lambda &lambda) {
+	static_assert(sizeof(Lambda) == 1, "lambda must not capture");
+	using R = get_result_type<Lambda>;
+	using Env = get_argument<Lambda, 0>;
+	struct Caller {
+		using func = R(Env);
+		static R call(Env env) {
+			(void) (func *) nullptr;
+			const Lambda &x = *(const Lambda *) nullptr;
+			x(env);
+		}
+	};
+	return makeCallback<Caller>(Caller(), env);
+}
+
 #endif

@@ -33,7 +33,9 @@ class TextureBrowser;
 
 TextureBrowser &GlobalTextureBrowser();
 
-ui::Widget TextureBrowser_constructWindow(ui::Window toplevel);
+struct OpenGLBinding;
+
+ui::Widget TextureBrowser_constructWindow(ui::Window toplevel, OpenGLBinding &GL);
 
 void TextureBrowser_destroyWindow();
 

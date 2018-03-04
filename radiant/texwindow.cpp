@@ -279,6 +279,7 @@ typedef FreeCaller<void(const Callback<void(bool)> &), TextureBrowser_enableAlph
 
 class TextureBrowser {
 public:
+    OpenGLBinding &GL;
     int width, height;
     int originy;
     int m_nTotalHeight;
@@ -375,7 +376,8 @@ public:
         return height;
     }
 
-    TextureBrowser() :
+    TextureBrowser(OpenGLBinding &GL) :
+            GL(GL),
             m_texture_scroll(ui::null),
             m_hideunused_item(TextureBrowserHideUnusedExport()),
             m_hidenotex_item(TextureBrowserFilterFallbackExport()),
@@ -428,7 +430,8 @@ const char *TextureBrowser_getComonShadersDir()
 
 inline int TextureBrowser_fontHeight(TextureBrowser &textureBrowser)
 {
-    return GlobalOpenGL().m_font->getPixelHeight();
+    OpenGLBinding &GL = textureBrowser.GL;
+    return GL.m_font->getPixelHeight();
 }
 
 const char *TextureBrowser_GetSelectedShader(TextureBrowser &textureBrowser)
@@ -1167,6 +1170,7 @@ void TextureBrowser_Selection_MouseDown(TextureBrowser &textureBrowser, guint32 
  */
 void Texture_Draw(TextureBrowser &textureBrowser)
 {
+    OpenGLBinding &GL = textureBrowser.GL;
     int originy = TextureBrowser_getOriginY(textureBrowser);
 
     glClearColor(textureBrowser.color_textureback[0],
@@ -1324,7 +1328,7 @@ void Texture_Draw(TextureBrowser &textureBrowser)
                 name--;
             }
 
-            GlobalOpenGL().drawString(name);
+            GL.drawString(name);
             glEnable(GL_TEXTURE_2D);
         }
 
@@ -1537,6 +1541,7 @@ gboolean TextureBrowser_size_allocate(ui::Widget widget, GtkAllocation *allocati
 
 gboolean TextureBrowser_expose(ui::Widget widget, GdkEventExpose *event, TextureBrowser *textureBrowser)
 {
+    OpenGLBinding &GL = textureBrowser->GL;
     if (glwidget_make_current(textureBrowser->m_gl_widget) != FALSE) {
         GlobalOpenGL_debugAssertNoErrors();
         TextureBrowser_evaluateHeight(*textureBrowser);
@@ -1548,24 +1553,24 @@ gboolean TextureBrowser_expose(ui::Widget widget, GdkEventExpose *event, Texture
 }
 
 
-TextureBrowser g_TextureBrowser;
 
 TextureBrowser &GlobalTextureBrowser()
 {
+    static TextureBrowser g_TextureBrowser{GlobalOpenGL()};
     return g_TextureBrowser;
 }
 
 bool TextureBrowser_hideUnused()
 {
-    return g_TextureBrowser.m_hideUnused;
+    return GlobalTextureBrowser().m_hideUnused;
 }
 
 void TextureBrowser_ToggleHideUnused()
 {
-    if (g_TextureBrowser.m_hideUnused) {
-        TextureBrowser_SetHideUnused(g_TextureBrowser, false);
+    if (GlobalTextureBrowser().m_hideUnused) {
+        TextureBrowser_SetHideUnused(GlobalTextureBrowser(), false);
     } else {
-        TextureBrowser_SetHideUnused(g_TextureBrowser, true);
+        TextureBrowser_SetHideUnused(GlobalTextureBrowser(), true);
     }
 }
 
@@ -1626,7 +1631,7 @@ void TextureBrowser_constructTreeStore()
     auto store = ui::TreeStore::from(gtk_tree_store_new(1, G_TYPE_STRING));
     TextureGroups_constructTreeModel(groups, store);
 
-    gtk_tree_view_set_model(g_TextureBrowser.m_treeViewTree, store);
+    gtk_tree_view_set_model(GlobalTextureBrowser().m_treeViewTree, store);
 
     g_object_unref(G_OBJECT(store));
 }
@@ -1635,9 +1640,9 @@ void TextureBrowser_constructTreeStoreTags()
 {
     TextureGroups groups;
     auto store = ui::TreeStore::from(gtk_tree_store_new(1, G_TYPE_STRING));
-    auto model = g_TextureBrowser.m_all_tags_list;
+    auto model = GlobalTextureBrowser().m_all_tags_list;
 
-    gtk_tree_view_set_model(g_TextureBrowser.m_treeViewTags, model);
+    gtk_tree_view_set_model(GlobalTextureBrowser().m_treeViewTags, model);
 
     g_object_unref(G_OBJECT(store));
 }
@@ -1656,7 +1661,7 @@ void TreeView_onRowActivated(ui::TreeView treeview, ui::TreePath path, ui::TreeV
         strcpy(dirName, buffer);
         g_free(buffer);
 
-        g_TextureBrowser.m_searchedTags = false;
+        GlobalTextureBrowser().m_searchedTags = false;
 
         if (!TextureBrowser_showWads()) {
             strcat(dirName, "/");
@@ -1670,13 +1675,13 @@ void TreeView_onRowActivated(ui::TreeView treeview, ui::TreePath path, ui::TreeV
 
 void TextureBrowser_createTreeViewTree()
 {
-    gtk_tree_view_set_enable_search(g_TextureBrowser.m_treeViewTree, FALSE);
+    gtk_tree_view_set_enable_search(GlobalTextureBrowser().m_treeViewTree, FALSE);
 
-    gtk_tree_view_set_headers_visible(g_TextureBrowser.m_treeViewTree, FALSE);
-    g_TextureBrowser.m_treeViewTree.connect("row-activated", (GCallback) TreeView_onRowActivated, NULL);
+    gtk_tree_view_set_headers_visible(GlobalTextureBrowser().m_treeViewTree, FALSE);
+    GlobalTextureBrowser().m_treeViewTree.connect("row-activated", (GCallback) TreeView_onRowActivated, NULL);
 
     auto renderer = ui::CellRendererText(ui::New);
-    gtk_tree_view_insert_column_with_attributes(g_TextureBrowser.m_treeViewTree, -1, "", renderer, "text", 0, NULL);
+    gtk_tree_view_insert_column_with_attributes(GlobalTextureBrowser().m_treeViewTree, -1, "", renderer, "text", 0, NULL);
 
     TextureBrowser_constructTreeStore();
 }
@@ -1730,6 +1735,7 @@ gboolean TreeViewTags_onButtonPressed(ui::TreeView treeview, GdkEventButton *eve
 
 void TextureBrowser_createTreeViewTags()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     g_TextureBrowser.m_treeViewTags = ui::TreeView(ui::New);
     gtk_tree_view_set_enable_search(g_TextureBrowser.m_treeViewTags, FALSE);
 
@@ -1762,6 +1768,8 @@ ui::MenuItem TextureBrowser_constructViewMenu(ui::Menu menu)
     menu_separator(menu);
 
     create_menu_item_with_mnemonic(menu, "Show All", "ShowAllTextures");
+
+    auto &g_TextureBrowser = GlobalTextureBrowser();
 
     // we always want to show shaders but don't want a "Show Shaders" menu for doom3 and .wad file games
     if (g_pGameDescription->mGameType == "doom3" || !string_empty(g_pGameDescription->getKeyValue("show_wads"))) {
@@ -1840,6 +1848,8 @@ void TextureBrowser_assignTags()
     GSList *node;
     gchar *tag_assigned;
 
+    auto &g_TextureBrowser = GlobalTextureBrowser();
+
     auto selection = gtk_tree_view_get_selection(g_TextureBrowser.m_available_tree);
 
     gtk_tree_selection_selected_foreach(selection, (GtkTreeSelectionForeachFunc) TextureBrowser_tagMoveHelper,
@@ -1890,6 +1900,8 @@ void TextureBrowser_removeTags()
     GSList *node;
     gchar *tag;
 
+    auto &g_TextureBrowser = GlobalTextureBrowser();
+
     auto selection = gtk_tree_view_get_selection(g_TextureBrowser.m_assigned_tree);
 
     gtk_tree_selection_selected_foreach(selection, (GtkTreeSelectionForeachFunc) TextureBrowser_tagMoveHelper,
@@ -1924,6 +1936,7 @@ void TextureBrowser_removeTags()
 
 void TextureBrowser_buildTagList()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     g_TextureBrowser.m_all_tags_list.clear();
 
     std::set<CopiedString>::iterator iter;
@@ -1940,6 +1953,8 @@ void TextureBrowser_searchTags()
     gchar *tag;
     char buffer[256];
     char tags_searched[256];
+
+    auto &g_TextureBrowser = GlobalTextureBrowser();
 
     auto selection = gtk_tree_view_get_selection(g_TextureBrowser.m_treeViewTags);
 
@@ -2007,6 +2022,7 @@ void TextureBrowser_searchTags()
 
 void TextureBrowser_toggleSearchButton()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     gint page = gtk_notebook_get_current_page(GTK_NOTEBOOK(g_TextureBrowser.m_tag_notebook));
 
     if (page == 0) { // tag page
@@ -2018,6 +2034,7 @@ void TextureBrowser_toggleSearchButton()
 
 void TextureBrowser_constructTagNotebook()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     g_TextureBrowser.m_tag_notebook = ui::Widget::from(gtk_notebook_new());
     ui::Widget labelTags = ui::Label("Tags");
     ui::Widget labelTextures = ui::Label("Textures");
@@ -2033,6 +2050,7 @@ void TextureBrowser_constructTagNotebook()
 
 void TextureBrowser_constructSearchButton()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     auto image = ui::Widget::from(gtk_image_new_from_stock(GTK_STOCK_FIND, GTK_ICON_SIZE_SMALL_TOOLBAR));
     g_TextureBrowser.m_search_button = ui::Button(ui::New);
     g_TextureBrowser.m_search_button.connect("clicked", G_CALLBACK(TextureBrowser_searchTags), NULL);
@@ -2042,6 +2060,7 @@ void TextureBrowser_constructSearchButton()
 
 void TextureBrowser_checkTagFile()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     const char SHADERTAG_FILE[] = "shadertags.xml";
     CopiedString default_filename, rc_filename;
     StringOutputStream stream(256);
@@ -2087,8 +2106,9 @@ void TextureBrowser_SetNotex()
     g_shadernotex = name.c_str();
 }
 
-ui::Widget TextureBrowser_constructWindow(ui::Window toplevel)
+ui::Widget TextureBrowser_constructWindow(ui::Window toplevel, OpenGLBinding &GL)
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     // The gl_widget and the tag assignment frame should be packed into a GtkVPaned with the slider
     // position stored in local.pref. gtk_paned_get_position() and gtk_paned_set_position() don't
     // seem to work in gtk 2.4 and the arrow buttons don't handle GTK_FILL, so here's another thing
@@ -2152,7 +2172,7 @@ ui::Widget TextureBrowser_constructWindow(ui::Window toplevel)
         g_TextureBrowser.m_texture_scroll.visible(g_TextureBrowser.m_showTextureScrollbar);
     }
     { // gl_widget
-        g_TextureBrowser.m_gl_widget = glwidget_new(FALSE);
+        g_TextureBrowser.m_gl_widget = glwidget_new(GL, FALSE);
         g_object_ref(g_TextureBrowser.m_gl_widget._handle);
 
         gtk_widget_set_events(g_TextureBrowser.m_gl_widget,
@@ -2336,6 +2356,7 @@ ui::Widget TextureBrowser_constructWindow(ui::Window toplevel)
 
 void TextureBrowser_destroyWindow()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     GlobalShaderSystem().setActiveShadersChangedNotify(Callback<void()>());
 
     g_signal_handler_disconnect(G_OBJECT(g_TextureBrowser.m_gl_widget), g_TextureBrowser.m_sizeHandler);
@@ -2366,6 +2387,7 @@ void TextureBrowser_selectionHelper(ui::TreeModel model, ui::TreePath path, GtkT
 
 void TextureBrowser_shaderInfo()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     const char *name = TextureBrowser_GetSelectedShader(g_TextureBrowser);
     IShader *shader = QERApp_Shader_ForName(name);
 
@@ -2381,6 +2403,7 @@ void TextureBrowser_addTag()
     EMessageBoxReturn result = DoShaderTagDlg(&tag, "Add shader tag");
 
     if (result == eIDOK && !tag.empty()) {
+        auto &g_TextureBrowser = GlobalTextureBrowser();
         GtkTreeIter iter;
         g_TextureBrowser.m_all_tags.insert(tag.c_str());
         gtk_list_store_append(g_TextureBrowser.m_available_store, &iter);
@@ -2396,6 +2419,7 @@ void TextureBrowser_addTag()
 
 void TextureBrowser_renameTag()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     /* WORKAROUND: The tag treeview is set to GTK_SELECTION_MULTIPLE. Because
 	   gtk_tree_selection_get_selected() doesn't work with GTK_SELECTION_MULTIPLE,
 	   we need to count the number of selected rows first and use
@@ -2446,6 +2470,7 @@ void TextureBrowser_renameTag()
 
 void TextureBrowser_deleteTag()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     GSList *selected = NULL;
 
     auto selection = gtk_tree_view_get_selection(g_TextureBrowser.m_treeViewTags);
@@ -2489,12 +2514,14 @@ void TextureBrowser_deleteTag()
 
 void TextureBrowser_copyTag()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     g_TextureBrowser.m_copied_tags.clear();
     TagBuilder.GetShaderTags(g_TextureBrowser.shader.c_str(), g_TextureBrowser.m_copied_tags);
 }
 
 void TextureBrowser_pasteTag()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     IShader *ishader = QERApp_Shader_ForName(g_TextureBrowser.shader.c_str());
     CopiedString shader = g_TextureBrowser.shader.c_str();
 
@@ -2553,6 +2580,7 @@ void TextureBrowser_RefreshShaders()
 
 void TextureBrowser_ToggleShowShaders()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     g_TextureBrowser.m_showShaders ^= 1;
     g_TextureBrowser.m_showshaders_item.update();
     TextureBrowser_queueDraw(g_TextureBrowser);
@@ -2560,6 +2588,7 @@ void TextureBrowser_ToggleShowShaders()
 
 void TextureBrowser_ToggleShowShaderListOnly()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     g_TextureBrowser_shaderlistOnly ^= 1;
     g_TextureBrowser.m_showshaderlistonly_item.update();
 
@@ -2568,6 +2597,7 @@ void TextureBrowser_ToggleShowShaderListOnly()
 
 void TextureBrowser_showAll()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     g_TextureBrowser_currentDirectory = "";
     g_TextureBrowser.m_searchedTags = false;
     TextureBrowser_heightChanged(g_TextureBrowser);
@@ -2576,6 +2606,7 @@ void TextureBrowser_showAll()
 
 void TextureBrowser_showUntagged()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     auto result = ui::alert(g_TextureBrowser.m_parent,
                             "WARNING! This function might need a lot of memory and time. Are you sure you want to use it?",
                             "Show Untagged", ui::alert_type::YESNO, ui::alert_icon::Warning);
@@ -2692,6 +2723,7 @@ struct TextureScale {
 struct UniformTextureSize {
     static void Export(const TextureBrowser &self, const Callback<void(int)> &returnz)
     {
+        auto &g_TextureBrowser = GlobalTextureBrowser();
         returnz(g_TextureBrowser.m_uniformTextureSize);
     }
 
@@ -2751,6 +2783,7 @@ void TextureClipboard_textureSelected(const char *shader);
 
 void TextureBrowser_Construct()
 {
+    auto &g_TextureBrowser = GlobalTextureBrowser();
     GlobalCommands_insert("ShaderInfo", makeCallbackF(TextureBrowser_shaderInfo));
     GlobalCommands_insert("ShowUntagged", makeCallbackF(TextureBrowser_showUntagged));
     GlobalCommands_insert("AddTag", makeCallbackF(TextureBrowser_addTag));

@@ -455,7 +455,7 @@ class RenderableClippedPrimitive : public OpenGLRenderable {
 public:
     Matrix4 m_world;
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         for (std::size_t i = 0; i < m_primitives.size(); ++i) {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_primitives[i].m_points[0].colour);
@@ -912,7 +912,7 @@ class RotateManipulator : public Manipulator {
         {
         }
 
-        void render(RenderStateFlags state) const
+        void render(OpenGLBinding &GL, RenderStateFlags state) const
         {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_vertices.data()->colour);
             glVertexPointer(3, GL_FLOAT, sizeof(PointVertex), &m_vertices.data()->vertex);
@@ -934,7 +934,7 @@ class RotateManipulator : public Manipulator {
         {
         }
 
-        void render(RenderStateFlags state) const
+        void render(OpenGLBinding &GL, RenderStateFlags state) const
         {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_vertices.data()->colour);
             glVertexPointer(3, GL_FLOAT, sizeof(PointVertex), &m_vertices.data()->vertex);
@@ -1321,7 +1321,7 @@ class TranslateManipulator : public Manipulator {
         {
         }
 
-        void render(RenderStateFlags state) const
+        void render(OpenGLBinding &GL, RenderStateFlags state) const
         {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_line[0].colour);
             glVertexPointer(3, GL_FLOAT, sizeof(PointVertex), &m_line[0].vertex);
@@ -1343,7 +1343,7 @@ class TranslateManipulator : public Manipulator {
         {
         }
 
-        void render(RenderStateFlags state) const
+        void render(OpenGLBinding &GL, RenderStateFlags state) const
         {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(FlatShadedVertex), &m_vertices.data()->colour);
             glVertexPointer(3, GL_FLOAT, sizeof(FlatShadedVertex), &m_vertices.data()->vertex);
@@ -1362,7 +1362,7 @@ class TranslateManipulator : public Manipulator {
     struct RenderableQuad : public OpenGLRenderable {
         PointVertex m_quad[4];
 
-        void render(RenderStateFlags state) const
+        void render(OpenGLBinding &GL, RenderStateFlags state) const
         {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_quad[0].colour);
             glVertexPointer(3, GL_FLOAT, sizeof(PointVertex), &m_quad[0].vertex);
@@ -1582,7 +1582,7 @@ class ScaleManipulator : public Manipulator {
     struct RenderableArrow : public OpenGLRenderable {
         PointVertex m_line[2];
 
-        void render(RenderStateFlags state) const
+        void render(OpenGLBinding &GL, RenderStateFlags state) const
         {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_line[0].colour);
             glVertexPointer(3, GL_FLOAT, sizeof(PointVertex), &m_line[0].vertex);
@@ -1599,7 +1599,7 @@ class ScaleManipulator : public Manipulator {
     struct RenderableQuad : public OpenGLRenderable {
         PointVertex m_quad[4];
 
-        void render(RenderStateFlags state) const
+        void render(OpenGLBinding &GL, RenderStateFlags state) const
         {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_quad[0].colour);
             glVertexPointer(3, GL_FLOAT, sizeof(PointVertex), &m_quad[0].vertex);

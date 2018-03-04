@@ -31,9 +31,9 @@ class Matrix4;
 class GLProgram
 {
 public:
-virtual void enable() = 0;
-virtual void disable() = 0;
-virtual void setParameters( const Vector3& viewer, const Matrix4& localToWorld, const Vector3& origin, const Vector3& colour, const Matrix4& world2light ) = 0;
+virtual void enable(OpenGLBinding &GL) = 0;
+virtual void disable(OpenGLBinding &GL) = 0;
+virtual void setParameters( OpenGLBinding &GL, const Vector3& viewer, const Matrix4& localToWorld, const Vector3& origin, const Vector3& colour, const Matrix4& world2light ) = 0;
 };
 
 class OpenGLFogState

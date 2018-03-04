@@ -48,6 +48,8 @@ const int c_texture_status = 3;
 const int c_grid_status = 4;
 const int c_count_status = 5;
 
+struct OpenGLBinding;
+
 class MainFrame {
 public:
     enum EViewStyle {
@@ -57,7 +59,7 @@ public:
         eRegularLeft = 3,
     };
 
-    MainFrame();
+    MainFrame(OpenGLBinding &GL);
 
     ~MainFrame();
 
@@ -70,7 +72,7 @@ public:
     CopiedString m_grid_status;
 private:
 
-    void Create();
+    void Create(OpenGLBinding &GL);
 
     void SaveWindowInfo();
 

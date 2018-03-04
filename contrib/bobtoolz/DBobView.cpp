@@ -69,7 +69,7 @@ DBobView::~DBobView()
 // Implementation
 //////////////////////////////////////////////////////////////////////
 
-void DBobView::render(RenderStateFlags state) const
+void DBobView::render(OpenGLBinding &GL, RenderStateFlags state) const
 {
     glBegin(GL_LINE_STRIP);
 

@@ -88,7 +88,7 @@ void DVisDrawer::destroyShaders()
     GlobalOpenGLStateLibrary().erase(g_state_wireframe);
 }
 
-void DVisDrawer::render(RenderStateFlags state) const
+void DVisDrawer::render(OpenGLBinding &GL, RenderStateFlags state) const
 {
     //bleh
     std::list<DWinding *>::const_iterator l = m_list->begin();

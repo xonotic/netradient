@@ -132,7 +132,7 @@ const char *Renderer_GetStats()
 }
 
 
-void printShaderLog(GLhandleARB object)
+void printShaderLog(OpenGLBinding &GL, GLhandleARB object)
 {
     GLint log_length = 0;
     glGetObjectParameterivARB(object, GL_OBJECT_INFO_LOG_LENGTH_ARB, &log_length);
@@ -143,7 +143,7 @@ void printShaderLog(GLhandleARB object)
     globalErrorStream() << StringRange(log.begin(), log.begin() + log_length) << "\n";
 }
 
-void createShader(GLhandleARB program, const char *filename, GLenum type)
+void createShader(OpenGLBinding &GL, GLhandleARB program, const char *filename, GLenum type)
 {
     GLhandleARB shader = glCreateShaderObjectARB(type);
     GlobalOpenGL_debugAssertNoErrors();
@@ -169,7 +169,7 @@ void createShader(GLhandleARB program, const char *filename, GLenum type)
         glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
 
         if (!compiled) {
-            printShaderLog(shader);
+            printShaderLog(GL, shader);
         }
 
         ASSERT_MESSAGE(compiled, "shader compile failed: " << makeQuoted(filename));
@@ -183,7 +183,7 @@ void createShader(GLhandleARB program, const char *filename, GLenum type)
     GlobalOpenGL_debugAssertNoErrors();
 }
 
-void GLSLProgram_link(GLhandleARB program)
+void GLSLProgram_link(OpenGLBinding &GL, GLhandleARB program)
 {
     glLinkProgramARB(program);
 
@@ -191,13 +191,13 @@ void GLSLProgram_link(GLhandleARB program)
     glGetObjectParameterivARB(program, GL_OBJECT_LINK_STATUS_ARB, &linked);
 
     if (!linked) {
-        printShaderLog(program);
+        printShaderLog(GL, program);
     }
 
     ASSERT_MESSAGE(linked, "program link failed");
 }
 
-void GLSLProgram_validate(GLhandleARB program)
+void GLSLProgram_validate(OpenGLBinding &GL, GLhandleARB program)
 {
     glValidateProgramARB(program);
 
@@ -205,7 +205,7 @@ void GLSLProgram_validate(GLhandleARB program)
     glGetObjectParameterivARB(program, GL_OBJECT_VALIDATE_STATUS_ARB, &validated);
 
     if (!validated) {
-        printShaderLog(program);
+        printShaderLog(GL, program);
     }
 
     ASSERT_MESSAGE(validated, "program validation failed");
@@ -229,7 +229,7 @@ public:
     {
     }
 
-    void create()
+    void create(OpenGLBinding &GL)
     {
         // create program
         m_program = glCreateProgramObjectARB();
@@ -238,14 +238,14 @@ public:
         {
             StringOutputStream filename(256);
             filename << GlobalRadiant().getAppPath() << "gl/lighting_DBS_omni_vp.glsl";
-            createShader(m_program, filename.c_str(), GL_VERTEX_SHADER_ARB);
+            createShader(GL, m_program, filename.c_str(), GL_VERTEX_SHADER_ARB);
             filename.clear();
             filename << GlobalRadiant().getAppPath() << "gl/lighting_DBS_omni_fp.glsl";
-            createShader(m_program, filename.c_str(), GL_FRAGMENT_SHADER_ARB);
+            createShader(GL, m_program, filename.c_str(), GL_FRAGMENT_SHADER_ARB);
         }
 
-        GLSLProgram_link(m_program);
-        GLSLProgram_validate(m_program);
+        GLSLProgram_link(GL, m_program);
+        GLSLProgram_validate(GL, m_program);
 
         glUseProgramObjectARB(m_program);
 
@@ -270,13 +270,13 @@ public:
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void destroy()
+    void destroy(OpenGLBinding &GL)
     {
         glDeleteObjectARB(m_program);
         m_program = 0;
     }
 
-    void enable()
+    void enable(OpenGLBinding &GL)
     {
         glUseProgramObjectARB(m_program);
 
@@ -290,7 +290,7 @@ public:
         g_bumpGLSLPass_enabled = true;
     }
 
-    void disable()
+    void disable(OpenGLBinding &GL)
     {
         glUseProgramObjectARB(0);
 
@@ -304,7 +304,7 @@ public:
         g_bumpGLSLPass_enabled = false;
     }
 
-    void setParameters(const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
+    void setParameters(OpenGLBinding &GL, const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
                        const Matrix4 &world2light)
     {
         Matrix4 world2local(localToWorld);
@@ -343,7 +343,7 @@ class GLSLDepthFillProgram : public GLProgram {
 public:
     GLhandleARB m_program;
 
-    void create()
+    void create(OpenGLBinding &GL)
     {
         // create program
         m_program = glCreateProgramObjectARB();
@@ -352,25 +352,25 @@ public:
         {
             StringOutputStream filename(256);
             filename << GlobalRadiant().getAppPath() << "gl/zfill_vp.glsl";
-            createShader(m_program, filename.c_str(), GL_VERTEX_SHADER_ARB);
+            createShader(GL, m_program, filename.c_str(), GL_VERTEX_SHADER_ARB);
             filename.clear();
             filename << GlobalRadiant().getAppPath() << "gl/zfill_fp.glsl";
-            createShader(m_program, filename.c_str(), GL_FRAGMENT_SHADER_ARB);
+            createShader(GL, m_program, filename.c_str(), GL_FRAGMENT_SHADER_ARB);
         }
 
-        GLSLProgram_link(m_program);
-        GLSLProgram_validate(m_program);
+        GLSLProgram_link(GL, m_program);
+        GLSLProgram_validate(GL, m_program);
 
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void destroy()
+    void destroy(OpenGLBinding &GL)
     {
         glDeleteObjectARB(m_program);
         m_program = 0;
     }
 
-    void enable()
+    void enable(OpenGLBinding &GL)
     {
         glUseProgramObjectARB(m_program);
         GlobalOpenGL_debugAssertNoErrors();
@@ -378,7 +378,7 @@ public:
         g_depthfillPass_enabled = true;
     }
 
-    void disable()
+    void disable(OpenGLBinding &GL)
     {
         glUseProgramObjectARB(0);
         GlobalOpenGL_debugAssertNoErrors();
@@ -386,7 +386,7 @@ public:
         g_depthfillPass_enabled = false;
     }
 
-    void setParameters(const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
+    void setParameters(OpenGLBinding &GL, const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
                        const Matrix4 &world2light)
     {
     }
@@ -397,7 +397,7 @@ GLSLDepthFillProgram g_depthFillGLSL;
 
 // ARB path
 
-void createProgram(const char *filename, GLenum type)
+void createProgram(OpenGLBinding &GL, const char *filename, GLenum type)
 {
     std::size_t size = file_size(filename);
     FileInputStream file(filename);
@@ -424,7 +424,7 @@ public:
     GLuint m_vertex_program;
     GLuint m_fragment_program;
 
-    void create()
+    void create(OpenGLBinding &GL)
     {
         glEnable(GL_VERTEX_PROGRAM_ARB);
         glEnable(GL_FRAGMENT_PROGRAM_ARB);
@@ -434,13 +434,13 @@ public:
             glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_vertex_program);
             StringOutputStream filename(256);
             filename << GlobalRadiant().getAppPath() << "gl/lighting_DBS_omni_vp.glp";
-            createProgram(filename.c_str(), GL_VERTEX_PROGRAM_ARB);
+            createProgram(GL, filename.c_str(), GL_VERTEX_PROGRAM_ARB);
 
             glGenProgramsARB(1, &m_fragment_program);
             glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_fragment_program);
             filename.clear();
             filename << GlobalRadiant().getAppPath() << "gl/lighting_DBS_omni_fp.glp";
-            createProgram(filename.c_str(), GL_FRAGMENT_PROGRAM_ARB);
+            createProgram(GL, filename.c_str(), GL_FRAGMENT_PROGRAM_ARB);
         }
 
         glDisable(GL_VERTEX_PROGRAM_ARB);
@@ -449,14 +449,14 @@ public:
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void destroy()
+    void destroy(OpenGLBinding &GL)
     {
         glDeleteProgramsARB(1, &m_vertex_program);
         glDeleteProgramsARB(1, &m_fragment_program);
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void enable()
+    void enable(OpenGLBinding &GL)
     {
         glEnable(GL_VERTEX_PROGRAM_ARB);
         glEnable(GL_FRAGMENT_PROGRAM_ARB);
@@ -471,7 +471,7 @@ public:
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void disable()
+    void disable(OpenGLBinding &GL)
     {
         glDisable(GL_VERTEX_PROGRAM_ARB);
         glDisable(GL_FRAGMENT_PROGRAM_ARB);
@@ -484,7 +484,7 @@ public:
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void setParameters(const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
+    void setParameters(OpenGLBinding &GL, const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
                        const Matrix4 &world2light)
     {
         Matrix4 world2local(localToWorld);
@@ -531,7 +531,7 @@ public:
     GLuint m_vertex_program;
     GLuint m_fragment_program;
 
-    void create()
+    void create(OpenGLBinding &GL)
     {
         glEnable(GL_VERTEX_PROGRAM_ARB);
         glEnable(GL_FRAGMENT_PROGRAM_ARB);
@@ -541,13 +541,13 @@ public:
             glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_vertex_program);
             StringOutputStream filename(256);
             filename << GlobalRadiant().getAppPath() << "gl/zfill_vp.glp";
-            createProgram(filename.c_str(), GL_VERTEX_PROGRAM_ARB);
+            createProgram(GL, filename.c_str(), GL_VERTEX_PROGRAM_ARB);
 
             glGenProgramsARB(1, &m_fragment_program);
             glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_fragment_program);
             filename.clear();
             filename << GlobalRadiant().getAppPath() << "gl/zfill_fp.glp";
-            createProgram(filename.c_str(), GL_FRAGMENT_PROGRAM_ARB);
+            createProgram(GL, filename.c_str(), GL_FRAGMENT_PROGRAM_ARB);
         }
 
         glDisable(GL_VERTEX_PROGRAM_ARB);
@@ -556,14 +556,14 @@ public:
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void destroy()
+    void destroy(OpenGLBinding &GL)
     {
         glDeleteProgramsARB(1, &m_vertex_program);
         glDeleteProgramsARB(1, &m_fragment_program);
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void enable()
+    void enable(OpenGLBinding &GL)
     {
         glEnable(GL_VERTEX_PROGRAM_ARB);
         glEnable(GL_FRAGMENT_PROGRAM_ARB);
@@ -573,7 +573,7 @@ public:
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void disable()
+    void disable(OpenGLBinding &GL)
     {
         glDisable(GL_VERTEX_PROGRAM_ARB);
         glDisable(GL_FRAGMENT_PROGRAM_ARB);
@@ -581,7 +581,7 @@ public:
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    void setParameters(const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
+    void setParameters(OpenGLBinding &GL, const Vector3 &viewer, const Matrix4 &localToWorld, const Vector3 &origin, const Vector3 &colour,
                        const Matrix4 &world2light)
     {
     }
@@ -920,7 +920,7 @@ public:
         return m_state;
     }
 
-    void render(OpenGLState &current, unsigned int globalstate, const Vector3 &viewer);
+    void render(OpenGLBinding &GL, OpenGLState &current, unsigned int globalstate, const Vector3 &viewer);
 };
 
 #define LIGHT_SHADER_DEBUG 0
@@ -1202,7 +1202,7 @@ public:
     }
 };
 
-inline void setFogState(const OpenGLFogState &state)
+inline void setFogState(OpenGLBinding &GL, const OpenGLFogState &state)
 {
     glFogi(GL_FOG_MODE, state.mode);
     glFogf(GL_FOG_DENSITY, state.density);
@@ -1291,7 +1291,7 @@ public:
     }
 
     void
-    render(RenderStateFlags globalstate, const Matrix4 &modelview, const Matrix4 &projection, const Vector3 &viewer)
+    render(OpenGLBinding &GL, RenderStateFlags globalstate, const Matrix4 &modelview, const Matrix4 &projection, const Vector3 &viewer)
     {
         glMatrixMode(GL_PROJECTION);
         glLoadMatrixf(reinterpret_cast<const float *>( &projection ));
@@ -1336,12 +1336,12 @@ public:
         g_vertexArray_enabled = true;
         glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
-        if (GlobalOpenGL().GL_1_3()) {
+        if (GL.GL_1_3()) {
             glActiveTexture(GL_TEXTURE0);
             glClientActiveTexture(GL_TEXTURE0);
         }
 
-        if (GlobalOpenGL().ARB_shader_objects()) {
+        if (GL.ARB_shader_objects()) {
             glUseProgramObjectARB(0);
             glDisableVertexAttribArrayARB(c_attr_TexCoord0);
             glDisableVertexAttribArrayARB(c_attr_Tangent);
@@ -1389,27 +1389,28 @@ public:
 
         glHint(GL_FOG_HINT, GL_NICEST);
         glDisable(GL_FOG);
-        setFogState(OpenGLFogState());
+        setFogState(GL, OpenGLFogState());
 
         GlobalOpenGL_debugAssertNoErrors();
 
         debug_string("begin rendering");
         for (OpenGLStates::iterator i = g_state_sorted.begin(); i != g_state_sorted.end(); ++i) {
-            (*i).second->render(current, globalstate, viewer);
+            (*i).second->render(GL, current, globalstate, viewer);
         }
         debug_string("end rendering");
     }
 
     void realise()
     {
+        OpenGLBinding &GL = GlobalOpenGL();
         if (--m_unrealised == 0) {
             if (lightingSupported() && lightingEnabled()) {
                 if (useShaderLanguage()) {
-                    g_bumpGLSL.create();
-                    g_depthFillGLSL.create();
+                    g_bumpGLSL.create(GL);
+                    g_depthFillGLSL.create(GL);
                 } else {
-                    g_bumpARB.create();
-                    g_depthFillARB.create();
+                    g_bumpARB.create(GL);
+                    g_depthFillARB.create(GL);
                 }
             }
 
@@ -1423,19 +1424,20 @@ public:
 
     void unrealise()
     {
+        OpenGLBinding &GL = GlobalOpenGL();
         if (++m_unrealised == 1) {
             for (Shaders::iterator i = m_shaders.begin(); i != m_shaders.end(); ++i) {
                 if (!(*i).value.empty()) {
                     (*i).value->unrealise();
                 }
             }
-            if (GlobalOpenGL().contextValid && lightingSupported() && lightingEnabled()) {
+            if (GL.contextValid && lightingSupported() && lightingEnabled()) {
                 if (useShaderLanguage()) {
-                    g_bumpGLSL.destroy();
-                    g_depthFillGLSL.destroy();
+                    g_bumpGLSL.destroy(GL);
+                    g_depthFillGLSL.destroy(GL);
                 } else {
-                    g_bumpARB.destroy();
-                    g_depthFillARB.destroy();
+                    g_bumpARB.destroy(GL);
+                    g_depthFillARB.destroy(GL);
                 }
             }
         }
@@ -1479,39 +1481,39 @@ public:
         }
     }
 
-    void extensionsInitialised()
+    void extensionsInitialised(OpenGLBinding &GL)
     {
-        setLighting(GlobalOpenGL().GL_1_3()
-                    && GlobalOpenGL().ARB_vertex_program()
-                    && GlobalOpenGL().ARB_fragment_program()
-                    && GlobalOpenGL().ARB_shader_objects()
-                    && GlobalOpenGL().ARB_vertex_shader()
-                    && GlobalOpenGL().ARB_fragment_shader()
-                    && GlobalOpenGL().ARB_shading_language_100(),
+        setLighting(GL.GL_1_3()
+                    && GL.ARB_vertex_program()
+                    && GL.ARB_fragment_program()
+                    && GL.ARB_shader_objects()
+                    && GL.ARB_vertex_shader()
+                    && GL.ARB_fragment_shader()
+                    && GL.ARB_shading_language_100(),
                     m_lightingEnabled
         );
 
         if (!lightingSupported()) {
             globalOutputStream() << "Lighting mode requires OpenGL features not supported by your graphics drivers:\n";
-            if (!GlobalOpenGL().GL_1_3()) {
+            if (!GL.GL_1_3()) {
                 globalOutputStream() << "  GL version 1.3 or better\n";
             }
-            if (!GlobalOpenGL().ARB_vertex_program()) {
+            if (!GL.ARB_vertex_program()) {
                 globalOutputStream() << "  GL_ARB_vertex_program\n";
             }
-            if (!GlobalOpenGL().ARB_fragment_program()) {
+            if (!GL.ARB_fragment_program()) {
                 globalOutputStream() << "  GL_ARB_fragment_program\n";
             }
-            if (!GlobalOpenGL().ARB_shader_objects()) {
+            if (!GL.ARB_shader_objects()) {
                 globalOutputStream() << "  GL_ARB_shader_objects\n";
             }
-            if (!GlobalOpenGL().ARB_vertex_shader()) {
+            if (!GL.ARB_vertex_shader()) {
                 globalOutputStream() << "  GL_ARB_vertex_shader\n";
             }
-            if (!GlobalOpenGL().ARB_fragment_shader()) {
+            if (!GL.ARB_fragment_shader()) {
                 globalOutputStream() << "  GL_ARB_fragment_shader\n";
             }
-            if (!GlobalOpenGL().ARB_shading_language_100()) {
+            if (!GL.ARB_shading_language_100()) {
                 globalOutputStream() << "  GL_ARB_shading_language_100\n";
             }
         }
@@ -1611,9 +1613,9 @@ public:
 
 static OpenGLShaderCache *g_ShaderCache;
 
-void ShaderCache_extensionsInitialised()
+void ShaderCache_extensionsInitialised(OpenGLBinding &GL)
 {
-    g_ShaderCache->extensionsInitialised();
+    g_ShaderCache->extensionsInitialised(GL);
 }
 
 void ShaderCache_setBumpEnabled(bool enabled)
@@ -1695,7 +1697,7 @@ ShaderCache *GetShaderCache()
     return g_ShaderCache;
 }
 
-inline void setTextureState(GLint &current, const GLint &texture, GLenum textureUnit)
+inline void setTextureState(OpenGLBinding &GL, GLint &current, const GLint &texture, GLenum textureUnit)
 {
     if (texture != current) {
         glActiveTexture(textureUnit);
@@ -1706,7 +1708,7 @@ inline void setTextureState(GLint &current, const GLint &texture, GLenum texture
     }
 }
 
-inline void setTextureState(GLint &current, const GLint &texture)
+inline void setTextureState(OpenGLBinding &GL, GLint &current, const GLint &texture)
 {
     if (texture != current) {
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -1715,7 +1717,7 @@ inline void setTextureState(GLint &current, const GLint &texture)
     }
 }
 
-inline void setState(unsigned int state, unsigned int delta, unsigned int flag, GLenum glflag)
+inline void setState(OpenGLBinding &GL, unsigned int state, unsigned int delta, unsigned int flag, GLenum glflag)
 {
     if (delta & state & flag) {
         glEnable(glflag);
@@ -1726,7 +1728,7 @@ inline void setState(unsigned int state, unsigned int delta, unsigned int flag, 
     }
 }
 
-void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned int globalstate)
+void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned int globalstate, OpenGLBinding &GL)
 {
     debug_int("sort", int(self.m_sort));
     debug_int("texture", self.m_texture);
@@ -1748,7 +1750,7 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
 
     if (program != current.m_program) {
         if (current.m_program != 0) {
-            current.m_program->disable();
+            current.m_program->disable(GL);
             glColor4fv(vector4_to_array(current.m_colour));
             debug_colour("cleaning program");
         }
@@ -1756,7 +1758,7 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
         current.m_program = program;
 
         if (current.m_program != 0) {
-            current.m_program->enable();
+            current.m_program->enable(GL);
         }
     }
 
@@ -1770,7 +1772,7 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    setState(state, delta, RENDER_OFFSETLINE, GL_POLYGON_OFFSET_LINE);
+    setState(GL, state, delta, RENDER_OFFSETLINE, GL_POLYGON_OFFSET_LINE);
 
     if (delta & state & RENDER_LIGHTING) {
         glEnable(GL_LIGHTING);
@@ -1791,7 +1793,7 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
     if (delta & state & RENDER_TEXTURE) {
         GlobalOpenGL_debugAssertNoErrors();
 
-        if (GlobalOpenGL().GL_1_3()) {
+        if (GL.GL_1_3()) {
             glActiveTexture(GL_TEXTURE0);
             glClientActiveTexture(GL_TEXTURE0);
         }
@@ -1805,7 +1807,7 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
         GlobalOpenGL_debugAssertNoErrors();
         g_texcoordArray_enabled = true;
     } else if (delta & ~state & RENDER_TEXTURE) {
-        if (GlobalOpenGL().GL_1_3()) {
+        if (GL.GL_1_3()) {
             glActiveTexture(GL_TEXTURE0);
             glClientActiveTexture(GL_TEXTURE0);
         }
@@ -1826,21 +1828,21 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
 // this could get better if you can get glTexEnviv (GL_TEXTURE_ENV, to work .. patches are welcome
 
         glEnable(GL_BLEND);
-        if (GlobalOpenGL().GL_1_3()) {
+        if (GL.GL_1_3()) {
             glActiveTexture(GL_TEXTURE0);
         }
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
         GlobalOpenGL_debugAssertNoErrors();
     } else if (delta & ~state & RENDER_BLEND) {
         glDisable(GL_BLEND);
-        if (GlobalOpenGL().GL_1_3()) {
+        if (GL.GL_1_3()) {
             glActiveTexture(GL_TEXTURE0);
         }
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    setState(state, delta, RENDER_CULLFACE, GL_CULL_FACE);
+    setState(GL, state, delta, RENDER_CULLFACE, GL_CULL_FACE);
 
     if (delta & state & RENDER_SMOOTH) {
         glShadeModel(GL_SMOOTH);
@@ -1850,9 +1852,9 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    setState(state, delta, RENDER_SCALED, GL_NORMALIZE); // not GL_RESCALE_NORMAL
+    setState(GL, state, delta, RENDER_SCALED, GL_NORMALIZE); // not GL_RESCALE_NORMAL
 
-    setState(state, delta, RENDER_DEPTHTEST, GL_DEPTH_TEST);
+    setState(GL, state, delta, RENDER_DEPTHTEST, GL_DEPTH_TEST);
 
     if (delta & state & RENDER_DEPTHWRITE) {
         glDepthMask(GL_TRUE);
@@ -1886,7 +1888,7 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    setState(state, delta, RENDER_ALPHATEST, GL_ALPHA_TEST);
+    setState(GL, state, delta, RENDER_ALPHATEST, GL_ALPHA_TEST);
 
     if (delta & state & RENDER_COLOURARRAY) {
         glEnableClientState(GL_COLOR_ARRAY);
@@ -1906,16 +1908,16 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
         GlobalOpenGL_debugAssertNoErrors();
     }
 
-    setState(state, delta, RENDER_LINESTIPPLE, GL_LINE_STIPPLE);
-    setState(state, delta, RENDER_LINESMOOTH, GL_LINE_SMOOTH);
+    setState(GL, state, delta, RENDER_LINESTIPPLE, GL_LINE_STIPPLE);
+    setState(GL, state, delta, RENDER_LINESMOOTH, GL_LINE_SMOOTH);
 
-    setState(state, delta, RENDER_POLYGONSTIPPLE, GL_POLYGON_STIPPLE);
-    setState(state, delta, RENDER_POLYGONSMOOTH, GL_POLYGON_SMOOTH);
+    setState(GL, state, delta, RENDER_POLYGONSTIPPLE, GL_POLYGON_STIPPLE);
+    setState(GL, state, delta, RENDER_POLYGONSMOOTH, GL_POLYGON_SMOOTH);
 
-    setState(state, delta, RENDER_FOG, GL_FOG);
+    setState(GL, state, delta, RENDER_FOG, GL_FOG);
 
     if ((state & RENDER_FOG) != 0) {
-        setFogState(self.m_fog);
+        setFogState(GL, self.m_fog);
         GlobalOpenGL_debugAssertNoErrors();
         current.m_fog = self.m_fog;
     }
@@ -1966,17 +1968,17 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
             texture7 = self.m_texture7;
         }
 
-        if (GlobalOpenGL().GL_1_3()) {
-            setTextureState(current.m_texture, texture0, GL_TEXTURE0);
-            setTextureState(current.m_texture1, texture1, GL_TEXTURE1);
-            setTextureState(current.m_texture2, texture2, GL_TEXTURE2);
-            setTextureState(current.m_texture3, texture3, GL_TEXTURE3);
-            setTextureState(current.m_texture4, texture4, GL_TEXTURE4);
-            setTextureState(current.m_texture5, texture5, GL_TEXTURE5);
-            setTextureState(current.m_texture6, texture6, GL_TEXTURE6);
-            setTextureState(current.m_texture7, texture7, GL_TEXTURE7);
+        if (GL.GL_1_3()) {
+            setTextureState(GL, current.m_texture, texture0, GL_TEXTURE0);
+            setTextureState(GL, current.m_texture1, texture1, GL_TEXTURE1);
+            setTextureState(GL, current.m_texture2, texture2, GL_TEXTURE2);
+            setTextureState(GL, current.m_texture3, texture3, GL_TEXTURE3);
+            setTextureState(GL, current.m_texture4, texture4, GL_TEXTURE4);
+            setTextureState(GL, current.m_texture5, texture5, GL_TEXTURE5);
+            setTextureState(GL, current.m_texture6, texture6, GL_TEXTURE6);
+            setTextureState(GL, current.m_texture7, texture7, GL_TEXTURE7);
         } else {
-            setTextureState(current.m_texture, texture0);
+            setTextureState(GL, current.m_texture, texture0);
         }
     }
 
@@ -2025,7 +2027,7 @@ void OpenGLState_apply(const OpenGLState &self, OpenGLState &current, unsigned i
     GlobalOpenGL_debugAssertNoErrors();
 }
 
-void Renderables_flush(OpenGLStateBucket::Renderables &renderables, OpenGLState &current, unsigned int globalstate,
+void Renderables_flush(OpenGLBinding &GL, OpenGLStateBucket::Renderables &renderables, OpenGLState &current, unsigned int globalstate,
                        const Vector3 &viewer)
 {
     const Matrix4 *transform = 0;
@@ -2053,13 +2055,13 @@ void Renderables_flush(OpenGLStateBucket::Renderables &renderables, OpenGLState 
                                        ? lightShader.lightFalloffImage()->texture_number
                                        : static_cast<OpenGLShader *>( g_defaultPointLight )->getShader().lightFalloffImage()->texture_number;
 
-                setTextureState(current.m_texture3, attenuation_xy, GL_TEXTURE3);
+                setTextureState(GL, current.m_texture3, attenuation_xy, GL_TEXTURE3);
                 glActiveTexture(GL_TEXTURE3);
                 glBindTexture(GL_TEXTURE_2D, attenuation_xy);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-                setTextureState(current.m_texture4, attenuation_z, GL_TEXTURE4);
+                setTextureState(GL, current.m_texture4, attenuation_z, GL_TEXTURE4);
                 glActiveTexture(GL_TEXTURE4);
                 glBindTexture(GL_TEXTURE_2D, attenuation_z);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -2085,22 +2087,22 @@ void Renderables_flush(OpenGLStateBucket::Renderables &renderables, OpenGLState 
                     matrix4_translate_by_vec3(world2light, vector3_negated(lightBounds.origin)); // world->lightBounds
                 }
 
-                current.m_program->setParameters(viewer, *(*i).m_transform, lightBounds.origin + (*i).m_light->offset(),
+                current.m_program->setParameters(GL, viewer, *(*i).m_transform, lightBounds.origin + (*i).m_light->offset(),
                                                  (*i).m_light->colour(), world2light);
                 debug_string("set lightBounds parameters");
             }
         }
 
-        (*i).m_renderable->render(current.m_state);
+        (*i).m_renderable->render(GL, current.m_state);
     }
     glPopMatrix();
     renderables.clear();
 }
 
-void OpenGLStateBucket::render(OpenGLState &current, unsigned int globalstate, const Vector3 &viewer)
+void OpenGLStateBucket::render(OpenGLBinding &GL, OpenGLState &current, unsigned int globalstate, const Vector3 &viewer)
 {
     if ((globalstate & m_state.m_state & RENDER_SCREEN) != 0) {
-        OpenGLState_apply(m_state, current, globalstate);
+        OpenGLState_apply(m_state, current, globalstate, GL);
         debug_colour("screen fill");
 
         glMatrixMode(GL_PROJECTION);
@@ -2124,8 +2126,8 @@ void OpenGLStateBucket::render(OpenGLState &current, unsigned int globalstate, c
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
     } else if (!m_renderables.empty()) {
-        OpenGLState_apply(m_state, current, globalstate);
-        Renderables_flush(m_renderables, current, globalstate, viewer);
+        OpenGLState_apply(m_state, current, globalstate, GL);
+        Renderables_flush(GL, m_renderables, current, globalstate, viewer);
     }
 }
 

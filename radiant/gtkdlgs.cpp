@@ -430,7 +430,7 @@ void about_button_issues(ui::Widget widget, gpointer data)
     OpenURL(cred.c_str());
 }
 
-void DoAbout()
+void DoAbout(OpenGLBinding &GL)
 {
     ModalDialog dialog;
     ModalDialogButton ok_button(dialog, eIDOK);

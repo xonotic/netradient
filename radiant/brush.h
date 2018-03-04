@@ -110,13 +110,13 @@ inline bool texdef_sane(const texdef_t &texdef)
            && fabs(texdef.shift[1]) < (1 << 16);
 }
 
-inline void Winding_DrawWireframe(const Winding &winding)
+inline void Winding_DrawWireframe(OpenGLBinding &GL, const Winding &winding)
 {
     glVertexPointer(3, GL_FLOAT, sizeof(WindingVertex), &winding.points.data()->vertex);
     glDrawArrays(GL_LINE_LOOP, 0, GLsizei(winding.numpoints));
 }
 
-inline void Winding_Draw(const Winding &winding, const Vector3 &normal, RenderStateFlags state)
+inline void Winding_Draw(OpenGLBinding &GL, const Winding &winding, const Vector3 &normal, RenderStateFlags state)
 {
     glVertexPointer(3, GL_FLOAT, sizeof(WindingVertex), &winding.points.data()->vertex);
 
@@ -1070,9 +1070,9 @@ public:
         m_shader.instanceDetach();
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
-        Winding_Draw(m_winding, m_planeTransformed.plane3().normal(), state);
+        Winding_Draw(GL, m_winding, m_planeTransformed.plane3().normal(), state);
     }
 
     void updateFiltered()
@@ -1468,7 +1468,7 @@ struct EdgeFaces {
 
 class RenderableWireframe : public OpenGLRenderable {
 public:
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
 #if 1
         glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(PointVertex), &m_vertices->colour);
@@ -3128,12 +3128,12 @@ public:
         }
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         if ((state & RENDER_FILL) != 0) {
-            Winding_Draw(m_winding, m_plane.normal(), state);
+            Winding_Draw(GL, m_winding, m_plane.normal(), state);
         } else {
-            Winding_DrawWireframe(m_winding);
+            Winding_DrawWireframe(GL, m_winding);
 
             // also draw a line indicating the direction of the cut
             Vector3 lineverts[2];

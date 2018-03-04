@@ -100,10 +100,10 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         glRasterPos3fv(vector3_to_array(m_position));
-        GlobalOpenGL().drawString(m_named.name());
+        GL.drawString(m_named.name());
     }
 };
 

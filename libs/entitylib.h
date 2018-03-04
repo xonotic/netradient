@@ -43,7 +43,7 @@
 #include <list>
 #include <set>
 
-inline void arrow_draw( const Vector3& origin, const Vector3& direction_forward, const Vector3& direction_left, const Vector3& direction_up ){
+inline void arrow_draw( OpenGLBinding &GL, const Vector3& origin, const Vector3& direction_forward, const Vector3& direction_left, const Vector3& direction_up ){
 	Vector3 endpoint( vector3_added( origin, vector3_scaled( direction_forward, 32.0 ) ) );
 
 	Vector3 tip1( vector3_added( vector3_added( endpoint, vector3_scaled( direction_forward, -8.0 ) ), vector3_scaled( direction_up, -4.0 ) ) );
@@ -100,7 +100,7 @@ inline void aabb_testselect( const AABB& aabb, SelectionTest& test, SelectionInt
 	test.TestQuads( VertexPointer( reinterpret_cast<VertexPointer::pointer>( points ), sizeof( Vector3 ) ), IndexPointer( indices, 24 ), best );
 }
 
-inline void aabb_draw_wire( const Vector3 points[8] ){
+inline void aabb_draw_wire( OpenGLBinding &GL, const Vector3 points[8] ){
 	unsigned int indices[26] = {
 		0, 1, 1, 2, 2, 3, 3, 0,
 		4, 5, 5, 6, 6, 7, 7, 4,
@@ -121,7 +121,7 @@ inline void aabb_draw_wire( const Vector3 points[8] ){
 #endif
 }
 
-inline void aabb_draw_flatshade( const Vector3 points[8] ){
+inline void aabb_draw_flatshade( OpenGLBinding &GL, const Vector3 points[8] ){
 	glBegin( GL_QUADS );
 
 	glNormal3fv( vector3_to_array( aabb_normals[0] ) );
@@ -163,19 +163,19 @@ inline void aabb_draw_flatshade( const Vector3 points[8] ){
 	glEnd();
 }
 
-inline void aabb_draw_wire( const AABB& aabb ){
+inline void aabb_draw_wire( OpenGLBinding &GL, const AABB& aabb ){
 	Vector3 points[8];
 	aabb_corners( aabb, points );
-	aabb_draw_wire( points );
+	aabb_draw_wire( GL, points );
 }
 
-inline void aabb_draw_flatshade( const AABB& aabb ){
+inline void aabb_draw_flatshade( OpenGLBinding &GL, const AABB& aabb ){
 	Vector3 points[8];
 	aabb_corners( aabb, points );
-	aabb_draw_flatshade( points );
+	aabb_draw_flatshade( GL, points );
 }
 
-inline void aabb_draw_textured( const AABB& aabb ){
+inline void aabb_draw_textured( OpenGLBinding &GL, const AABB& aabb ){
 	Vector3 points[8];
 	aabb_corners( aabb, points );
 
@@ -244,23 +244,23 @@ inline void aabb_draw_textured( const AABB& aabb ){
 	glEnd();
 }
 
-inline void aabb_draw_solid( const AABB& aabb, RenderStateFlags state ){
+inline void aabb_draw_solid( OpenGLBinding &GL, const AABB& aabb, RenderStateFlags state ){
 	if ( state & RENDER_TEXTURE ) {
-		aabb_draw_textured( aabb );
+		aabb_draw_textured( GL, aabb );
 	}
 	else
 	{
-		aabb_draw_flatshade( aabb );
+		aabb_draw_flatshade( GL, aabb );
 	}
 }
 
-inline void aabb_draw( const AABB& aabb, RenderStateFlags state ){
+inline void aabb_draw( OpenGLBinding &GL, const AABB& aabb, RenderStateFlags state ){
 	if ( state & RENDER_FILL ) {
-		aabb_draw_solid( aabb, state );
+		aabb_draw_solid( GL, aabb, state );
 	}
 	else
 	{
-		aabb_draw_wire( aabb );
+		aabb_draw_wire( GL, aabb );
 	}
 }
 
@@ -270,8 +270,8 @@ const AABB& m_aabb;
 public:
 RenderableSolidAABB( const AABB& aabb ) : m_aabb( aabb ){
 }
-void render( RenderStateFlags state ) const {
-	aabb_draw_solid( m_aabb, state );
+void render( OpenGLBinding &GL, RenderStateFlags state ) const {
+	aabb_draw_solid( GL, m_aabb, state );
 }
 };
 
@@ -281,8 +281,8 @@ const AABB& m_aabb;
 public:
 RenderableWireframeAABB( const AABB& aabb ) : m_aabb( aabb ){
 }
-void render( RenderStateFlags state ) const {
-	aabb_draw_wire( m_aabb );
+void render( OpenGLBinding &GL, RenderStateFlags state ) const {
+	aabb_draw_wire( GL, m_aabb );
 }
 };
 

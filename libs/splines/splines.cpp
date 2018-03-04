@@ -95,7 +95,7 @@ idCameraDef *g_splineList = &splineList;
 
 idVec3 idSplineList::zero( 0,0,0 );
 
-void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label ) {
+void glLabeledPoint( OpenGLBinding &GL, idVec3 &color, idVec3 &point, float size, const char *label ) {
 	glColor3fv( color );
 	glPointSize( size );
 	glBegin( GL_POINTS );
@@ -110,7 +110,7 @@ void glLabeledPoint( idVec3 &color, idVec3 &point, float size, const char *label
 }
 
 
-void glBox( idVec3 &color, idVec3 &point, float size ) {
+void glBox( OpenGLBinding &GL, idVec3 &color, idVec3 &point, float size ) {
 	idVec3 mins( point );
 	idVec3 maxs( point );
 	mins[0] -= size;
@@ -243,7 +243,7 @@ void idSplineList::buildSpline() {
 }
 
 
-void idSplineList::draw( bool editMode ) {
+void idSplineList::draw( OpenGLBinding &GL, bool editMode ) {
 	int i;
 	idVec4 yellow( 1, 1, 0, 1 );
 
@@ -267,7 +267,7 @@ void idSplineList::draw( bool editMode ) {
 
 	if ( editMode ) {
 		for ( i = 0; i < controlPoints.Num(); i++ ) {
-			glBox( activeColor, *controlPoints[i], 4 );
+			glBox( GL, activeColor, *controlPoints[i], 4 );
 		}
 	}
 
@@ -292,8 +292,8 @@ void idSplineList::draw( bool editMode ) {
 	if ( count > 0 ) {
 		//assert(activeSegment >=0 && activeSegment < count);
 		if ( activeSegment >= 0 && activeSegment < count ) {
-			glBox( activeColor, *splinePoints[activeSegment], 6 );
-			glBox( yellow, *splinePoints[activeSegment], 8 );
+			glBox( GL, activeColor, *splinePoints[activeSegment], 6 );
+			glBox( GL, yellow, *splinePoints[activeSegment], 8 );
 		}
 	}
 

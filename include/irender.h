@@ -104,11 +104,13 @@ const int c_attr_TexCoord0 = 1;
 const int c_attr_Tangent = 3;
 const int c_attr_Binormal = 4;
 
+struct OpenGLBinding;
+
 class OpenGLRenderable
 {
 public:
 virtual ~OpenGLRenderable() = default;
-virtual void render( RenderStateFlags state ) const = 0;
+virtual void render( OpenGLBinding &GL, RenderStateFlags state ) const = 0;
 };
 
 class Matrix4;
@@ -139,7 +141,7 @@ STRING_CONSTANT( Name, "renderstate" );
 virtual Shader* capture( const char* name ) = 0;
 virtual void release( const char* name ) = 0;
 /*! Render all Shader objects. */
-virtual void render( RenderStateFlags globalstate, const Matrix4& modelview, const Matrix4& projection, const Vector3& viewer = Vector3( 0, 0, 0 ) ) = 0;
+virtual void render( OpenGLBinding &GL, RenderStateFlags globalstate, const Matrix4& modelview, const Matrix4& projection, const Vector3& viewer = Vector3( 0, 0, 0 ) ) = 0;
 
 virtual void realise() = 0;
 virtual void unrealise() = 0;

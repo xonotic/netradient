@@ -129,7 +129,7 @@ void glInvalidFunction()
 
 #define EXTENSIONS_ENABLED 1
 
-bool QGL_ExtensionSupported(const char *extension)
+bool QGL_ExtensionSupported(OpenGLBinding &GL, const char *extension)
 {
 #if EXTENSIONS_ENABLED
     const GLubyte *extensions = 0;
@@ -142,7 +142,7 @@ bool QGL_ExtensionSupported(const char *extension)
         return false;
     }
 
-    extensions = GlobalOpenGL().m_glGetString(GL_EXTENSIONS);
+    extensions = GL.m_glGetString(GL_EXTENSIONS);
 #if !GDEF_OS_MACOS
     if (!extensions) {
         return false;
@@ -576,12 +576,12 @@ int g_qglMajorVersion = 0;
 int g_qglMinorVersion = 0;
 
 // requires a valid gl context
-void QGL_InitVersion()
+void QGL_InitVersion(OpenGLBinding &GL)
 {
 #if EXTENSIONS_ENABLED
     const std::size_t versionSize = 256;
     char version[versionSize];
-    strncpy(version, reinterpret_cast<const char *>( GlobalOpenGL().m_glGetString(GL_VERSION)), versionSize - 1);
+    strncpy(version, reinterpret_cast<const char *>( GL.m_glGetString(GL_VERSION)), versionSize - 1);
     version[versionSize - 1] = '\0';
     char *firstDot = strchr(version, '.');
     ASSERT_NOTNULL(firstDot);
@@ -613,7 +613,7 @@ float QGL_maxTextureAnisotropy()
 
 void QGL_sharedContextCreated(OpenGLBinding &table)
 {
-    QGL_InitVersion();
+    QGL_InitVersion(table);
 
     table.major_version = g_qglMajorVersion;
     table.minor_version = g_qglMinorVersion;
@@ -955,7 +955,7 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
     table.m_glVertexPointer = glVertexPointer;
     table.m_glViewport = glViewport;
 
-    if (QGL_ExtensionSupported("GL_ARB_multitexture")) {
+    if (QGL_ExtensionSupported(table, "GL_ARB_multitexture")) {
         table.support_ARB_multitexture =
                 QGL_constructExtensionFunc(table.m_glActiveTextureARB, "glActiveTextureARB")
                 && QGL_constructExtensionFunc(table.m_glClientActiveTextureARB, "glClientActiveTextureARB")
@@ -999,7 +999,7 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
         table.support_ARB_multitexture = false;
     }
 
-    if (QGL_ExtensionSupported("GL_ARB_texture_compression")) {
+    if (QGL_ExtensionSupported(table, "GL_ARB_texture_compression")) {
         table.support_ARB_texture_compression =
                 QGL_constructExtensionFunc(table.m_glCompressedTexImage3DARB, "glCompressedTexImage3DARB")
                 && QGL_constructExtensionFunc(table.m_glCompressedTexImage2DARB, "glCompressedTexImage2DARB")
@@ -1016,7 +1016,7 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
         table.support_ARB_texture_compression = false;
     }
 
-    table.support_EXT_texture_compression_s3tc = QGL_ExtensionSupported("GL_EXT_texture_compression_s3tc");
+    table.support_EXT_texture_compression_s3tc = QGL_ExtensionSupported(table, "GL_EXT_texture_compression_s3tc");
 
     // GL 1.2
     if (table.major_version > 1 || table.minor_version >= 2) {
@@ -1177,7 +1177,7 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
     }
 
 
-    if (QGL_ExtensionSupported("GL_ARB_vertex_program")) {
+    if (QGL_ExtensionSupported(table, "GL_ARB_vertex_program")) {
         table.support_ARB_vertex_program =
                 QGL_constructExtensionFunc(table.m_glVertexAttrib1sARB, "glVertexAttrib1sARB")
                 && QGL_constructExtensionFunc(table.m_glVertexAttrib1fARB, "glVertexAttrib1fARB")
@@ -1252,9 +1252,9 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
     }
 
 
-    table.support_ARB_fragment_program = QGL_ExtensionSupported("GL_ARB_fragment_program");
+    table.support_ARB_fragment_program = QGL_ExtensionSupported(table, "GL_ARB_fragment_program");
 
-    if (QGL_ExtensionSupported("GL_ARB_shader_objects")) {
+    if (QGL_ExtensionSupported(table, "GL_ARB_shader_objects")) {
         table.support_ARB_shader_objects =
                 QGL_constructExtensionFunc(table.m_glDeleteObjectARB, "glDeleteObjectARB")
                 && QGL_constructExtensionFunc(table.m_glGetHandleARB, "glGetHandleARB")
@@ -1303,7 +1303,7 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
         table.support_ARB_shader_objects = false;
     }
 
-    if (QGL_ExtensionSupported("GL_ARB_vertex_shader")) {
+    if (QGL_ExtensionSupported(table, "GL_ARB_vertex_shader")) {
         table.support_ARB_vertex_shader =
                 QGL_constructExtensionFunc(table.m_glVertexAttrib1fARB, "glVertexAttrib1fARB")
                 && QGL_constructExtensionFunc(table.m_glVertexAttrib1sARB, "glVertexAttrib1sARB")
@@ -1359,7 +1359,7 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
         table.support_ARB_vertex_shader = false;
     }
 
-    if (QGL_ExtensionSupported("GL_NV_vertex_program2")) {
+    if (QGL_ExtensionSupported(table, "GL_NV_vertex_program2")) {
         table.support_NV_vertex_program2 =
                 QGL_constructExtensionFunc(table.m_glAreProgramsResidentNV, "glAreProgramsResidentNV")
                 && QGL_constructExtensionFunc(table.m_glBindProgramNV, "glBindProgramNV")
@@ -1437,7 +1437,7 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
         QGL_invalidateExtensionFunc(table.m_glVertexAttribs4fvNV);
     }
 
-    if (QGL_ExtensionSupported("GL_NV_fragment_program")) {
+    if (QGL_ExtensionSupported(table, "GL_NV_fragment_program")) {
         table.support_NV_fragment_program =
                 QGL_constructExtensionFunc(table.m_glProgramNamedParameter4fNV, "glProgramNamedParameter4fNV")
                 && QGL_constructExtensionFunc(table.m_glProgramNamedParameter4fvNV, "glProgramNamedParameter4fvNV")
@@ -1450,10 +1450,10 @@ void QGL_sharedContextCreated(OpenGLBinding &table)
         table.support_NV_fragment_program = false;
     }
 
-    table.support_ARB_fragment_shader = QGL_ExtensionSupported("GL_ARB_fragment_shader");
-    table.support_ARB_shading_language_100 = QGL_ExtensionSupported("GL_ARB_shading_language_100");
+    table.support_ARB_fragment_shader = QGL_ExtensionSupported(table, "GL_ARB_fragment_shader");
+    table.support_ARB_shading_language_100 = QGL_ExtensionSupported(table, "GL_ARB_shading_language_100");
 
-    if (QGL_ExtensionSupported("GL_EXT_texture_filter_anisotropic")) {
+    if (QGL_ExtensionSupported(table, "GL_EXT_texture_filter_anisotropic")) {
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &g_maxTextureAnisotropy);
         globalOutputStream() << "Anisotropic filtering possible (max " << g_maxTextureAnisotropy << "x)\n";
     } else {
@@ -1468,9 +1468,9 @@ void QGL_sharedContextDestroyed(OpenGLBinding &table)
 }
 
 
-void QGL_assertNoErrors(const char *file, int line)
+void QGL_assertNoErrors(OpenGLBinding &GL, const char *file, int line)
 {
-    GLenum error = GlobalOpenGL().m_glGetError();
+    GLenum error = GL.m_glGetError();
     while (error != GL_NO_ERROR) {
         const char *errorString = reinterpret_cast<const char *>( qgluErrorString(error));
         if (error == GL_OUT_OF_MEMORY) {
@@ -1478,7 +1478,7 @@ void QGL_assertNoErrors(const char *file, int line)
         } else {
             ERROR_MESSAGE("OpenGL error at " << file << ":" << line << ": " << errorString);
         }
-        error = GlobalOpenGL().m_glGetError();
+        error = GL.m_glGetError();
     }
 }
 
@@ -1494,7 +1494,7 @@ public:
     {
         QGL_Init(m_qgl);
 
-        m_qgl.assertNoErrors = &QGL_assertNoErrors;
+        m_qgl.assertNoErrors_ = &QGL_assertNoErrors;
     }
 
     ~QglAPI()

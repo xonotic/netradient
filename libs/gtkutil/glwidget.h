@@ -24,11 +24,13 @@
 #if !defined( INCLUDED_GTKUTIL_GLWIDGET_H )
 #define INCLUDED_GTKUTIL_GLWIDGET_H
 
-extern void (*GLWidget_sharedContextCreated)();
+struct OpenGLBinding;
 
-extern void (*GLWidget_sharedContextDestroyed)();
+extern void (*GLWidget_sharedContextCreated)(OpenGLBinding &GL);
 
-ui::GLArea glwidget_new(bool zbuffer);
+extern void (*GLWidget_sharedContextDestroyed)(OpenGLBinding &GL);
+
+ui::GLArea glwidget_new(OpenGLBinding &GL, bool zbuffer);
 
 void glwidget_create_context(ui::GLArea self);
 

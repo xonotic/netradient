@@ -253,7 +253,7 @@ RenderablePivot(){
 	m_vertices.push_back( PointVertex( Vertex3f( 0, 0, 16 ), g_colour_z ) );
 }
 
-void render( RenderStateFlags state ) const {
+void render( OpenGLBinding &GL, RenderStateFlags state ) const {
 	if ( m_vertices.size() == 0 ) {
 		return;
 	}

@@ -85,7 +85,7 @@ struct texture_globals_t {
 
 texture_globals_t g_texture_globals(GL_RGBA);
 
-void SetTexParameters(ETexturesMode mode)
+void SetTexParameters(OpenGLBinding &GL, ETexturesMode mode)
 {
     float maxAniso = QGL_maxTextureAnisotropy();
     if (maxAniso > 1) {
@@ -164,7 +164,7 @@ LatchedValue<int> g_Textures_textureQuality(3, "Texture Quality");
 
 /// \brief This function does the actual processing of raw RGBA data into a GL texture.
 /// It will also resample to power-of-two dimensions, generate the mipmaps and adjust gamma.
-void LoadTextureRGBA(qtexture_t *q, unsigned char *pPixels, int nWidth, int nHeight)
+void LoadTextureRGBA(OpenGLBinding &GL, qtexture_t *q, unsigned char *pPixels, int nWidth, int nHeight)
 {
     static float fGamma = -1;
     float total[3];
@@ -198,7 +198,7 @@ void LoadTextureRGBA(qtexture_t *q, unsigned char *pPixels, int nWidth, int nHei
 
     glBindTexture(GL_TEXTURE_2D, q->texture_number);
 
-    SetTexParameters(g_texture_mode);
+    SetTexParameters(GL, g_texture_mode);
 
     int gl_width = 1;
     while (gl_width < nWidth) {
@@ -326,13 +326,13 @@ const TestHashtable g_testhashtable;
 
 typedef std::pair<LoadImageCallback, CopiedString> TextureKey;
 
-void qtexture_realise(qtexture_t &texture, const TextureKey &key)
+void qtexture_realise(OpenGLBinding &GL, qtexture_t &texture, const TextureKey &key)
 {
     texture.texture_number = 0;
     if (!string_empty(key.second.c_str())) {
         Image *image = key.first.loadImage(key.second.c_str());
         if (image != 0) {
-            LoadTextureRGBA(&texture, image->getRGBAPixels(), image->getWidth(), image->getHeight());
+            LoadTextureRGBA(GL, &texture, image->getRGBAPixels(), image->getWidth(), image->getHeight());
             texture.surfaceFlags = image->getSurfaceFlags();
             texture.contentFlags = image->getContentFlags();
             texture.value = image->getValue();
@@ -345,9 +345,9 @@ void qtexture_realise(qtexture_t &texture, const TextureKey &key)
     }
 }
 
-void qtexture_unrealise(qtexture_t &texture)
+void qtexture_unrealise(OpenGLBinding &GL, qtexture_t &texture)
 {
-    if (GlobalOpenGL().contextValid && texture.texture_number != 0) {
+    if (GL.contextValid && texture.texture_number != 0) {
         glDeleteTextures(1, &texture.texture_number);
         GlobalOpenGL_debugAssertNoErrors();
     }
@@ -384,17 +384,19 @@ class TexturesMap : public TexturesCache {
 
         qtexture_t *construct(const TextureKey &key)
         {
+            OpenGLBinding &GL = GlobalOpenGL();
             qtexture_t *texture = new qtexture_t(key.first, key.second.c_str());
             if (m_cache->realised()) {
-                qtexture_realise(*texture, key);
+                qtexture_realise(GL, *texture, key);
             }
             return texture;
         }
 
         void destroy(qtexture_t *texture)
         {
+            OpenGLBinding &GL = GlobalOpenGL();
             if (m_cache->realised()) {
-                qtexture_unrealise(*texture);
+                qtexture_unrealise(GL, *texture);
             }
             delete texture;
         }
@@ -467,17 +469,17 @@ public:
         m_observer = 0;
     }
 
-    void realise()
+    void realise(OpenGLBinding &GL)
     {
         if (--m_unrealised == 0) {
             g_texture_globals.bTextureCompressionSupported = false;
 
-            if (GlobalOpenGL().ARB_texture_compression()) {
+            if (GL.ARB_texture_compression()) {
                 g_texture_globals.bTextureCompressionSupported = true;
                 g_texture_globals.m_bOpenGLCompressionSupported = true;
             }
 
-            if (GlobalOpenGL().EXT_texture_compression_s3tc()) {
+            if (GL.EXT_texture_compression_s3tc()) {
                 g_texture_globals.bTextureCompressionSupported = true;
                 g_texture_globals.m_bS3CompressionSupported = true;
             }
@@ -523,7 +525,7 @@ public:
 
             for (qtextures_t::iterator i = m_qtextures.begin(); i != m_qtextures.end(); ++i) {
                 if (!(*i).value.empty()) {
-                    qtexture_realise(*(*i).value, (*i).key);
+                    qtexture_realise(GL, *(*i).value, (*i).key);
                 }
             }
             if (m_observer != 0) {
@@ -532,7 +534,7 @@ public:
         }
     }
 
-    void unrealise()
+    void unrealise(OpenGLBinding &GL)
     {
         if (++m_unrealised == 1) {
             if (m_observer != 0) {
@@ -540,7 +542,7 @@ public:
             }
             for (qtextures_t::iterator i = m_qtextures.begin(); i != m_qtextures.end(); ++i) {
                 if (!(*i).value.empty()) {
-                    qtexture_unrealise(*(*i).value);
+                    qtexture_unrealise(GL, *(*i).value);
                 }
             }
         }
@@ -560,14 +562,14 @@ TexturesCache &GetTexturesCache()
 }
 
 
-void Textures_Realise()
+void Textures_Realise(OpenGLBinding &GL)
 {
-    g_texturesmap->realise();
+    g_texturesmap->realise(GL);
 }
 
-void Textures_Unrealise()
+void Textures_Unrealise(OpenGLBinding &GL)
 {
-    g_texturesmap->unrealise();
+    g_texturesmap->unrealise(GL);
 }
 
 
@@ -578,14 +580,14 @@ void Textures_setModeChangedNotify(const Callback<void()> &notify)
     g_texturesModeChangedNotify = notify;
 }
 
-void Textures_ModeChanged()
+void Textures_ModeChanged(OpenGLBinding &GL)
 {
     if (g_texturesmap->realised()) {
-        SetTexParameters(g_texture_mode);
+        SetTexParameters(GL, g_texture_mode);
 
         for (TexturesMap::iterator i = g_texturesmap->begin(); i != g_texturesmap->end(); ++i) {
             glBindTexture(GL_TEXTURE_2D, (*i).value->texture_number);
-            SetTexParameters(g_texture_mode);
+            SetTexParameters(GL, g_texture_mode);
         }
 
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -593,26 +595,27 @@ void Textures_ModeChanged()
     g_texturesModeChangedNotify();
 }
 
-void Textures_SetMode(ETexturesMode mode)
+void Textures_SetMode(OpenGLBinding &GL, ETexturesMode mode)
 {
     if (g_texture_mode != mode) {
         g_texture_mode = mode;
 
-        Textures_ModeChanged();
+        Textures_ModeChanged(GL);
     }
 }
 
-void Textures_setTextureComponents(GLint texture_components)
+void Textures_setTextureComponents(OpenGLBinding &GL, GLint texture_components)
 {
     if (g_texture_globals.texture_components != texture_components) {
-        Textures_Unrealise();
+        Textures_Unrealise(GL);
         g_texture_globals.texture_components = texture_components;
-        Textures_Realise();
+        Textures_Realise(GL);
     }
 }
 
 void Textures_UpdateTextureCompressionFormat()
 {
+    OpenGLBinding &GL = GlobalOpenGL();
     GLint texture_components = GL_RGBA;
 
     switch (g_texture_globals.m_nTextureCompressionFormat) {
@@ -638,7 +641,7 @@ void Textures_UpdateTextureCompressionFormat()
         }
     }
 
-    Textures_setTextureComponents(texture_components);
+    Textures_setTextureComponents(GL, texture_components);
 }
 
 struct TextureCompression {
@@ -683,10 +686,11 @@ struct TextureGamma {
 
     static void Import(float &self, float value)
     {
+        OpenGLBinding &GL = GlobalOpenGL();
         if (value != self) {
-            Textures_Unrealise();
+            Textures_Unrealise(GL);
             self = value;
-            Textures_Realise();
+            Textures_Realise(GL);
         }
     }
 };
@@ -723,27 +727,28 @@ struct TextureMode {
 
     static void Import(ETexturesMode &self, int value)
     {
+        OpenGLBinding &GL = GlobalOpenGL();
         switch (value) {
             case 0:
-                Textures_SetMode(eTextures_NEAREST);
+                Textures_SetMode(GL, eTextures_NEAREST);
                 break;
             case 1:
-                Textures_SetMode(eTextures_NEAREST_MIPMAP_NEAREST);
+                Textures_SetMode(GL, eTextures_NEAREST_MIPMAP_NEAREST);
                 break;
             case 2:
-                Textures_SetMode(eTextures_LINEAR);
+                Textures_SetMode(GL, eTextures_LINEAR);
                 break;
             case 3:
-                Textures_SetMode(eTextures_NEAREST_MIPMAP_LINEAR);
+                Textures_SetMode(GL, eTextures_NEAREST_MIPMAP_LINEAR);
                 break;
             case 4:
-                Textures_SetMode(eTextures_LINEAR_MIPMAP_NEAREST);
+                Textures_SetMode(GL, eTextures_LINEAR_MIPMAP_NEAREST);
                 break;
             case 5:
-                Textures_SetMode(eTextures_LINEAR_MIPMAP_LINEAR);
+                Textures_SetMode(GL, eTextures_LINEAR_MIPMAP_LINEAR);
                 break;
             case 6:
-                Textures_SetMode(eTextures_MAX_ANISOTROPY);
+                Textures_SetMode(GL, eTextures_MAX_ANISOTROPY);
         }
     }
 };
@@ -820,7 +825,7 @@ struct TextureCompressionPreference {
     }
 };
 
-void Textures_Construct()
+void Textures_Construct(OpenGLBinding &GL)
 {
     g_texturesmap = new TexturesMap;
 
@@ -836,7 +841,7 @@ void Textures_Construct()
 
     Textures_registerPreferencesPage();
 
-    Textures_ModeChanged();
+    Textures_ModeChanged(GL);
 }
 
 void Textures_Destroy()
@@ -875,7 +880,8 @@ public:
 
     TexturesAPI()
     {
-        Textures_Construct();
+        OpenGLBinding &GL = GlobalOpenGL();
+        Textures_Construct(GL);
 
         m_textures = &GetTexturesCache();
     }

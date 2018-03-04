@@ -104,7 +104,7 @@ void CalculateSpline_r(vec3_t *v, int count, vec3_t out, float tension)
     delete[] v2;
 }
 
-void DTrainDrawer::render(RenderStateFlags state) const
+void DTrainDrawer::render(OpenGLBinding &GL, RenderStateFlags state) const
 {
     for (std::list<splinePoint_t *>::const_iterator sp = m_splineList.begin(); sp != m_splineList.end(); sp++) {
         splinePoint_t *pSP = (*sp);

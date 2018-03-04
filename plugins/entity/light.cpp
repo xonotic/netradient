@@ -68,7 +68,7 @@
 extern bool g_newLightDraw;
 
 
-void sphere_draw_fill(const Vector3 &origin, float radius, int sides)
+void sphere_draw_fill(OpenGLBinding &GL, const Vector3 &origin, float radius, int sides)
 {
     if (radius <= 0) {
         return;
@@ -139,7 +139,7 @@ void sphere_draw_fill(const Vector3 &origin, float radius, int sides)
     glEnd();
 }
 
-void sphere_draw_wire(const Vector3 &origin, float radius, int sides)
+void sphere_draw_wire(OpenGLBinding &GL, const Vector3 &origin, float radius, int sides)
 {
     {
         glBegin(GL_LINE_LOOP);
@@ -193,7 +193,7 @@ void sphere_draw_wire(const Vector3 &origin, float radius, int sides)
     }
 }
 
-void light_draw_box_lines(const Vector3 &origin, const Vector3 points[8])
+void light_draw_box_lines(OpenGLBinding &GL, const Vector3 &origin, const Vector3 points[8])
 {
     //draw lines from the center of the bbox to the corners
     glBegin(GL_LINES);
@@ -225,29 +225,29 @@ void light_draw_box_lines(const Vector3 &origin, const Vector3 points[8])
     glEnd();
 }
 
-void light_draw_radius_wire(const Vector3 &origin, const float envelope[3])
+void light_draw_radius_wire(OpenGLBinding &GL, const Vector3 &origin, const float envelope[3])
 {
     if (envelope[0] > 0) {
-        sphere_draw_wire(origin, envelope[0], 24);
+        sphere_draw_wire(GL, origin, envelope[0], 24);
     }
     if (envelope[1] > 0) {
-        sphere_draw_wire(origin, envelope[1], 24);
+        sphere_draw_wire(GL, origin, envelope[1], 24);
     }
     if (envelope[2] > 0) {
-        sphere_draw_wire(origin, envelope[2], 24);
+        sphere_draw_wire(GL, origin, envelope[2], 24);
     }
 }
 
-void light_draw_radius_fill(const Vector3 &origin, const float envelope[3])
+void light_draw_radius_fill(OpenGLBinding &GL, const Vector3 &origin, const float envelope[3])
 {
     if (envelope[0] > 0) {
-        sphere_draw_fill(origin, envelope[0], 16);
+        sphere_draw_fill(GL, origin, envelope[0], 16);
     }
     if (envelope[1] > 0) {
-        sphere_draw_fill(origin, envelope[1], 16);
+        sphere_draw_fill(GL, origin, envelope[1], 16);
     }
     if (envelope[2] > 0) {
-        sphere_draw_fill(origin, envelope[2], 16);
+        sphere_draw_fill(GL, origin, envelope[2], 16);
     }
 }
 
@@ -266,7 +266,7 @@ void light_vertices(const AABB &aabb_light, Vector3 points[6])
     points[5] = Vector3(min[0], mid[1], mid[2]);
 }
 
-void light_draw(const AABB &aabb_light, RenderStateFlags state)
+void light_draw(OpenGLBinding &GL, const AABB &aabb_light, RenderStateFlags state)
 {
     Vector3 points[6];
     light_vertices(aabb_light, points);
@@ -587,9 +587,9 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
-        light_draw_radius_wire(m_origin, m_radii.m_radii);
+        light_draw_radius_wire(GL, m_origin, m_radii.m_radii);
     }
 };
 
@@ -603,9 +603,9 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
-        light_draw_radius_fill(m_origin, m_radii.m_radii);
+        light_draw_radius_fill(GL, m_origin, m_radii.m_radii);
     }
 };
 
@@ -619,17 +619,17 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         //draw the bounding box of light based on light_radius key
         if ((state & RENDER_FILL) != 0) {
-            aabb_draw_flatshade(m_points);
+            aabb_draw_flatshade(GL, m_points);
         } else {
-            aabb_draw_wire(m_points);
+            aabb_draw_wire(GL, m_points);
         }
 
 #if 1    //disable if you dont want lines going from the center of the light bbox to the corners
-        light_draw_box_lines(m_origin, m_points);
+        light_draw_box_lines(GL, m_origin, m_points);
 #endif
     }
 };
@@ -646,7 +646,7 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         glBegin(GL_POINTS);
         glColor3fv(vector3_to_array(m_eclass.color));
@@ -665,7 +665,7 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         Matrix4 unproject(matrix4_full_inverse(m_projection));
         Vector3 points[8];
@@ -680,7 +680,7 @@ public:
         points[7] = vector4_projected(matrix4_transformed_vector4(unproject, Vector4(points[7], 1)));
 //	Vector4 test1 = matrix4_transformed_vector4( unproject, Vector4( 0.5f, 0.5f, 0.5f, 1 ) );
 //	Vector3 test2 = vector4_projected( test1 );
-        aabb_draw_wire(points);
+        aabb_draw_wire(GL, points);
     }
 };
 
@@ -1179,12 +1179,12 @@ public:
         m_traverseObservers.detach(*observer);
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         if (!g_newLightDraw) {
-            aabb_draw(m_aabb_light, state);
+            aabb_draw(GL, m_aabb_light, state);
         } else {
-            light_draw(m_aabb_light, state);
+            light_draw(GL, m_aabb_light, state);
         }
     }
 

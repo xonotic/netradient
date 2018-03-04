@@ -61,10 +61,10 @@ public:
     {
     }
 
-    void render(RenderStateFlags state) const
+    void render(OpenGLBinding &GL, RenderStateFlags state) const
     {
         Matrix4 mat = matrix4_rotation_for_euler_xyz_degrees(m_angles);
-        arrow_draw(m_origin, matrix4_transformed_direction(mat, Vector3(1, 0, 0)),
+        arrow_draw(GL, m_origin, matrix4_transformed_direction(mat, Vector3(1, 0, 0)),
                    matrix4_transformed_direction(mat, Vector3(0, 1, 0)),
                    matrix4_transformed_direction(mat, Vector3(0, 0, 1)));
     }

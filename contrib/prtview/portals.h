@@ -123,19 +123,19 @@ class CPortalsDrawSolid : public OpenGLRenderable {
 public:
     mutable CubicClipVolume clip;
 
-    void render(RenderStateFlags state) const;
+    void render(OpenGLBinding &GL, RenderStateFlags state) const;
 };
 
 class CPortalsDrawSolidOutline : public OpenGLRenderable {
 public:
     mutable CubicClipVolume clip;
 
-    void render(RenderStateFlags state) const;
+    void render(OpenGLBinding &GL, RenderStateFlags state) const;
 };
 
 class CPortalsDrawWireframe : public OpenGLRenderable {
 public:
-    void render(RenderStateFlags state) const;
+    void render(OpenGLBinding &GL, RenderStateFlags state) const;
 };
 
 class CPortalsRender : public Renderable {

@@ -24,6 +24,8 @@
 
 typedef unsigned int GLuint;
 
+struct OpenGLBinding;
+
 class GLFont {
 public:
     virtual int getPixelHeight() const = 0;
@@ -32,7 +34,7 @@ public:
 
     virtual int getPixelDescent() const = 0;
 
-    virtual void printString(const char *s) = 0;
+    virtual void printString(OpenGLBinding &GL, const char *s) = 0;
 
     virtual ~GLFont()
     {
