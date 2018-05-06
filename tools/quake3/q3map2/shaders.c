@@ -34,6 +34,7 @@
 
 
 /* dependencies */
+#include <assert.h>
 #include "q3map2.h"
 
 
@@ -719,7 +720,7 @@ void FinishShader( shaderInfo_t *si ){
 
 			/* determine error squared */
 			VectorSubtract( color, si->averageColor, delta );
-			delta[ 3 ] = color[ 3 ] - si->averageColor[ 3 ];
+			delta[ 3 ] = color[ 3 ] - 255;
 			dist = delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] + delta[ 2 ] * delta[ 2 ] + delta[ 3 ] * delta[ 3 ];
 			if ( dist < bestDist ) {
 				si->stFlat[ 0 ] = st[ 0 ];
@@ -956,8 +957,10 @@ void Parse1DMatrixAppend( char *buffer, int x, vec_t *m ){
 	}
 }
 
-
-
+#define snprintf_ignore(s, n, format, ...) do { \
+    size_t __n = snprintf(s, n, format, __VA_ARGS__); \
+    if (__n >= n) { assert(0); } /* truncated, ignore */ \
+} while (0)
 
 /*
    ParseShaderFile()
@@ -1185,7 +1188,7 @@ static void ParseShaderFile( const char *filename ){
 				si->implicitMap = IM_OPAQUE;
 				GetTokenAppend( shaderText, qfalse );
 				if ( token[ 0 ] == '-' && token[ 1 ] == '\0' ) {
-					sprintf( si->implicitImagePath, "%s.tga", si->shader );
+					snprintf_ignore( si->implicitImagePath, sizeof si->implicitImagePath, "%s.tga", si->shader );
 				}
 				else{
 					strcpy( si->implicitImagePath, token );
@@ -1196,7 +1199,7 @@ static void ParseShaderFile( const char *filename ){
 				si->implicitMap = IM_MASKED;
 				GetTokenAppend( shaderText, qfalse );
 				if ( token[ 0 ] == '-' && token[ 1 ] == '\0' ) {
-					sprintf( si->implicitImagePath, "%s.tga", si->shader );
+					snprintf_ignore( si->implicitImagePath, sizeof si->implicitImagePath, "%s.tga", si->shader );
 				}
 				else{
 					strcpy( si->implicitImagePath, token );
@@ -1207,7 +1210,7 @@ static void ParseShaderFile( const char *filename ){
 				si->implicitMap = IM_MASKED;
 				GetTokenAppend( shaderText, qfalse );
 				if ( token[ 0 ] == '-' && token[ 1 ] == '\0' ) {
-					sprintf( si->implicitImagePath, "%s.tga", si->shader );
+					snprintf_ignore( si->implicitImagePath, sizeof si->implicitImagePath, "%s.tga", si->shader );
 				}
 				else{
 					strcpy( si->implicitImagePath, token );
@@ -1251,7 +1254,7 @@ static void ParseShaderFile( const char *filename ){
 
 					/* use top image as sky light image */
 					if ( si->lightImagePath[ 0 ] == '\0' ) {
-						sprintf( si->lightImagePath, "%s_up.tga", si->skyParmsImageBase );
+						snprintf_ignore( si->lightImagePath, sizeof si->lightImagePath, "%s_up.tga", si->skyParmsImageBase );
 					}
 				}
 

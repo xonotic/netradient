@@ -669,7 +669,7 @@ int FloodEntities( tree_t *tree ){
 	node_t      *headnode;
 	entity_t    *e, *tripped;
 	const char  *value;
-	int tripcount;
+	int tripcount = 0;
 
 
 	headnode = tree->headnode;

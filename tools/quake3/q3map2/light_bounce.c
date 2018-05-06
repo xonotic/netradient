@@ -288,7 +288,7 @@ static void RadSample( int lightmapNum, bspDrawSurface_t *ds, rawLightmap_t *lm,
 			/* multiply by texture color */
 			if ( !RadSampleImage( si->lightImage->pixels, si->lightImage->width, si->lightImage->height, rw->verts[ samples ].st, textureColor ) ) {
 				VectorCopy( si->averageColor, textureColor );
-				textureColor[ 4 ] = 255.0f;
+				textureColor[ 3 ] = 255.0f;
 			}
 			for ( i = 0; i < 3; i++ )
 				color[ i ] = ( textureColor[ i ] / 255 ) * ( rw->verts[ samples ].color[ lightmapNum ][ i ] / 255.0f );
@@ -372,7 +372,7 @@ static void RadSample( int lightmapNum, bspDrawSurface_t *ds, rawLightmap_t *lm,
 						/* multiply by texture color */
 						if ( !RadSampleImage( si->lightImage->pixels, si->lightImage->width, si->lightImage->height, st, textureColor ) ) {
 							VectorCopy( si->averageColor, textureColor );
-							textureColor[ 4 ] = 255;
+							textureColor[ 3 ] = 255;
 						}
 						for ( i = 0; i < 3; i++ )
 							color[ i ] = ( textureColor[ i ] / 255 ) * ( radLuxel[ i ] / 255 );

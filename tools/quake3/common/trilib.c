@@ -25,6 +25,7 @@
 
 #include "globaldefs.h"
 #include <stdio.h>
+#include <assert.h>
 #include "cmdlib.h"
 #include "mathlib.h"
 #include "polyset.h"
@@ -77,7 +78,7 @@ static void ReadPolysetGeometry( triangle_t *tripool, FILE *input, int count, tr
 	for ( i = 0; i < count; ++i ) {
 		int j;
 
-		fread( &tri, sizeof( tf_triangle ), 1, input );
+		assert(fread( &tri, sizeof( tf_triangle ), 1, input ));
 		ByteSwapTri( &tri );
 		for ( j = 0 ; j < 3 ; j++ )
 		{
@@ -124,7 +125,7 @@ void TRI_LoadPolysets( const char *filename, polyset_t **ppPSET, int *numpsets )
 
 	iLevel = 0;
 
-	fread( &magic, sizeof( int ), 1, input );
+	assert(fread( &magic, sizeof( int ), 1, input ));
 	if ( BigLong( magic ) != MAGIC ) {
 		Error( "%s is not a Alias object separated triangle file, magic number is wrong.", filename );
 	}
@@ -148,7 +149,7 @@ void TRI_LoadPolysets( const char *filename, polyset_t **ppPSET, int *numpsets )
 					/* a file, but this does allow you to do error checking */
 					/* (which I'm not doing) on a per character basis.      */
 					++i;
-					fread( &( name[i] ), sizeof( char ), 1, input );
+					assert(fread( &( name[i] ), sizeof( char ), 1, input ));
 				} while ( name[i] != '\0' );
 
 				if ( i != 0 ) {
@@ -161,7 +162,7 @@ void TRI_LoadPolysets( const char *filename, polyset_t **ppPSET, int *numpsets )
 
 //				indent();
 //				fprintf(stdout,"OBJECT START: %s\n",name);
-				fread( &count, sizeof( int ), 1, input );
+				assert(fread( &count, sizeof( int ), 1, input ));
 				count = BigLong( count );
 				++iLevel;
 				if ( count != 0 ) {
@@ -171,7 +172,7 @@ void TRI_LoadPolysets( const char *filename, polyset_t **ppPSET, int *numpsets )
 					i = -1;
 					do {
 						++i;
-						fread( &( tex[i] ), sizeof( char ), 1, input );
+						assert(fread( &( tex[i] ), sizeof( char ), 1, input ));
 					} while ( tex[i] != '\0' );
 
 /*
@@ -199,7 +200,7 @@ void TRI_LoadPolysets( const char *filename, polyset_t **ppPSET, int *numpsets )
 				i = -1;
 				do {
 					++i;
-					fread( &( name[i] ), sizeof( char ), 1, input );
+					assert(fread( &( name[i] ), sizeof( char ), 1, input ));
 				} while ( name[i] != '\0' );
 
 				if ( i != 0 ) {

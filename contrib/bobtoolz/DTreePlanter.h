@@ -20,6 +20,7 @@
 #ifndef __DTREE_H__
 #define __DTREE_H__
 
+#include <cassert>
 #include "qerplugin.h"
 #include "signal/isignal.h"
 #include "string/string.h"
@@ -83,7 +84,7 @@ public:
                 buf[len] = '\0';
                 // parser will do the cleanup, dont delete.
 
-                fread(buf, len, 1, file);
+                assert(fread(buf, len, 1, file));
 
                 CScriptParser parser;
                 parser.SetScript(buf);

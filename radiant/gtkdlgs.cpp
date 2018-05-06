@@ -49,6 +49,7 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <uilib/uilib.h>
+#include <cassert>
 
 #include "os/path.h"
 #include "math/aabb.h"
@@ -788,7 +789,7 @@ static void DoGtkTextEditor(const char *filename, guint cursorpos)
         void *old_filename;
 
         rewind(f);
-        fread(buf, 1, len, f);
+        assert(fread(buf, 1, len, f));
 
         gtk_window_set_title(text_editor, filename);
 

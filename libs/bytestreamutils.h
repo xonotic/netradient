@@ -151,7 +151,7 @@ inline float istream_read_float32_be( InputStreamType& istream ){
 
 template<typename InputStreamType>
 inline typename InputStreamType::byte_type istream_read_byte( InputStreamType& istream ){
-	typename InputStreamType::byte_type b;
+	typename InputStreamType::byte_type b = 0;
 	istream.read( &b, sizeof( typename InputStreamType::byte_type ) );
 	return b;
 }

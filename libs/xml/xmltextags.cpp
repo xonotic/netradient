@@ -22,6 +22,7 @@
 #include "xmltextags.h"
 
 #include <string>
+#include <cassert>
 
 #include "qerplugin.h"
 #include "stream/stringstream.h"
@@ -155,6 +156,10 @@ bool XmlTagBuilder::AddShaderNode( const char* shader, TextureType textureType, 
 			break;
 		case TEXTURE:
 			newnode = xmlNewNode( NULL, (xmlChar*)"texture" );
+			break;
+		default:
+			assert(false);
+			break;
 		};
 
 		newnode = xmlDocCopyNode( newnode, doc, 1 );

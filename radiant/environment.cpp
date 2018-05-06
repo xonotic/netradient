@@ -197,6 +197,7 @@ bool portable_app_setup()
 #include <unistd.h>
 
 #include <glib.h>
+#include <cassert>
 
 const char *LINK_NAME =
 #if GDEF_OS_LINUX
@@ -242,10 +243,10 @@ void environment_init(int argc, char const *argv[])
     // Important: must be done before calling gtk_init().
     char *loginname;
     struct passwd *pw;
-    seteuid(getuid());
+    assert(seteuid(getuid()) == 0);
     if (geteuid() == 0 && (loginname = getlogin()) != 0 &&
         (pw = getpwnam(loginname)) != 0) {
-        setuid(pw->pw_uid);
+        assert(setuid(pw->pw_uid) == 0);
     }
 
     args_init(argc, argv);

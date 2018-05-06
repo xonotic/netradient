@@ -33,6 +33,7 @@
    ----------------------------------------------------------------------------- */
 
 /* dependencies */
+#include <assert.h>
 #include "picointernal.h"
 #include "globaldefs.h"
 
@@ -228,6 +229,7 @@ static picoModel_t *_ms3d_load( PM_PARAMS_LOAD ){
 
 	/* get number of vertices */
 	bufptr = GetWord( bufptr,&numVerts );
+	assert(bufptr);
 	ptrToVerts = bufptr;
 
 #ifdef DEBUG_PM_MS3D
@@ -291,6 +293,7 @@ static picoModel_t *_ms3d_load( PM_PARAMS_LOAD ){
 	}
 	/* get number of groups */
 	bufptr = GetWord( bufptr,&numGroups );
+	assert(bufptr);
 //	ptrToGroups = bufptr;
 
 #ifdef DEBUG_PM_MS3D
@@ -332,6 +335,7 @@ static picoModel_t *_ms3d_load( PM_PARAMS_LOAD ){
 
 			/* get triangle index */
 			bufptr = GetWord( bufptr,(int *)&triangleIndex );
+			assert(bufptr);
 
 			/* get ptr to triangle data */
 			triangle = (TMsTriangle *)( ptrToTris + ( sizeof( TMsTriangle ) * triangleIndex ) );
@@ -376,6 +380,7 @@ static picoModel_t *_ms3d_load( PM_PARAMS_LOAD ){
 	}
 	/* get number of materials */
 	bufptr = GetWord( bufptr,&numMaterials );
+	assert(bufptr);
 
 #ifdef DEBUG_PM_MS3D
 	printf( "NumMaterials: %d\n",numMaterials );

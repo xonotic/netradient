@@ -2173,7 +2173,6 @@ int PicoRemapModel( picoModel_t *model, char *remapFile ){
 				}
 				/* remap shader's ambient color */
 				else if ( !_pico_stricmp( p->token,"ambient" ) ) {
-					picoColor_t color;
 					picoVec3_t v;
 
 					/* get vector from parser */
@@ -2182,16 +2181,13 @@ int PicoRemapModel( picoModel_t *model, char *remapFile ){
 					}
 
 					/* store as color */
-					color[ 0 ] = (picoByte_t)v[ 0 ];
-					color[ 1 ] = (picoByte_t)v[ 1 ];
-					color[ 2 ] = (picoByte_t)v[ 2 ];
+					picoColor_t color = {(picoByte_t) v[0], (picoByte_t) v[1], (picoByte_t) v[2]};
 
 					/* set new ambient color */
 					PicoSetShaderAmbientColor( shader,color );
 				}
 				/* remap shader's diffuse color */
 				else if ( !_pico_stricmp( p->token,"diffuse" ) ) {
-					picoColor_t color;
 					picoVec3_t v;
 
 					/* get vector from parser */
@@ -2200,16 +2196,13 @@ int PicoRemapModel( picoModel_t *model, char *remapFile ){
 					}
 
 					/* store as color */
-					color[ 0 ] = (picoByte_t)v[ 0 ];
-					color[ 1 ] = (picoByte_t)v[ 1 ];
-					color[ 2 ] = (picoByte_t)v[ 2 ];
+					picoColor_t color = {(picoByte_t) v[0], (picoByte_t) v[1], (picoByte_t) v[2]};
 
 					/* set new ambient color */
 					PicoSetShaderDiffuseColor( shader,color );
 				}
 				/* remap shader's specular color */
 				else if ( !_pico_stricmp( p->token,"specular" ) ) {
-					picoColor_t color;
 					picoVec3_t v;
 
 					/* get vector from parser */
@@ -2218,9 +2211,7 @@ int PicoRemapModel( picoModel_t *model, char *remapFile ){
 					}
 
 					/* store as color */
-					color[ 0 ] = (picoByte_t)v[ 0 ];
-					color[ 1 ] = (picoByte_t)v[ 1 ];
-					color[ 2 ] = (picoByte_t)v[ 2 ];
+					picoColor_t color = {(picoByte_t) v[0], (picoByte_t) v[1], (picoByte_t) v[2]};
 
 					/* set new ambient color */
 					PicoSetShaderSpecularColor( shader,color );

@@ -558,7 +558,7 @@ void InitDirectory(const char *directory, ArchiveModules &archiveModules)
                 }
 
                 const char *ext = strrchr(name, '.');
-                char tmppath[PATH_MAX];
+                char tmppath[PATH_MAX + 1];
 
                 if (is_dpk_vfs) {
                     if (!!ext && !string_compare_nocase_upper(ext, ".dpkdir")) {

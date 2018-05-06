@@ -26,6 +26,7 @@
    please contact Id Software immediately at info@idsoftware.com.
  */
 
+#include <cassert>
 #include "points.h"
 
 #include "debugging/debugging.h"
@@ -274,7 +275,7 @@ int LoadFile(const char *filename, void **bufferptr)
         return -1;
     }
 
-    fread(*bufferptr, 1, len, f);
+    assert(fread(*bufferptr, 1, len, f));
     fclose(f);
 
     // we need to end the buffer with a 0

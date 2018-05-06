@@ -142,7 +142,7 @@ bool EntityClassDoom3_parseUnknown(Tokeniser &tokeniser)
 
     std::size_t depth = 1;
     for (;;) {
-        const char *token;
+        const char *token = nullptr;
         PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, token));
         if (string_equal(token, "}")) {
             if (--depth == 0) {
@@ -196,7 +196,7 @@ void Model_resolveInheritance(const char *name, Model &model)
 
 bool EntityClassDoom3_parseModel(Tokeniser &tokeniser)
 {
-    const char *name;
+    const char *name = nullptr;
     PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, name));
 
     Model &model = g_models[name];
@@ -235,7 +235,7 @@ bool EntityClassDoom3_parseModel(Tokeniser &tokeniser)
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseToken(tokeniser));
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseToken(tokeniser, "("));
             for (;;) {
-                const char *end;
+                const char *end = nullptr;
                 PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, end));
                 if (string_equal(end, ")")) {
                     tokeniser.nextLine();
@@ -245,11 +245,11 @@ bool EntityClassDoom3_parseModel(Tokeniser &tokeniser)
         } else if (string_equal(parameter, "anim")) {
             CopiedString animName;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, animName));
-            const char *animFile;
+            const char *animFile = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, animFile));
             model.m_anims.insert(Model::Anims::value_type(animName, animFile));
 
-            const char *token;
+            const char *token = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, token));
 
             while (string_equal(token, ",")) {
@@ -259,7 +259,7 @@ bool EntityClassDoom3_parseModel(Tokeniser &tokeniser)
 
             if (string_equal(token, "{")) {
                 for (;;) {
-                    const char *end;
+                    const char *end = nullptr;
                     PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, end));
                     if (string_equal(end, "}")) {
                         tokeniser.nextLine();
@@ -352,14 +352,14 @@ static bool EntityClass_parse(EntityClass &entityClass, Tokeniser &tokeniser)
             tokeniser.nextLine();
             break;
         } else if (string_equal(key, "model")) {
-            const char *token;
+            const char *token = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, token));
             entityClass.fixedsize = true;
             StringOutputStream buffer(256);
             buffer << PathCleaned(token);
             entityClass.m_modelpath = buffer.c_str();
         } else if (string_equal(key, "editor_color")) {
-            const char *value;
+            const char *value = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, value));
             if (!string_empty(value)) {
                 entityClass.colorSpecified = true;
@@ -371,7 +371,7 @@ static bool EntityClass_parse(EntityClass &entityClass, Tokeniser &tokeniser)
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseToken(tokeniser));
         } else if (string_equal(key, "editor_mins")) {
             entityClass.sizeSpecified = true;
-            const char *value;
+            const char *value = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, value));
             if (!string_empty(value) && !string_equal(value, "?")) {
                 entityClass.fixedsize = true;
@@ -380,7 +380,7 @@ static bool EntityClass_parse(EntityClass &entityClass, Tokeniser &tokeniser)
             }
         } else if (string_equal(key, "editor_maxs")) {
             entityClass.sizeSpecified = true;
-            const char *value;
+            const char *value = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, value));
             if (!string_empty(value) && !string_equal(value, "?")) {
                 entityClass.fixedsize = true;
@@ -456,7 +456,7 @@ static bool EntityClass_parse(EntityClass &entityClass, Tokeniser &tokeniser)
         } else if (string_equal(key, "inherit")) {
             entityClass.inheritanceResolved = false;
             ASSERT_MESSAGE(entityClass.m_parent.empty(), "only one 'inherit' supported per entityDef");
-            const char *token;
+            const char *token = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, token));
             entityClass.m_parent.push_back(token);
         }
@@ -489,7 +489,7 @@ static bool EntityClass_parse(EntityClass &entityClass, Tokeniser &tokeniser)
             }
             EntityClassAttribute &attribute = EntityClass_insertAttribute(entityClass, key).second;
             attribute.m_type = "string";
-            const char *value;
+            const char *value = nullptr;
             PARSE_RETURN_FALSE_IF_FAIL(EntityClassDoom3_parseString(tokeniser, value));
             if (string_equal(value, "}")) { // hack for quake4 powerups.def bug
                 globalErrorStream() << "entityDef " << makeQuoted(entityClass.m_name.c_str()) << " key "

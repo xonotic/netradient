@@ -34,9 +34,7 @@ bool LoadExclusionList(char *filename, std::list<Str> *exclusionList)
         int cnt = 0;
         while (!feof(eFile)) {
             memset(buffer, 0, 256);
-            fscanf(eFile, "%s\n", buffer);
-
-            if (strlen(buffer) > 0) {
+            if (fscanf(eFile, "%s\n", buffer)) {
                 exclusionList->push_back(buffer);
             } else {
                 cnt++;
@@ -60,9 +58,7 @@ bool LoadGList(char *filename, ui::ListStore loadlist)
         int cnt = 0;
         while (!feof(eFile)) {
             memset(buffer, 0, 256);
-            fscanf(eFile, "%s\n", buffer);
-
-            if (strlen(buffer) > 0) {
+            if (fscanf(eFile, "%s\n", buffer)) {
                 char *buffer2 = new char[strlen(buffer) + 1];
                 strcpy(buffer2, buffer);
                 loadlist.append(0, buffer2);

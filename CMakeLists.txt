@@ -109,6 +109,9 @@ add_definitions(-DRADIANT_PATCH_VERSION="${NetRadiant_VERSION_PATCH}")
 
 add_definitions(-DRADIANT_ABOUTMSG="${NetRadiant_ABOUT}")
 
+add_definitions(-D_GLIBCXX_DEBUG=1)
+add_definitions(-D_GLIBCXX_DEBUG_PEDANTIC=1)
+
 if (NOT CMAKE_BUILD_TYPE MATCHES Release)
     add_definitions(-D_DEBUG=1)
 endif ()
