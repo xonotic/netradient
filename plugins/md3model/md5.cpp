@@ -303,7 +303,7 @@ bool MD5Model_parse(Model &model, Tokeniser &tokeniser)
         tokeniser.nextLine();
 
         MD5_RETURN_FALSE_IF_FAIL(MD5_parseToken(tokeniser, "shader"));
-        const char *shader;
+        const char *shader = nullptr;
         MD5_RETURN_FALSE_IF_FAIL(MD5_parseString(tokeniser, shader));
         surface.setShader(shader);
         tokeniser.nextLine();

@@ -39,7 +39,7 @@ static int ReadString( FILE *fp, char *buffer ){
 
 	do
 	{
-		fread( &buffer[i], 1, sizeof( char ), fp );
+		assert(fread( &buffer[i], 1, sizeof( char ), fp ));
 		bytesRead++;
 	} while ( buffer[i++] != 0 );
 	buffer[i] = 0;
@@ -67,10 +67,10 @@ static void LoadMapName( FILE *fp, char *buffer, int thisChunkLen ){
 		switch ( chunkID )
 		{
 		case _3DS_CHUNK_MAT_MAPNAME:
-			fread( buffer, chunkLen - 6, 1, fp );
+			assert(fread( buffer, chunkLen - 6, 1, fp ));
 			break;
 		default:
-			fread( s_buffer, chunkLen - 6, 1, fp );
+			assert(fread( s_buffer, chunkLen - 6, 1, fp ));
 			break;
 		}
 		bytesRead += chunkLen;
@@ -99,7 +99,7 @@ static void LoadMaterialList( FILE *fp, long thisChunkLen, _3DSMaterial_t *pMat 
 		switch ( chunkID )
 		{
 		case _3DS_CHUNK_MAT_NAME:
-			fread( mat.name, chunkLen - 6, 1, fp );
+			assert(fread( mat.name, chunkLen - 6, 1, fp ));
 			if ( s_verbose ) {
 				printf( "        found mat name '%s'\n", mat.name );
 			}
@@ -135,7 +135,7 @@ static void LoadMaterialList( FILE *fp, long thisChunkLen, _3DSMaterial_t *pMat 
 			}
 			break;
 		default:
-			fread( s_buffer, chunkLen - 6, 1, fp );
+			assert(fread( s_buffer, chunkLen - 6, 1, fp ));
 			break;
 		}
 
@@ -208,9 +208,9 @@ static void LoadMeshMaterialGroup( FILE *fp, long thisChunkLen, _3DSMeshMaterial
 
 	ReadString( fp, mmg.name );
 
-	fread( &mmg.numFaces, sizeof( mmg.numFaces ), 1, fp );
+	assert(fread( &mmg.numFaces, sizeof( mmg.numFaces ), 1, fp ));
 	mmg.pFaces = malloc( sizeof( mmg.pFaces[0] ) * mmg.numFaces );
-	fread( mmg.pFaces, sizeof( mmg.pFaces[0] ), mmg.numFaces, fp );
+	assert(fread( mmg.pFaces, sizeof( mmg.pFaces[0] ), mmg.numFaces, fp ));
 
 	if ( s_verbose ) {
 		printf( "    >>> MESH MATERIAL GROUP '%s' (%d faces)\n", mmg.name, mmg.numFaces );
@@ -253,11 +253,11 @@ static void LoadNamedTriObject( FILE *fp, long thisChunkLen, _3DSTriObject_t *pT
 			numMeshMaterialGroups++;
 			break;
 		case _3DS_CHUNK_FACE_ARRAY:
-			fread( &triObj.numFaces, sizeof( triObj.numFaces ), 1, fp );
+			assert(fread( &triObj.numFaces, sizeof( triObj.numFaces ), 1, fp ));
 			assert( triObj.pFaces == 0 );
 
 			triObj.pFaces = malloc( sizeof( triObj.pFaces[0] ) * triObj.numFaces );
-			fread( triObj.pFaces, sizeof( triObj.pFaces[0] ), triObj.numFaces, fp );
+			assert(fread( triObj.pFaces, sizeof( triObj.pFaces[0] ), triObj.numFaces, fp ));
 			bytesRead += sizeof( triObj.numFaces ) + triObj.numFaces * sizeof( triObj.pFaces[0] ) + 6;
 
 			if ( s_verbose ) {
@@ -270,9 +270,9 @@ static void LoadNamedTriObject( FILE *fp, long thisChunkLen, _3DSTriObject_t *pT
 
 			break;
 		case _3DS_CHUNK_POINT_ARRAY:
-			fread( &triObj.numPoints, sizeof( triObj.numPoints ), 1, fp );
+			assert(fread( &triObj.numPoints, sizeof( triObj.numPoints ), 1, fp ));
 			triObj.pPoints = malloc( sizeof( triObj.pPoints[0] ) * triObj.numPoints );
-			fread( triObj.pPoints, sizeof( triObj.pPoints[0] ), triObj.numPoints, fp );
+			assert(fread( triObj.pPoints, sizeof( triObj.pPoints[0] ), triObj.numPoints, fp ));
 			bytesRead += sizeof( triObj.numPoints ) + triObj.numPoints * sizeof( triObj.pPoints[0] ) + 6;
 
 			// flip points around into our coordinate system
@@ -298,9 +298,9 @@ static void LoadNamedTriObject( FILE *fp, long thisChunkLen, _3DSTriObject_t *pT
 			}
 			break;
 		case _3DS_CHUNK_TEX_VERTS:
-			fread( &triObj.numTexVerts, sizeof( triObj.numTexVerts ), 1, fp );
+			assert(fread( &triObj.numTexVerts, sizeof( triObj.numTexVerts ), 1, fp ));
 			triObj.pTexVerts = malloc( sizeof( triObj.pTexVerts[0] ) * triObj.numTexVerts );
-			fread( triObj.pTexVerts, sizeof( triObj.pTexVerts[0] ), triObj.numTexVerts, fp );
+				assert(fread( triObj.pTexVerts, sizeof( triObj.pTexVerts[0] ), triObj.numTexVerts, fp ));
 			bytesRead += sizeof( triObj.numTexVerts ) + sizeof( triObj.pTexVerts[0] ) * triObj.numTexVerts + 6;
 
 			if ( s_verbose ) {
@@ -312,7 +312,7 @@ static void LoadNamedTriObject( FILE *fp, long thisChunkLen, _3DSTriObject_t *pT
 			}
 			break;
 		default:
-			fread( s_buffer, chunkLen - 6, 1, fp );
+			assert(fread( s_buffer, chunkLen - 6, 1, fp ));
 			bytesRead += chunkLen;
 			break;
 		}
@@ -371,7 +371,7 @@ static void LoadNamedObject( FILE *fp, long thisChunkLen, _3DSNamedObject_t *pNO
 			numTriObjects++;
 			break;
 		default:
-			fread( s_buffer, chunkLen - 6, 1, fp );
+			assert(fread( s_buffer, chunkLen - 6, 1, fp ));
 			break;
 		}
 
@@ -423,7 +423,7 @@ static void LoadEditChunk( FILE *fp, long thisChunkLen, _3DSEditChunk_t *pEC ){
 			break;
 		case _3DS_CHUNK_MESH_VERSION:
 		default:
-			fread( s_buffer, chunkLen - 6, 1, fp );
+			assert(fread( s_buffer, chunkLen - 6, 1, fp ));
 			break;
 		}
 
@@ -485,10 +485,10 @@ static void Load3DS( const char *filename, _3DS_t *p3DS, qboolean verbose ){
 			LoadEditChunk( fp, chunkLen - 6, &editChunk );
 			break;
 		case _3DS_CHUNK_KEYFRAME_DATA:
-			fread( s_buffer, chunkLen - 6, 1, fp );
+			assert(fread( s_buffer, chunkLen - 6, 1, fp ));
 			break;
 		default:
-			fread( s_buffer, chunkLen - 6, 1, fp );
+			assert(fread( s_buffer, chunkLen - 6, 1, fp ));
 			break;
 		}
 	}

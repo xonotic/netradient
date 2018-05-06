@@ -21,6 +21,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <cassert>
 
 #include "misc.h"
 
@@ -244,10 +245,10 @@ void CPortals::Load()
 
     in = fopen(fn, "rt");
 
-    fgets(buf, LINE_BUF, in);
-    fgets(buf, LINE_BUF, in);
-    fgets(buf, LINE_BUF, in);
-    fgets(buf, LINE_BUF, in);
+    assert(fgets(buf, LINE_BUF, in));
+    assert(fgets(buf, LINE_BUF, in));
+    assert(fgets(buf, LINE_BUF, in));
+    assert(fgets(buf, LINE_BUF, in));
 
     unsigned int n;
     for (n = 0; n < p_count; n++) {

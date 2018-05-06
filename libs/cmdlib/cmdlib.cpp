@@ -76,11 +76,11 @@ bool Q_Exec( const char *cmd, char *cmdline, const char *, bool, bool waitfor ){
 		printf( "Running system...\n" );
 		printf( "Command: %s\n", pCmd );
 #endif
-		system( pCmd );
+		int ret = system( pCmd );
 #if GDEF_DEBUG
 		printf( "system() returned\n" );
 #endif
-		_exit( 0 );
+		_exit( ret );
 		break;
 	}
 	return true;

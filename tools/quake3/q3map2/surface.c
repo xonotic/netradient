@@ -34,6 +34,7 @@
 
 
 /* dependencies */
+#include <assert.h>
 #include "q3map2.h"
 
 
@@ -783,7 +784,7 @@ byte GetShaderIndexForPoint( indexMap_t *im, vec3_t eMins, vec3_t eMaxs, vec3_t 
 
 #define snprintf_ignore(s, n, format, ...) do { \
     size_t __n = snprintf(s, n, format, __VA_ARGS__); \
-    if (n >= n) {} /* truncated, ignore */ \
+    if (__n >= n) { assert(0); } /* truncated, ignore */ \
 } while (0)
 
 /*

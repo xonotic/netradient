@@ -43,6 +43,7 @@
 #include "file.h"
 
 #include <stdlib.h>
+#include <cassert>
 
 #include "str.h"
 
@@ -120,7 +121,7 @@ bool save_var( const char *filename, const char *section, const char *key, const
 		len = ftell( rc );
 		rewind( rc );
 		buf = malloc( len );
-		fread( buf, len, 1, rc );
+        assert(fread( buf, len, 1, rc ));
 		old_rc.write( reinterpret_cast<MemStream::byte_type*>( buf ), len );
 		free( buf );
 		fclose( rc );

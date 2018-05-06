@@ -198,9 +198,9 @@ bool Q_Exec(const char *pCmd, bool bCreateConsole)
             // NOTE: we could use that to detect when a step finishes. But then it
             // would not work for remote compiling stuff.
 //      execlp (pCmd, pCmd, NULL);
-            system(pCmd);
+            int ret = system(pCmd);
             printf("system() returned");
-            _exit(0);
+            _exit(ret);
             break;
     }
     return true;

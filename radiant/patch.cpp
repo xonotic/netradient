@@ -2713,7 +2713,7 @@ void Patch::BuildVertexArray()
 
 
 class PatchFilterWrapper : public Filter {
-    bool m_active;
+    bool m_active = false;
     bool m_invert;
     PatchFilter &m_filter;
 public:

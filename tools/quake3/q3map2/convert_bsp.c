@@ -39,7 +39,7 @@
  */
 void PseudoCompileBSP( qboolean need_tree, const char *BSPFilePath, const char *surfaceFilePath ){
 	int models;
-	char modelValue[10];
+	char modelValue[12];
 	entity_t *entity;
 	face_t *faces;
 	tree_t *tree;

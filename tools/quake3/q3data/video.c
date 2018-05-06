@@ -249,7 +249,7 @@ void LoadSoundtrack( void ){
 	}
 	len = Q_filelength( f );
 	s_soundtrack = malloc( len );
-	fread( s_soundtrack, 1, len, f );
+	assert(fread( s_soundtrack, 1, len, f ));
 	fclose( f );
 
 	s_wavinfo = GetWavinfo( name, s_soundtrack, len );

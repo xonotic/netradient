@@ -330,13 +330,14 @@ struct CGameDialog_GameFile {
 void CGameDialog::CreateGlobalFrame(PreferencesPage &page)
 {
     std::vector<const char *> games;
-    games.reserve(mGames.size());
+    games.reserve(mGames.size() + 1);
     for (std::list<CGameDescription *>::iterator i = mGames.begin(); i != mGames.end(); ++i) {
         games.push_back((*i)->getRequiredKeyValue("name"));
     }
+    games.push_back(nullptr);
     page.appendCombo(
             "Select the game",
-            StringArrayRange(&(*games.begin()), &(*games.end())),
+            StringArrayRange(&(*games.begin()), &(*--games.end())),
             make_property<CGameDialog_GameFile>(*this)
     );
     page.appendCheckBox("Startup", "Show Global Preferences", m_bGamePrompt);

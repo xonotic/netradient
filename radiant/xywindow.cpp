@@ -43,6 +43,7 @@
 
 #include <uilib/uilib.h>
 #include <gdk/gdkkeysyms.h>
+#include <cassert>
 
 #include "generic/callback.h"
 #include "string/string.h"
@@ -1545,6 +1546,8 @@ void XYWnd::XY_LoadBackgroundImage(const char *name)
             m_ix = 1;
             m_iy = 2;
             break;
+        default:
+            assert(false);
     }
 
     Vector3 min, max;

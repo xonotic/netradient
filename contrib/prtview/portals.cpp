@@ -69,7 +69,7 @@ bool CBspPortal::Build(char *def)
     char *c = def;
     unsigned int n;
     int dummy1, dummy2;
-    int res_cnt, i;
+    int res_cnt = 0, i;
 
     if (portals.hint_flags) {
         res_cnt = sscanf(def, "%u %d %d %d", &point_count, &dummy1, &dummy2, (int *) &hint);

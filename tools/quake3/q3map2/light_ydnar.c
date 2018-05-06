@@ -34,6 +34,7 @@
 
 
 /* dependencies */
+#include <assert.h>
 #include "q3map2.h"
 
 
@@ -1742,14 +1743,11 @@ static qboolean SubmapRawLuxel( rawLightmap_t *lm, int x, int y, float bx, float
 	}
 	else {
 		Sys_FPrintf( SYS_WRN, "WARNING: Spurious lightmap S vector\n" );
+		assert(0);
 	}
 
-	if (origin && origin2) {
-		VectorSubtract(origin2, origin, originVecs[0]);
-	}
+	VectorSubtract( origin2, origin, originVecs[ 0 ] );
 	//%	VectorSubtract( normal2, normal, normalVecs[ 0 ] );
-
-	origin = origin2 = NULL;
 
 	/* calulate y vector */
 	if ( ( y < ( lm->sh - 1 ) && bx >= 0.0f ) || ( y == 0 && bx <= 0.0f ) ) {
@@ -1770,11 +1768,10 @@ static qboolean SubmapRawLuxel( rawLightmap_t *lm, int x, int y, float bx, float
 	}
 	else {
 		Sys_FPrintf( SYS_WRN, "WARNING: Spurious lightmap T vector\n" );
+		assert(0);
 	}
 
-	if (origin && origin2) {
-		VectorSubtract(origin2, origin, originVecs[1]);
-	}
+	VectorSubtract( origin2, origin, originVecs[ 1 ] );
 
 	/* calculate new origin */
 	for ( i = 0; i < 3; i++ )

@@ -1,4 +1,5 @@
 #include <globaldefs.h>
+#include <cassert>
 #include "bsploader.h"
 #include "dialogs/dialogs-gtk.h"
 #include "cmdlib.h"
@@ -66,7 +67,7 @@ bool LoadFile(const char *filename, byte **bufferptr)
     length = FileLength(f);
     buffer = new byte[length + 1];
     buffer[length] = 0;
-    fread(buffer, 1, length, f);
+    assert(fread(buffer, 1, length, f));
     fclose(f);
 
     *bufferptr = buffer;
