@@ -325,7 +325,7 @@ namespace {
     }
 }
 
-struct ModelResource : public Resource {
+struct ModelResource final : public Resource {
     NodeSmartReference m_model;
     const CopiedString m_originalName;
     CopiedString m_path;

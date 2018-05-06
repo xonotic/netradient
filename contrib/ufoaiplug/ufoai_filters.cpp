@@ -90,13 +90,11 @@ public:
 };
 
 class ForEachFace : public BrushVisitor {
-    Brush &m_brush;
 public:
     mutable int m_contentFlagsVis;
     mutable int m_surfaceFlagsVis;
 
-    ForEachFace(Brush &brush)
-            : m_brush(brush)
+    ForEachFace()
     {
         m_contentFlagsVis = -1;
         m_surfaceFlagsVis = -1;
@@ -140,7 +138,7 @@ public:
     {
         Brush *brush = Node_getBrush(path.top());
         if (brush != 0) {
-            ForEachFace faces(*brush);
+            ForEachFace faces{};
             brush->forEachFace(faces);
             // contentflags?
             if (m_content) {

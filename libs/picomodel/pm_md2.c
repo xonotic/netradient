@@ -50,7 +50,7 @@ const int MD2_MAX_TRIANGLES       = 4096;
 const int MD2_MAX_VERTS           = 2048;
 const int MD2_MAX_FRAMES          = 512;
 const int MD2_MAX_MD2SKINS        = 32;
-const int MD2_MAX_SKINNAME        = 64;
+#define MD2_MAX_SKINNAME 64
 
 typedef struct index_LUT_s
 {
@@ -491,7 +491,7 @@ static picoModel_t *_md2_load( PM_PARAMS_LOAD ){
 				continue;
 			}
 
-			else if ( ( p_index_LUT[p_md2Triangle->index_xyz[j]].next == NULL ) ) { // Not equal to Main entry, and no LL entry
+			else if ( p_index_LUT[p_md2Triangle->index_xyz[j]].next == NULL ) { // Not equal to Main entry, and no LL entry
 				// Add first entry of LL from Main
 				p_index_LUT2 = (index_LUT_t *)_pico_alloc( sizeof( index_LUT_t ) );
 				if ( p_index_LUT2 == NULL ) {

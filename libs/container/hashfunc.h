@@ -182,7 +182,7 @@ inline ub4 hash(
 	const UB1Traits& ub1traits,
 	const UB4x1Traits& ub4x1traits
 	){
-	register ub4 a,b,c,len;
+	ub4 a,b,c,len;
 
 	/* Set up the internal state */
 	len = length;
@@ -203,17 +203,17 @@ inline ub4 hash(
 	c += length;
 	switch ( len )          /* all the case statements fall through */
 	{
-	case 11: c += ( ( ub4 ) UB1Traits::as_ub1( k[10] ) << 24 ); __attribute((fallthrough));
-	case 10: c += ( ( ub4 ) UB1Traits::as_ub1( k[9] ) << 16 ); __attribute((fallthrough));
-	case 9: c += ( ( ub4 ) UB1Traits::as_ub1( k[8] ) << 8 ); __attribute((fallthrough));
+	case 11: c += ( ( ub4 ) UB1Traits::as_ub1( k[10] ) << 24 ); [[clang::fallthrough]];
+	case 10: c += ( ( ub4 ) UB1Traits::as_ub1( k[9] ) << 16 ); [[clang::fallthrough]];
+	case 9: c += ( ( ub4 ) UB1Traits::as_ub1( k[8] ) << 8 ); [[clang::fallthrough]];
 	/* the first byte of c is reserved for the length */
-	case 8: b += ( ( ub4 ) UB1Traits::as_ub1( k[7] ) << 24 ); __attribute((fallthrough));
-	case 7: b += ( ( ub4 ) UB1Traits::as_ub1( k[6] ) << 16 ); __attribute((fallthrough));
-	case 6: b += ( ( ub4 ) UB1Traits::as_ub1( k[5] ) << 8 ); __attribute((fallthrough));
-	case 5: b += UB1Traits::as_ub1( k[4] );  __attribute((fallthrough));
-	case 4: a += ( ( ub4 ) UB1Traits::as_ub1( k[3] ) << 24 ); __attribute((fallthrough));
-	case 3: a += ( ( ub4 ) UB1Traits::as_ub1( k[2] ) << 16 ); __attribute((fallthrough));
-	case 2: a += ( ( ub4 ) UB1Traits::as_ub1( k[1] ) << 8 ); __attribute((fallthrough));
+	case 8: b += ( ( ub4 ) UB1Traits::as_ub1( k[7] ) << 24 ); [[clang::fallthrough]];
+	case 7: b += ( ( ub4 ) UB1Traits::as_ub1( k[6] ) << 16 ); [[clang::fallthrough]];
+	case 6: b += ( ( ub4 ) UB1Traits::as_ub1( k[5] ) << 8 ); [[clang::fallthrough]];
+	case 5: b += UB1Traits::as_ub1( k[4] );  [[clang::fallthrough]];
+	case 4: a += ( ( ub4 ) UB1Traits::as_ub1( k[3] ) << 24 ); [[clang::fallthrough]];
+	case 3: a += ( ( ub4 ) UB1Traits::as_ub1( k[2] ) << 16 ); [[clang::fallthrough]];
+	case 2: a += ( ( ub4 ) UB1Traits::as_ub1( k[1] ) << 8 ); [[clang::fallthrough]];
 	case 1: a += UB1Traits::as_ub1( k[0] );
 		/* case 0: nothing left to add */
 	}
@@ -240,7 +240,7 @@ inline ub4 hash2(
 	ub4 initval, /* the previous hash, or an arbitrary value */
 	const UB4Traits& ub4traits
 	){
-	register ub4 a,b,c,len;
+	ub4 a,b,c,len;
 
 	/* Set up the internal state */
 	len = length;

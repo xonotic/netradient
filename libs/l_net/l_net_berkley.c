@@ -79,7 +79,7 @@ static char my_tcpip_address[NET_NAMELEN];
 
 const int DEFAULTnet_hostport = 26000;
 
-const int MAXHOSTNAMELEN = 256;
+#define MAXHOSTNAMELEN 256
 
 static int net_acceptsocket = -1;       // socket for fielding new connections
 static int net_controlsocket;

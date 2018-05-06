@@ -66,7 +66,7 @@ public:
     virtual TreeXMLImporter &child() = 0;
 };
 
-class SubPrimitiveImporter : public TreeXMLImporter {
+class SubPrimitiveImporter final : public TreeXMLImporter {
     XMLImporter *m_importer;
 public:
     SubPrimitiveImporter(XMLImporter *importer) : m_importer(importer)
@@ -94,7 +94,7 @@ public:
     }
 };
 
-class PrimitiveImporter : public TreeXMLImporter {
+class PrimitiveImporter final : public TreeXMLImporter {
     scene::Node &m_parent;
     XMLImporter *m_importer;
     char m_child[sizeof(SubPrimitiveImporter)];
@@ -149,7 +149,7 @@ public:
     }
 };
 
-class EntityImporter : public TreeXMLImporter {
+class EntityImporter final : public TreeXMLImporter {
     scene::Node &m_parent;
     char m_node[sizeof(NodeSmartReference)];
     char m_child[sizeof(PrimitiveImporter)];

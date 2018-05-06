@@ -70,53 +70,35 @@ namespace detail {
 namespace detail {
 
 	template<class Type>
+	struct ConvertToOpaque {
+	};
+
+	template<class Type>
 	struct ConvertFromOpaque {
-	};
-
-	// reference
-
-	template<class T>
-	inline const void *convertToOpaque(const T &t) {
-		return &t;
-	}
-
-	template<class T>
-	struct ConvertFromOpaque<const T &> {
-		static T const &apply(void *p) {
-			return *static_cast<const T *>(p);
-		}
-	};
-
-	template<class T>
-	inline void *convertToOpaque(T &t) {
-		return &t;
-	}
-
-	template<class T>
-	struct ConvertFromOpaque<T &> {
-		static T &apply(void *p) {
-			return *static_cast<T *>( p );
-		}
 	};
 
 	// pointer
 
 	template<class T>
-	inline const void *convertToOpaque(const T *t) {
-		return t;
-	}
-
-	template<class T>
-	struct ConvertFromOpaque<const T *> {
-		static const T *apply(void *p) {
-			return static_cast<const T *>(p);
+	struct ConvertToOpaque<T const *> {
+		static void const *apply(const T *t) {
+			return t;
 		}
 	};
 
 	template<class T>
-	inline void *convertToOpaque(T *t) {
-		return t;
-	}
+	struct ConvertFromOpaque<T const *> {
+		static T const *apply(void const *p) {
+			return static_cast<T const *>(p);
+		}
+	};
+
+	template<class T>
+	struct ConvertToOpaque<T *> {
+		static void *apply(T *t) {
+			return t;
+		}
+	};
 
 	template<class T>
 	struct ConvertFromOpaque<T *> {
@@ -125,35 +107,35 @@ namespace detail {
 		}
 	};
 
-	// function pointer
+	// reference
 
-	template<class R, class... Ts>
-	inline const void *convertToOpaque(R(*const &t)(Ts...)) {
-		return &t;
-	}
-
-	template<class R, class... Ts>
-	struct ConvertFromOpaque<R(*const &)(Ts...)> {
-		using Type = R(*)(Ts...);
-
-		static Type const &apply(void *p) {
-			return *static_cast<Type *>(p);
+	template<class T>
+	struct ConvertToOpaque<T const &> {
+		static void const *apply(T const &t) {
+			return &t;
 		}
 	};
 
-    template<class R, class... Ts>
-    inline void *convertToOpaque(R(*&t)(Ts...)) {
-        return &t;
-    }
+	template<class T>
+	struct ConvertFromOpaque<T const &> {
+		static T const &apply(void const *p) {
+			return *static_cast<T const *>(p);
+		}
+	};
 
-    template<class R, class... Ts>
-    struct ConvertFromOpaque<R(*&)(Ts...)> {
-        using Type = R(*)(Ts...);
+	template<class T>
+	struct ConvertToOpaque<T &> {
+		static void *apply(T &t) {
+			return &t;
+		}
+	};
 
-        static Type &apply(void *p) {
-            return *static_cast<Type *>(p);
-        }
-    };
+	template<class T>
+	struct ConvertFromOpaque<T &> {
+		static T &apply(void *p) {
+			return *static_cast<T *>( p );
+		}
+	};
 
 	template<class Caller, class F>
 	class BindFirstOpaqueN;
@@ -182,7 +164,7 @@ namespace detail {
 		}
 
 		void *getEnvironment() const {
-			return const_cast<void *>(detail::convertToOpaque(firstBound));
+			return const_cast<void *>(detail::ConvertToOpaque<FirstBound>::apply(firstBound));
 		}
 	};
 

@@ -214,7 +214,7 @@ std::list<DWinding *> *CreateTrace(dleaf_t *leaf, int c, vis_header *header, byt
         }
     }
 
-    delete repeatlist;
+    delete[] repeatlist;
 
     return pointlist;
 }

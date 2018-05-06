@@ -39,7 +39,7 @@
 #include "traverselib.h"
 #include "render.h"
 
-class VectorLightList : public LightList {
+class VectorLightList final : public LightList {
     typedef std::vector<const RendererLight *> Lights;
     Lights m_lights;
 public:

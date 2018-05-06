@@ -1738,7 +1738,7 @@ void m4x4_solve_ge( m4x4_t matrix, vec4_t x ){
 #endif
 
 int matrix_solve_ge( vec_t* matrix, vec_t* aug, vec3_t x ){
-	const int N = 3;
+	#define N 3
 	int indx[N];
 	int c,r;
 	int i;

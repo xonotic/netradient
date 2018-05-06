@@ -719,7 +719,7 @@ void FinishShader( shaderInfo_t *si ){
 
 			/* determine error squared */
 			VectorSubtract( color, si->averageColor, delta );
-			delta[ 3 ] = color[ 3 ] - si->averageColor[ 3 ];
+			delta[ 3 ] = color[ 3 ] - 255;
 			dist = delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] + delta[ 2 ] * delta[ 2 ] + delta[ 3 ] * delta[ 3 ];
 			if ( dist < bestDist ) {
 				si->stFlat[ 0 ] = st[ 0 ];
@@ -1272,7 +1272,7 @@ static void ParseShaderFile( const char *filename ){
 			else if ( !Q_stricmp( token, "sun" ) /* sof2 */ || !Q_stricmp( token, "q3map_sun" ) || !Q_stricmp( token, "q3map_sunExt" ) ) {
 				float a, b;
 				sun_t       *sun;
-				qboolean ext;
+				qboolean ext = qfalse;
 
 
 				/* ydnar: extended sun directive? */

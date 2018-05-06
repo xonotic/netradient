@@ -198,7 +198,7 @@ namespace {
         }
     };
 
-    class AttributeImporter : public TreeXMLImporter {
+    class AttributeImporter final : public TreeXMLImporter {
         StringOutputStream &m_comment;
 
     public:
@@ -278,7 +278,7 @@ namespace {
     }
 
 
-    class ClassImporter : public TreeXMLImporter {
+    class ClassImporter final : public TreeXMLImporter {
         EntityClassCollector &m_collector;
         EntityClass *m_eclass;
         StringOutputStream m_comment;
@@ -358,7 +358,7 @@ namespace {
         }
     };
 
-    class ItemImporter : public TreeXMLImporter {
+    class ItemImporter final : public TreeXMLImporter {
     public:
         ItemImporter(ListAttributeType &list, const XMLElement &element)
         {
@@ -389,7 +389,7 @@ namespace {
         return string_equal(name, "item");
     }
 
-    class ListAttributeImporter : public TreeXMLImporter {
+    class ListAttributeImporter final : public TreeXMLImporter {
         ListAttributeType *m_listType;
         Storage<ItemImporter> m_item;
     public:
@@ -436,7 +436,7 @@ namespace {
         return string_equal(name, "list");
     }
 
-    class ClassesImporter : public TreeXMLImporter {
+    class ClassesImporter final : public TreeXMLImporter {
         EntityClassCollector &m_collector;
         Storage<ClassImporter> m_class;
         Storage<ListAttributeImporter> m_list;

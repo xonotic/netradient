@@ -51,7 +51,10 @@ namespace ui {
             >::type
     >;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
 #define this (verify<self>::test(*static_cast<self>(const_cast<pointer_remove_const<decltype(this)>::type>(this))))
+#pragma clang diagnostic pop
 
     IMPL(Editable, GTK_EDITABLE);
 

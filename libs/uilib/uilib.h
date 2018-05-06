@@ -599,7 +599,10 @@ namespace ui {
         }
     }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
 #define this (*static_cast<self>(this))
+#pragma clang diagnostic pop
 
     template<class Lambda>
     gulong Object::connect(char const *detailed_signal, Lambda &&c_handler, void *data)

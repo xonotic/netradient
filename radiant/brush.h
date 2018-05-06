@@ -2633,7 +2633,7 @@ triangles_same_winding(const BasicVector3<Element> &x1, const BasicVector3<Eleme
 typedef const Plane3 *PlanePointer;
 typedef PlanePointer *PlanesIterator;
 
-class VectorLightList : public LightList {
+class VectorLightList final : public LightList {
     typedef std::vector<const RendererLight *> Lights;
     Lights m_lights;
 public:

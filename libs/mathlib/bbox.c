@@ -166,7 +166,7 @@ int aabb_test_plane( const aabb_t *aabb, const float *plane ){
    from "Graphics Gems", Academic Press, 1990
  */
 
-const int NUMDIM  = 3;
+#define NUMDIM 3
 const int RIGHT   = 0;
 const int LEFT    = 1;
 const int MIDDLE  = 2;

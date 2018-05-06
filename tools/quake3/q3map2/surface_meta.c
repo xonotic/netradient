@@ -987,8 +987,7 @@ void CreateEdge( vec4_t plane, vec3_t a, vec3_t b, edge_t *edge ){
 	edge->kingpinLength = edge->edge[ edge->kingpin ];
 
 	VectorNormalize( edge->edge, edge->edge );
-	edge->edge[ 3 ] = DotProduct( a, edge->edge );
-	edge->length = DotProduct( b, edge->edge ) - edge->edge[ 3 ];
+	edge->length = DotProduct( b, edge->edge ) - DotProduct( a, edge->edge );
 
 	/* create perpendicular plane that edge lies in */
 	CrossProduct( plane, edge->edge, edge->plane );

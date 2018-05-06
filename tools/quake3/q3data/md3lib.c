@@ -85,6 +85,9 @@ void MD3_ComputeTagFromTri( md3Tag_t *pTag, float pTri[3][3] ){
 		hypotSide = 2;
 		origin = 1;
 	}
+	else {
+		assert(0);
+	}
 	len[hypotSide] = -1;
 
 	if ( len[0] > len[1] && len[0] > len[2] ) {
@@ -96,6 +99,9 @@ void MD3_ComputeTagFromTri( md3Tag_t *pTag, float pTri[3][3] ){
 	else if ( len[2] > len[0] && len[2] > len[1] ) {
 		longestSide = 2;
 	}
+	else {
+		assert(0);
+	}
 	len[longestSide] = -1;
 
 	if ( len[0] > len[1] && len[0] > len[2] ) {
@@ -106,6 +112,9 @@ void MD3_ComputeTagFromTri( md3Tag_t *pTag, float pTri[3][3] ){
 	}
 	else if ( len[2] > len[0] && len[2] > len[1] ) {
 		shortestSide = 2;
+	}
+	else {
+		assert(0);
 	}
 	len[shortestSide] = -1;
 

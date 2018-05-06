@@ -43,7 +43,7 @@ bool isSelected() const {
 }
 };
 
-class ObservedSelectable : public Selectable
+class ObservedSelectable final : public Selectable
 {
 SelectionChangeCallback m_onchanged;
 bool m_selected;

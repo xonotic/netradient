@@ -1719,7 +1719,7 @@ void DirtyRawLightmap( int rawLightmapNum ){
 
 static qboolean SubmapRawLuxel( rawLightmap_t *lm, int x, int y, float bx, float by, int *sampleCluster, vec3_t sampleOrigin, vec3_t sampleNormal ){
 	int i, *cluster, *cluster2;
-	float       *origin, *origin2, *normal; //%	, *normal2;
+	float       *origin = NULL, *origin2 = NULL, *normal; //%	, *normal2;
 	vec3_t originVecs[ 2 ];                 //%	, normalVecs[ 2 ];
 
 
@@ -1744,8 +1744,12 @@ static qboolean SubmapRawLuxel( rawLightmap_t *lm, int x, int y, float bx, float
 		Sys_FPrintf( SYS_WRN, "WARNING: Spurious lightmap S vector\n" );
 	}
 
-	VectorSubtract( origin2, origin, originVecs[ 0 ] );
+	if (origin && origin2) {
+		VectorSubtract(origin2, origin, originVecs[0]);
+	}
 	//%	VectorSubtract( normal2, normal, normalVecs[ 0 ] );
+
+	origin = origin2 = NULL;
 
 	/* calulate y vector */
 	if ( ( y < ( lm->sh - 1 ) && bx >= 0.0f ) || ( y == 0 && bx <= 0.0f ) ) {
@@ -1768,7 +1772,9 @@ static qboolean SubmapRawLuxel( rawLightmap_t *lm, int x, int y, float bx, float
 		Sys_FPrintf( SYS_WRN, "WARNING: Spurious lightmap T vector\n" );
 	}
 
-	VectorSubtract( origin2, origin, originVecs[ 1 ] );
+	if (origin && origin2) {
+		VectorSubtract(origin2, origin, originVecs[1]);
+	}
 
 	/* calculate new origin */
 	for ( i = 0; i < 3; i++ )

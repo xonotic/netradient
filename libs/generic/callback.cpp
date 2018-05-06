@@ -207,7 +207,7 @@ void instantiate(){
 	Test test;
 	const Test& testconst = test;
 	{
-		Callback<void()> a = makeCallbackF(&test0free);
+		Callback<void()> a = makeCallbackF(test0free);
 		Callback<void()> b = Test::Test0Caller( test );
 		b = makeCallback( Test::Test0(), test );
 		Callback<void()> c = Test::Test0ConstCaller( testconst );
@@ -221,7 +221,7 @@ void instantiate(){
 	}
 	{
 		typedef Callback<void(A1)> TestCallback1;
-		TestCallback1 a = makeCallbackF(&test1free);
+		TestCallback1 a = makeCallbackF(test1free);
 		TestCallback1 b = Test::Test1Caller( test );
 		b = makeCallback( Test::Test1(), test );
 		TestCallback1 c = Test::Test1ConstCaller( testconst );

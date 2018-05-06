@@ -57,7 +57,7 @@ static picoColor_t white = { 255,255,255,255 };
 /* ms3d limits */
 const int MS3D_MAX_VERTS      = 8192;
 const int MS3D_MAX_TRIS       = 16384;
-const int MS3D_MAX_GROUPS     = 128;
+#define MS3D_MAX_GROUPS 128
 const int MS3D_MAX_MATERIALS  = 128;
 const int MS3D_MAX_JOINTS     = 128;
 const int MS3D_MAX_KEYFRAMES  = 216;
