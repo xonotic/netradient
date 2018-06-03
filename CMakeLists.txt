@@ -82,6 +82,12 @@ endif ()
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     addflags("-Werror")
     addflags("-pedantic-errors")
+    set(CMAKE_VERBOSE_MAKEFILE ON)
+    addflags(-fstack-protector -fstack-protector-strong -fstack-protector-all)
+    #addflags("-fsanitize=address,undefined") # break __asan::ReportGenericError
+
+    #add_definitions(-D_GLIBCXX_DEBUG=1)
+    #add_definitions(-D_GLIBCXX_DEBUG_PEDANTIC=1)
 endif ()
 
 addflags("-Wall")
@@ -89,6 +95,7 @@ addflags("-Wextra")
 addflags("-pedantic")
 
 addflags_c("-Wno-deprecated-declarations") # vfs.c: g_strdown
+addflags_cxx("-Wno-deprecated-declarations") # various gtk
 
 addflags("-Wno-unused-function")
 addflags("-Wno-unused-variable")
@@ -108,9 +115,6 @@ add_definitions(-DRADIANT_MINOR_VERSION="${NetRadiant_VERSION_MINOR}")
 add_definitions(-DRADIANT_PATCH_VERSION="${NetRadiant_VERSION_PATCH}")
 
 add_definitions(-DRADIANT_ABOUTMSG="${NetRadiant_ABOUT}")
-
-add_definitions(-D_GLIBCXX_DEBUG=1)
-add_definitions(-D_GLIBCXX_DEBUG_PEDANTIC=1)
 
 if (NOT CMAKE_BUILD_TYPE MATCHES Release)
     add_definitions(-D_DEBUG=1)
@@ -252,7 +256,7 @@ endif ()
 # Game packs
 #-----------------------------------------------------------------------
 
-option(DOWNLOAD_GAMEPACKS "Download game packs" ON)
+option(DOWNLOAD_GAMEPACKS "Download game packs" OFF)
 add_custom_target(game_packs_free
         COMMAND ${CMAKE_COMMAND} -E make_directory games
         COMMAND DOWNLOAD_GAMEPACKS=yes SOURCE_DIR="${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/install-gamepacks.sh" "${PROJECT_BINARY_DIR}"

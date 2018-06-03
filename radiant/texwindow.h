@@ -31,6 +31,7 @@
 
 class TextureBrowser;
 
+#define g_TextureBrowser GlobalTextureBrowser()
 TextureBrowser &GlobalTextureBrowser();
 
 ui::Widget TextureBrowser_constructWindow(ui::Window toplevel);

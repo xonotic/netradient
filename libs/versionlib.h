@@ -52,6 +52,9 @@ inline int string_range_parse_unsigned_decimal_integer( const char* first, const
 	int result = 0;
 	for (; first != last; ++first )
 	{
+		if (!isdigit(*first)) {
+			break;
+		}
 		result *= 10;
 		result += *first - '0';
 	}

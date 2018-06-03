@@ -56,8 +56,10 @@ create_dialog_table(unsigned int rows, unsigned int columns, unsigned int row_sp
 {
     auto table = ui::Table(rows, columns, FALSE);
     table.show();
+    WARNING_SUPPRESS(deprecated-declarations)
     gtk_table_set_row_spacings(table, row_spacing);
     gtk_table_set_col_spacings(table, col_spacing);
+    WARNING_RESTORE(deprecated-declarations)
     gtk_container_set_border_width(GTK_CONTAINER(table), border);
     return table;
 }

@@ -1286,8 +1286,11 @@ void graph_tree_model_erase(GraphTreeModel *model, const scene::Instance &instan
 
     GraphTreeNode *parent = graph_tree_model_find_parent(model, instance.path());
 
-    GraphTreeNode::iterator i = parent->find(GraphTreeNode::key_type(node_get_name_safe(instance.path().top().get()),
+    auto i = parent->find(GraphTreeNode::key_type(node_get_name_safe(instance.path().top().get()),
                                                                      instance.path().top().get_pointer()));
+    if (i == parent->end()) {
+        return;
+    }
 
     graph_tree_model_row_deleted(model, i);
 

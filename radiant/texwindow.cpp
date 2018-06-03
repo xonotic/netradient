@@ -1547,12 +1547,10 @@ gboolean TextureBrowser_expose(ui::Widget widget, GdkEventExpose *event, Texture
     return FALSE;
 }
 
-
-TextureBrowser g_TextureBrowser;
-
 TextureBrowser &GlobalTextureBrowser()
 {
-    return g_TextureBrowser;
+    static TextureBrowser *_g_TextureBrowser = new TextureBrowser();
+    return *_g_TextureBrowser;
 }
 
 bool TextureBrowser_hideUnused()

@@ -208,6 +208,9 @@ const double DEBUG_EPSILON_SQUARED = DEBUG_EPSILON * DEBUG_EPSILON;
 void Winding_Clip(const FixedWinding &winding, const Plane3 &plane, const Plane3 &clipPlane, std::size_t adjacent,
                   FixedWinding &clipped)
 {
+    if (!winding.size()) {
+        return;
+    }
     PlaneClassification classification = Winding_ClassifyDistance(
             plane3_distance_to_point(clipPlane, winding.back().vertex), ON_EPSILON);
     PlaneClassification nextClassification;

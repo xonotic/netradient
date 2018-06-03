@@ -1,6 +1,8 @@
 #ifndef INCLUDED_UILIB_H
 #define INCLUDED_UILIB_H
 
+#include "globaldefs.h"
+
 #include <string>
 #include <glib-object.h>
 
@@ -599,10 +601,9 @@ namespace ui {
         }
     }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wkeyword-macro"
+WARNING_SUPPRESS_CLANG(keyword-macro)
 #define this (*static_cast<self>(this))
-#pragma clang diagnostic pop
+WARNING_RESTORE_CLANG(keyword-macro)
 
     template<class Lambda>
     gulong Object::connect(char const *detailed_signal, Lambda &&c_handler, void *data)

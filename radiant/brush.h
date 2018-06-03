@@ -118,40 +118,40 @@ inline void Winding_DrawWireframe(const Winding &winding)
 
 inline void Winding_Draw(const Winding &winding, const Vector3 &normal, RenderStateFlags state)
 {
-    glVertexPointer(3, GL_FLOAT, sizeof(WindingVertex), &winding.points.data()->vertex);
+    GLsizei stride = sizeof(WindingVertex);
+    const WindingVertex *first = winding.points.data();
+    auto size = winding.numpoints;
+    glVertexPointer(3, GL_FLOAT, stride, &first->vertex);
 
     if ((state & RENDER_BUMP) != 0) {
         Vector3 normals[c_brush_maxFaces];
         typedef Vector3 *Vector3Iter;
-        for (Vector3Iter i = normals, end = normals + winding.numpoints; i != end; ++i) {
+        for (Vector3Iter i = normals, end = normals + size; i != end; ++i) {
             *i = normal;
         }
         if (GlobalShaderCache().useShaderLanguage()) {
             glNormalPointer(GL_FLOAT, sizeof(Vector3), normals);
-            glVertexAttribPointerARB(c_attr_TexCoord0, 2, GL_FLOAT, 0, sizeof(WindingVertex),
-                                     &winding.points.data()->texcoord);
-            glVertexAttribPointerARB(c_attr_Tangent, 3, GL_FLOAT, 0, sizeof(WindingVertex),
-                                     &winding.points.data()->tangent);
-            glVertexAttribPointerARB(c_attr_Binormal, 3, GL_FLOAT, 0, sizeof(WindingVertex),
-                                     &winding.points.data()->bitangent);
+            glVertexAttribPointerARB(c_attr_TexCoord0, 2, GL_FLOAT, 0, stride, &first->texcoord);
+            glVertexAttribPointerARB(c_attr_Tangent, 3, GL_FLOAT, 0, stride, &first->tangent);
+            glVertexAttribPointerARB(c_attr_Binormal, 3, GL_FLOAT, 0, stride, &first->bitangent);
         } else {
             glVertexAttribPointerARB(11, 3, GL_FLOAT, 0, sizeof(Vector3), normals);
-            glVertexAttribPointerARB(8, 2, GL_FLOAT, 0, sizeof(WindingVertex), &winding.points.data()->texcoord);
-            glVertexAttribPointerARB(9, 3, GL_FLOAT, 0, sizeof(WindingVertex), &winding.points.data()->tangent);
-            glVertexAttribPointerARB(10, 3, GL_FLOAT, 0, sizeof(WindingVertex), &winding.points.data()->bitangent);
+            glVertexAttribPointerARB(8, 2, GL_FLOAT, 0, stride, &first->texcoord);
+            glVertexAttribPointerARB(9, 3, GL_FLOAT, 0, stride, &first->tangent);
+            glVertexAttribPointerARB(10, 3, GL_FLOAT, 0, stride, &first->bitangent);
         }
     } else {
         if (state & RENDER_LIGHTING) {
             Vector3 normals[c_brush_maxFaces];
             typedef Vector3 *Vector3Iter;
-            for (Vector3Iter i = normals, last = normals + winding.numpoints; i != last; ++i) {
+            for (Vector3Iter i = normals, last = normals + size; i != last; ++i) {
                 *i = normal;
             }
             glNormalPointer(GL_FLOAT, sizeof(Vector3), normals);
         }
 
         if (state & RENDER_TEXTURE) {
-            glTexCoordPointer(2, GL_FLOAT, sizeof(WindingVertex), &winding.points.data()->texcoord);
+            glTexCoordPointer(2, GL_FLOAT, stride, &first->texcoord);
         }
     }
 #if 0
@@ -163,7 +163,7 @@ inline void Winding_Draw(const Winding &winding, const Vector3 &normal, RenderSt
 		glDrawArrays( GL_LINE_LOOP, 0, GLsizei( winding.numpoints ) );
 	}
 #else
-    glDrawArrays(GL_POLYGON, 0, GLsizei(winding.numpoints));
+    glDrawArrays(GL_POLYGON, 0, GLsizei(size));
 #endif
 
 #if 0

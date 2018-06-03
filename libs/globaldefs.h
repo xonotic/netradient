@@ -122,4 +122,24 @@
 #endif
 #endif
 
+#define CPP_CAT_(a, b) a ## b
+#define CPP_CAT(a, b) CPP_CAT_(a, b)
+
+#define CPP_STR_(x) #x
+#define CPP_STR(x) CPP_STR_(x)
+
+#define WARNING_SUPPRESS(x) \
+    _Pragma (CPP_STR(GCC diagnostic push)) \
+    _Pragma (CPP_STR(GCC diagnostic ignored CPP_STR(CPP_CAT(-W,x))))
+#define WARNING_RESTORE(x) \
+    _Pragma (CPP_STR(GCC diagnostic pop))
+
+#if defined(__clang__)
+#define WARNING_SUPPRESS_CLANG(x) WARNING_SUPPRESS(x)
+#define WARNING_RESTORE_CLANG(x) WARNING_RESTORE(x)
+#else
+#define WARNING_SUPPRESS_CLANG(x)
+#define WARNING_RESTORE_CLANG(x)
+#endif
+
 #endif

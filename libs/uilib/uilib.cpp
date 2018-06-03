@@ -51,10 +51,9 @@ namespace ui {
             >::type
     >;
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wkeyword-macro"
+WARNING_SUPPRESS_CLANG(keyword-macro)
 #define this (verify<self>::test(*static_cast<self>(const_cast<pointer_remove_const<decltype(this)>::type>(this))))
-#pragma clang diagnostic pop
+WARNING_RESTORE_CLANG(keyword-macro)
 
     IMPL(Editable, GTK_EDITABLE);
 
@@ -183,11 +182,13 @@ namespace ui {
         gtk_window_add_accel_group(this, group);
     }
 
+    WARNING_SUPPRESS(deprecated-declarations)
     IMPL(Alignment, GTK_ALIGNMENT);
 
     Alignment::Alignment(float xalign, float yalign, float xscale, float yscale)
             : Alignment(GTK_ALIGNMENT(gtk_alignment_new(xalign, yalign, xscale, yscale)))
     {}
+    WARNING_RESTORE(deprecated-declarations)
 
     IMPL(Frame, GTK_FRAME);
 
@@ -231,10 +232,12 @@ namespace ui {
             GTK_MENU_ITEM((mnemonic ? gtk_menu_item_new_with_mnemonic : gtk_menu_item_new_with_label)(label)))
     {}
 
+    WARNING_SUPPRESS(deprecated-declarations)
     IMPL(TearoffMenuItem, GTK_TEAROFF_MENU_ITEM);
 
     TearoffMenuItem::TearoffMenuItem(ui::New_t) : TearoffMenuItem(GTK_TEAROFF_MENU_ITEM(gtk_tearoff_menu_item_new()))
     {}
+    WARNING_RESTORE(deprecated-declarations)
 
     IMPL(ComboBoxText, GTK_COMBO_BOX_TEXT);
 
@@ -263,6 +266,7 @@ namespace ui {
         gtk_box_pack_end(this, child, expand, fill, padding);
     }
 
+    WARNING_SUPPRESS(deprecated-declarations)
     IMPL(VBox, GTK_VBOX);
 
     VBox::VBox(bool homogenous, int spacing) : VBox(GTK_VBOX(gtk_vbox_new(homogenous, spacing)))
@@ -282,12 +286,14 @@ namespace ui {
 
     VPaned::VPaned(ui::New_t) : VPaned(GTK_VPANED(gtk_vpaned_new()))
     {}
+    WARNING_RESTORE(deprecated-declarations)
 
     IMPL(Menu, GTK_MENU);
 
     Menu::Menu(ui::New_t) : Menu(GTK_MENU(gtk_menu_new()))
     {}
 
+    WARNING_SUPPRESS(deprecated-declarations)
     IMPL(Table, GTK_TABLE);
 
     Table::Table(std::size_t rows, std::size_t columns, bool homogenous) : Table(
@@ -302,6 +308,7 @@ namespace ui {
                          padding.x, padding.y
         );
     }
+    WARNING_RESTORE(deprecated-declarations)
 
     IMPL(TextView, GTK_TEXT_VIEW);
 
@@ -361,6 +368,7 @@ namespace ui {
             GTK_SPIN_BUTTON(gtk_spin_button_new(adjustment, climb_rate, digits)))
     {}
 
+    WARNING_SUPPRESS(deprecated-declarations)
     IMPL(HScale, GTK_HSCALE);
 
     HScale::HScale(Adjustment adjustment) : HScale(GTK_HSCALE(gtk_hscale_new(adjustment)))
@@ -368,6 +376,7 @@ namespace ui {
 
     HScale::HScale(double min, double max, double step) : HScale(GTK_HSCALE(gtk_hscale_new_with_range(min, max, step)))
     {}
+    WARNING_RESTORE(deprecated-declarations)
 
     IMPL(Adjustment, GTK_ADJUSTMENT);
 

@@ -3533,7 +3533,7 @@ void SetupEnvelopes( qboolean forGrid, qboolean fastFlag ){
 	light_t     *light, *light2, **owner;
 	bspLeaf_t   *leaf;
 	vec3_t origin, dir, mins, maxs;
-	float radius, intensity;
+	float radius = 0.0f, intensity;
 	light_t     *buckets[ 256 ];
 
 
@@ -3657,7 +3657,6 @@ void SetupEnvelopes( qboolean forGrid, qboolean fastFlag ){
 				}
 				else
 				{
-					radius = 0.0f;
 					intensity = light->photons;
 				}
 

@@ -1404,8 +1404,6 @@ void TextureClipboard_textureSelected(const char *shader)
 
 class TextureBrowser;
 
-extern TextureBrowser g_TextureBrowser;
-
 void TextureBrowser_SetSelectedShader(TextureBrowser &textureBrowser, const char *shader);
 
 const char *TextureBrowser_GetSelectedShader(TextureBrowser &textureBrowser);

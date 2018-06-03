@@ -78,7 +78,7 @@ GdkGLContext *glwidget_context_created(ui::GLArea self)
 
 ui::GLArea glwidget_new(bool zbuffer)
 {
-    auto self = ui::GLArea(GTK_GL_AREA(gtk_gl_area_new()));
+    auto self = ui::GLArea::from(GTK_GL_AREA(gtk_gl_area_new()));
     gtk_gl_area_set_has_depth_buffer(self, zbuffer);
     gtk_gl_area_set_auto_render(self, false);
 

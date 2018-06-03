@@ -30,14 +30,14 @@
 
 GdkCursor *create_blank_cursor()
 {
-    return gdk_cursor_new(GDK_BLANK_CURSOR);
+    return gdk_cursor_new_for_display(gdk_display_get_default(), GDK_BLANK_CURSOR);
 }
 
 void blank_cursor(ui::Widget widget)
 {
     GdkCursor *cursor = create_blank_cursor();
     gdk_window_set_cursor(gtk_widget_get_window(widget), cursor);
-    gdk_cursor_unref(cursor);
+    g_object_unref(cursor);
 }
 
 void default_cursor(ui::Widget widget)
