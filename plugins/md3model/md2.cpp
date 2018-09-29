@@ -233,7 +233,8 @@ void MD2Surface_read( Model& model, const byte* buffer, ArchiveFile& file ){
 
 	char skinname[MD2_MAX_SKINNAME];
 	char skinnameRelative[MD2_MAX_SKINNAME];
-	char path[MD2_MAX_SKINNAME];
+	char path[MD2_MAX_SKINNAME + 1];
+	path[MD2_MAX_SKINNAME] = '\0';
 	int i = MD2_MAX_SKINNAME;
 	PointerInputStream inputStream( buffer + header.ofs_skins );
 	inputStream.read( reinterpret_cast<byte*>( skinnameRelative ), MD2_MAX_SKINNAME );
