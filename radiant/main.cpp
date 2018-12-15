@@ -94,6 +94,10 @@
 #include <windows.h>
 #endif
 
+#ifdef _EMBED_PYTHON
+#include "pybindconnector.h"
+#endif // _EMBED_PYTHON
+
 void show_splash();
 
 void hide_splash();
@@ -645,6 +649,9 @@ int main(int argc, char *argv[])
         g_GamesDialog.m_bForceLogConsole = false;
     }
 
+#ifdef _EMBED_PYTHON
+    PYBIND_initializeInterpreter();
+#endif // _EMBED_PYTHON
 
     Radiant_Initialise();
 
@@ -689,6 +696,10 @@ int main(int argc, char *argv[])
     user_shortcuts_save();
 
     Radiant_Shutdown();
+
+#ifdef _EMBED_PYTHON
+    PYBIND_finalizeInterpreter();
+#endif // _EMBED_PYTHON
 
     // close the log file if any
     Sys_LogFile(false);

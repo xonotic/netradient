@@ -4,6 +4,7 @@ project(NetRadiant C CXX)
 
 option(BUILD_RADIANT "Build the GUI" ON)
 option(BUILD_CRUNCH "Build Crunch image support" OFF)
+option(EMBED_PYTHON "Embed python" ON)
 option(USE_WERROR "Build with -Werror -pedantic-errors" OFF)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -65,7 +66,8 @@ endif ()
 # Flags
 #-----------------------------------------------------------------------
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
+# TODO: check why these CXX flags were set
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 macro(addflags_c args)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${args}")
 endmacro()
@@ -144,6 +146,9 @@ else ()
     add_definitions(
             -DPOSIX=1
     )
+endif ()
+if (EMBED_PYTHON)
+    add_definitions(-D_EMBED_PYTHON)
 endif ()
 
 if (XWINDOWS)

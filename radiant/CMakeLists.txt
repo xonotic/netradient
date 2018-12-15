@@ -93,6 +93,11 @@ set(RADIANTLIST
 if (WIN32)
     list(APPEND RADIANTLIST multimon.cpp multimon.h)
 endif ()
+if (EMBED_PYTHON)
+    list(APPEND RADIANTLIST
+         pybindconnector.cpp pybindconnector.h
+         pythonconsole.cpp pythonconsole.h)
+endif ()
 
 radiant_tool(radiant WIN32 radiant.rc ${RADIANTLIST})
 add_dependencies(radiant modules)
@@ -128,6 +133,9 @@ target_link_libraries(radiant
         )
 if (X11_LIBRARIES)
     target_link_libraries(radiant ${X11_LIBRARIES})
+endif ()
+if (EMBED_PYTHON)
+    target_link_libraries(radiant pybind11::embed)
 endif ()
 
 copy_dlls(radiant)

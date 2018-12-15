@@ -86,6 +86,9 @@
 #include "pluginmenu.h"
 #include "plugintoolbar.h"
 #include "preferences.h"
+#ifdef _EMBED_PYTHON
+    #include "pythonconsole.h"
+#endif // _EMBED_PYTHON
 #include "qe3.h"
 #include "qgl.h"
 #include "select.h"
@@ -1209,6 +1212,15 @@ void Console_ToggleShow()
 {
     GroupDialog_showPage(g_page_console);
 }
+
+#ifdef _EMBED_PYTHON
+ui::Widget g_page_pythonconsole{ui::null};
+
+void PythonConsole_ToggleShow()
+{
+    GroupDialog_showPage(g_page_pythonconsole);
+}
+#endif // _EMBED_PYTHON
 
 ui::Widget g_page_entity{ui::null};
 
@@ -3114,6 +3126,13 @@ void MainFrame::Create()
         g_page_console = GroupDialog_addPage("Console", Console_constructWindow(GroupDialog_getWindow()),
                                              RawStringExportCaller("Console"));
     }
+
+#ifdef _EMBED_PYTHON
+    if (FloatingGroupDialog()) {
+        g_page_pythonconsole = GroupDialog_addPage("Python", PythonConsole_constructWindow(GroupDialog_getWindow()),
+                                                   RawStringExportCaller("Python"));
+    }
+#endif // _EMBED_PYTHON
 
 #if GDEF_OS_WINDOWS
                                                                                                                             if ( g_multimon_globals.m_bStartOnPrimMon ) {
