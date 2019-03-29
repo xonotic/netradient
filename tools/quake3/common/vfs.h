@@ -35,7 +35,10 @@
 
 // to get PATH_MAX
 #include <stdio.h>
-#if GDEF_OS_LINUX || GDEF_OS_MACOS
+#if GDEF_OS_LINUX || GDEF_OS_MACOS || GDEF_OS_BSD_FREE
+#if GDEF_OS_BSD_FREE
+#include <sys/param.h>
+#endif
 #include <dirent.h>
 #include <unistd.h>
 #else

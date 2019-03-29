@@ -46,16 +46,6 @@ inline __int64 llrint( double f ){
 	return static_cast<__int64>( f + 0.5 );
 }
 
-#elif GDEF_OS_BSD
-
-inline long lrint( double f ){
-	return static_cast<long>( f + 0.5 );
-}
-
-inline long long llrint( double f ){
-	return static_cast<long long>( f + 0.5 );
-}
-
 #elif GDEF_COMPILER_GNU
 
 // lrint is part of ISO C99

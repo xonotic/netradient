@@ -39,7 +39,7 @@
 
 //#define NOISY 1
 
-#if GDEF_OS_LINUX || GDEF_OS_MACOS
+#if GDEF_OS_LINUX || GDEF_OS_MACOS || GDEF_OS_BSD_FREE
 #define strlwr strlower
 #endif
 

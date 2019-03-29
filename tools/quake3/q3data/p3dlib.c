@@ -31,7 +31,7 @@
 
 #define MAX_POLYSETS 64
 
-#if GDEF_OS_LINUX || GDEF_OS_MACOS
+#if GDEF_OS_LINUX || GDEF_OS_MACOS || GDEF_OS_BSD_FREE
 	#include "cmdlib.h"
 	#define _strcmpi Q_stricmp
 	#define strlwr strlower

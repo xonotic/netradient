@@ -23,6 +23,7 @@
 #define _ARRAYEDLIST_H
 
 #include <assert.h>
+#include "globaldefs.h"
 
 typedef struct ArrayedListNode_s
 {

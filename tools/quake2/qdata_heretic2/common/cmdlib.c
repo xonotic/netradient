@@ -85,7 +85,7 @@ void *SafeMalloc( size_t n, char *desc ){
 	return p;
 }
 
-#if GDEF_OS_LINUX || GDEF_OS_MACOS
+#if GDEF_OS_LINUX || GDEF_OS_MACOS | GDEF_OS_BSD_FREE
 void strlwr( char *conv_str ){
 	int i;
 

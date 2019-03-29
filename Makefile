@@ -239,7 +239,22 @@ ifeq ($(OS),Darwin)
 	OTOOL = otool
 else
 
+ifeq ($(OS),FreeBSD)
+	CPPFLAGS_COMMON += -DPOSIX -DXWINDOWS
+	CFLAGS_COMMON += -fPIC
+	LDFLAGS_DLL = -fPIC -ldl
+	LIBS_COMMON = -lpthread
+	EXE ?= $(shell uname -m)
+	MAKE_EXE_SYMLINK = true
+	A = a
+	DLL = so
+	MWINDOWS =
+	LDD =
+	CP_R = $(CP) -r
+else
+
 $(error Unsupported build OS: $(OS))
+endif
 endif
 endif
 endif

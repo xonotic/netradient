@@ -26,7 +26,7 @@
 #endif
 #include "md3lib.h"
 
-#if GDEF_OS_LINUX || GDEF_OS_MACOS
+#if GDEF_OS_LINUX || GDEF_OS_MACOS || GDEF_OS_BSD_FREE
 #define filelength(f) Q_filelength(f)
 #else
 #define filelength(f) filelength(fileno(f))

@@ -41,7 +41,7 @@ char *moddir = NULL;
 // some old defined that was in cmdlib lost during merge
 char writedir[1024];
 
-#if GDEF_OS_LINUX || GDEF_OS_MACOS
+#if GDEF_OS_LINUX || GDEF_OS_MACOS || GDEF_OS_BSD_FREE
 #define strlwr strlower
 #endif
 
