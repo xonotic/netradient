@@ -828,7 +828,37 @@ int BSPMain( int argc, char **argv ){
 			i++;
 			Sys_Printf( "Distance epsilon set to %f\n", distanceEpsilon );
 		}
-		else if ( !strcmp( argv[ i ],  "-mv" ) ) {
+		else if ( !strcmp( argv[ i ], "-fastmeta" ) ) {
+			maxLMSurfaceVerts = 64;
+			maxSurfaceVerts = 999;
+			maxSurfaceIndexes = 6000;
+			Sys_Printf( "Maximum per-surface vertex count set to %d\n", maxSurfaceVerts );
+			Sys_Printf( "Maximum per-surface index count set to %d\n", maxSurfaceIndexes );
+			Sys_Printf( "Maximum lightmapped surface vertex count set to %d\n", maxLMSurfaceVerts );
+		}
+		else if ( !strcmp( argv[ i ], "-maxsurfacevertices" ) ) {
+			maxSurfaceVerts = atoi( argv[ i + 1 ] );
+			if ( maxSurfaceVerts < 3 ) {
+				maxSurfaceVerts = 3;
+			}
+			i++;
+			Sys_Printf( "Maximum per-surface vertex count set to %d\n", maxSurfaceVerts );
+		}
+		else if ( !strcmp( argv[ i ], "-maxsurfaceindexes" ) || !strcmp( argv[ i ], "-mi" ) ) {
+			maxSurfaceIndexes = atoi( argv[ i + 1 ] );
+			if ( maxSurfaceIndexes < 3 ) {
+				maxSurfaceIndexes = 3;
+			}
+			i++;
+
+			if ( !strcmp( argv[ i ], "-mi" ) ) {
+				Sys_Printf( "The -mi argument is deprecated, use \"-maxsurfaceindexes\" instead\n" );
+			}
+			else {
+				Sys_Printf( "Maximum per-surface index count set to %d\n", maxSurfaceIndexes );
+			}
+		}
+		else if ( !strcmp( argv[ i ], "-maxlightmapvertices" ) || !strcmp( argv[ i ], "-mv" ) ) {
 			maxLMSurfaceVerts = atoi( argv[ i + 1 ] );
 			if ( maxLMSurfaceVerts < 3 ) {
 				maxLMSurfaceVerts = 3;
@@ -837,15 +867,13 @@ int BSPMain( int argc, char **argv ){
 				maxSurfaceVerts = maxLMSurfaceVerts;
 			}
 			i++;
-			Sys_Printf( "Maximum lightmapped surface vertex count set to %d\n", maxLMSurfaceVerts );
-		}
-		else if ( !strcmp( argv[ i ],  "-mi" ) ) {
-			maxSurfaceIndexes = atoi( argv[ i + 1 ] );
-			if ( maxSurfaceIndexes < 3 ) {
-				maxSurfaceIndexes = 3;
+
+			if ( !strcmp( argv[ i ], "-mv" ) ) {
+				Sys_Printf( "The -mv argument is deprecated, use \"-maxlightmapvertices\" instead\n" );
 			}
-			i++;
-			Sys_Printf( "Maximum per-surface index count set to %d\n", maxSurfaceIndexes );
+			else {
+				Sys_Printf( "Maximum lightmapped surface vertex count set to %d\n", maxLMSurfaceVerts );
+			}
 		}
 		else if ( !strcmp( argv[ i ], "-np" ) ) {
 			npDegrees = atof( argv[ i + 1 ] );
