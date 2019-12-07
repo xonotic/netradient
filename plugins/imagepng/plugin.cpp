@@ -113,7 +113,7 @@ Image* LoadPNGBuff( unsigned char* fbuffer ){
 		png_set_tRNS_to_alpha( png_ptr );
 	}
 
-	if ( !( color_type & PNG_COLOR_MASK_ALPHA ) ) {
+	else if ( !( color_type & PNG_COLOR_MASK_ALPHA ) ) {
 		// Set the background color to draw transparent and alpha images over.
 		png_color_16 my_background, *image_background;
 
