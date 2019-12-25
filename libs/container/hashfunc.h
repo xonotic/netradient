@@ -203,6 +203,20 @@ inline ub4 hash(
 	c += length;
 	switch ( len )          /* all the case statements fall through */
 	{
+#if defined(__GNUC__) && __GNUC__ < 7
+	case 11: c += ( ( ub4 ) UB1Traits::as_ub1( k[10] ) << 24 ); /* fall through */
+	case 10: c += ( ( ub4 ) UB1Traits::as_ub1( k[9] ) << 16 ); /* fall through */
+	case 9: c += ( ( ub4 ) UB1Traits::as_ub1( k[8] ) << 8 ); /* fall through */
+	/* the first byte of c is reserved for the length */
+	case 8: b += ( ( ub4 ) UB1Traits::as_ub1( k[7] ) << 24 ); /* fall through */
+	case 7: b += ( ( ub4 ) UB1Traits::as_ub1( k[6] ) << 16 ); /* fall through */
+	case 6: b += ( ( ub4 ) UB1Traits::as_ub1( k[5] ) << 8 ); /* fall through */
+	case 5: b += UB1Traits::as_ub1( k[4] );  /* fall through */
+	case 4: a += ( ( ub4 ) UB1Traits::as_ub1( k[3] ) << 24 ); /* fall through */
+	case 3: a += ( ( ub4 ) UB1Traits::as_ub1( k[2] ) << 16 ); /* fall through */
+	case 2: a += ( ( ub4 ) UB1Traits::as_ub1( k[1] ) << 8 ); /* fall through */
+	case 1: a += UB1Traits::as_ub1( k[0] );
+#else
 	case 11: c += ( ( ub4 ) UB1Traits::as_ub1( k[10] ) << 24 ); __attribute((fallthrough));
 	case 10: c += ( ( ub4 ) UB1Traits::as_ub1( k[9] ) << 16 ); __attribute((fallthrough));
 	case 9: c += ( ( ub4 ) UB1Traits::as_ub1( k[8] ) << 8 ); __attribute((fallthrough));
@@ -215,6 +229,7 @@ inline ub4 hash(
 	case 3: a += ( ( ub4 ) UB1Traits::as_ub1( k[2] ) << 16 ); __attribute((fallthrough));
 	case 2: a += ( ( ub4 ) UB1Traits::as_ub1( k[1] ) << 8 ); __attribute((fallthrough));
 	case 1: a += UB1Traits::as_ub1( k[0] );
+#endif
 		/* case 0: nothing left to add */
 	}
 	mix( a,b,c );
