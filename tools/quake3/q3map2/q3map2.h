@@ -2570,27 +2570,42 @@ Q_EXTERN bspAdvertisement_t bspAds[ MAX_MAP_ADVERTISEMENTS ];
 // Used for tex file support, Smokin'Guns globals
 Q_EXTERN qboolean compile_map;
 
-#define AUTOEXPAND_BY_REALLOC( ptr, reqitem, allocated, def ) \
+#define _AUTOEXPAND_BY_REALLOC( ptr, reqitem, allocated, def, fillWithZeros ) \
 	do \
 	{ \
+		int prevAllocated = allocated; \
 		if ( reqitem >= allocated )	\
 		{ \
 			if ( allocated == 0 ) {	\
-				allocated = def; } \
+				allocated = def; \
+			} \
 			while ( reqitem >= allocated && allocated )	\
+			{ \
 				allocated *= 2;	\
+			} \
 			if ( !allocated || allocated > 2147483647 / (int)sizeof( *ptr ) ) \
 			{ \
 				Error( #ptr " over 2 GB" ); \
 			} \
 			ptr = realloc( ptr, sizeof( *ptr ) * allocated ); \
 			if ( !ptr ) { \
-				Error( #ptr " out of memory" ); } \
+				Error( #ptr " out of memory" ); \
+			} \
+			if ( fillWithZeros ) \
+			{ \
+				memset( ptr + ( sizeof( *ptr ) * prevAllocated ), 0 , sizeof( *ptr ) * ( allocated - prevAllocated ) ); \
+			} \
 		} \
 	} \
 	while ( 0 )
 
+#define AUTOEXPAND_BY_REALLOC( ptr, reqitem, allocated, def ) _AUTOEXPAND_BY_REALLOC( ptr, reqitem, allocated, def, qfalse )
+
+#define AUTOEXPAND_BY_REALLOC0( ptr, reqitem, allocated, def ) _AUTOEXPAND_BY_REALLOC( ptr, reqitem, allocated, def, qtrue )
+
 #define AUTOEXPAND_BY_REALLOC_BSP( suffix, def ) AUTOEXPAND_BY_REALLOC( bsp##suffix, numBSP##suffix, allocatedBSP##suffix, def )
+
+#define AUTOEXPAND_BY_REALLOC0_BSP( suffix, def ) AUTOEXPAND_BY_REALLOC0( bsp##suffix, numBSP##suffix, allocatedBSP##suffix, def )
 
 #define Image_LinearFloatFromsRGBFloat( c ) ( ( ( c ) <= 0.04045f ) ? ( c ) * ( 1.0f / 12.92f ) : (float)pow( ( ( c ) + 0.055f ) * ( 1.0f / 1.055f ), 2.4f ) )
 #define Image_sRGBFloatFromLinearFloat( c ) ( ( ( c ) < 0.0031308f ) ? ( c ) * 12.92f : 1.055f * (float)pow( ( c ), 1.0f / 2.4f ) - 0.055f )

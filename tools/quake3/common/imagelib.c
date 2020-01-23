@@ -256,8 +256,7 @@ void LoadLBM( const char *filename, byte **picture, byte **palette ){
 			break;
 
 		case CMAPID:
-			cmapbuffer = safe_malloc( 768 );
-			memset( cmapbuffer, 0, 768 );
+			cmapbuffer = safe_malloc0( 768 );
 			memcpy( cmapbuffer, LBM_P, chunklength );
 			break;
 
@@ -572,8 +571,7 @@ void WritePCXfile( const char *filename, byte *data,
 	pcx_t   *pcx;
 	byte        *pack;
 
-	pcx = safe_malloc( width * height * 2 + 1000 );
-	memset( pcx, 0, sizeof( *pcx ) );
+	pcx = safe_malloc0( width * height * 2 + 1000 );
 
 	pcx->manufacturer = 0x0a;   // PCX id
 	pcx->version = 5;           // 256 color
@@ -1145,6 +1143,8 @@ void WriteTGA( const char *filename, byte *data, int width, int height ) {
 	FILE    *f;
 
 	buffer = safe_malloc( width * height * 4 + 18 );
+	/* we may also use safe_malloc0 on the whole instead,
+	 * this would just be a bit slower */
 	memset( buffer, 0, 18 );
 	buffer[2] = 2;      // uncompressed type
 	buffer[12] = width & 255;

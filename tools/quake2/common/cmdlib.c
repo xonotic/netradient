@@ -46,7 +46,6 @@
 
 // qboolean verbose = false;
 
-#ifdef SAFE_MALLOC
 void *safe_malloc( size_t size ){
 	void *p;
 
@@ -70,7 +69,6 @@ void *safe_malloc_info( size_t size, char* info ){
 	memset( p, 0, size );
 	return p;
 }
-#endif
 
 // set these before calling CheckParm
 int myargc;
@@ -492,23 +490,19 @@ int Q_strcasecmp( const char *s1, const char *s2 ){
 	return Q_strncasecmp( s1, s2, 99999 );
 }
 
-
-// NOTE TTimo when switching to Multithread DLL (Release/Debug) in the config
-//   started getting warnings about that function, prolly a duplicate with the runtime function
-//   maybe we still need to have it in linux builds
-/*
-   char *strupr (char *start)
-   {
-    char	*in;
-    in = start;
-    while (*in)
-    {
-   *in = toupper(*in);
-        in++;
-    }
-    return start;
-   }
- */
+#if !GDEF_OS_WINDOWS
+char *strupr (char *start)
+{
+	char *in;
+	in = start;
+	while (*in)
+	{
+		*in = toupper(*in);
+		in++;
+	}
+	return start;
+}
+#endif
 
 char *strlower( char *start ){
 	char    *in;

@@ -120,8 +120,7 @@ static void AddBrushSidesLump( FILE *file, ibspHeader_t *header ){
 
 	/* allocate output buffer */
 	size = numBSPBrushSides * sizeof( *buffer );
-	buffer = safe_malloc( size );
-	memset( buffer, 0, size );
+	buffer = safe_malloc0( size );
 
 	/* convert */
 	in = bspBrushSides;
@@ -232,8 +231,7 @@ static void AddDrawSurfacesLump( FILE *file, ibspHeader_t *header ){
 
 	/* allocate output buffer */
 	size = numBSPDrawSurfaces * sizeof( *buffer );
-	buffer = safe_malloc( size );
-	memset( buffer, 0, size );
+	buffer = safe_malloc0( size );
 
 	/* convert */
 	in = bspDrawSurfaces;
@@ -330,8 +328,7 @@ static void AddDrawVertsLump( FILE *file, ibspHeader_t *header ){
 
 	/* allocate output buffer */
 	size = numBSPDrawVerts * sizeof( *buffer );
-	buffer = safe_malloc( size );
-	memset( buffer, 0, size );
+	buffer = safe_malloc0( size );
 
 	/* convert */
 	in = bspDrawVerts;
@@ -385,8 +382,7 @@ static void CopyLightGridLumps( ibspHeader_t *header ){
 	numBSPGridPoints = GetLumpElements( (bspHeader_t*) header, LUMP_LIGHTGRID, sizeof( *in ) );
 
 	/* allocate buffer */
-	bspGridPoints = safe_malloc( numBSPGridPoints * sizeof( *bspGridPoints ) );
-	memset( bspGridPoints, 0, numBSPGridPoints * sizeof( *bspGridPoints ) );
+	bspGridPoints = safe_malloc0( numBSPGridPoints * sizeof( *bspGridPoints ) );
 
 	/* copy */
 	in = GetLump( (bspHeader_t*) header, LUMP_LIGHTGRID );
@@ -550,7 +546,9 @@ void WriteIBSPFile( const char *filename ){
 
 	/* add marker lump */
 	time( &t );
-	sprintf( marker, "I LOVE MY Q3MAP2 %s on %s)", Q3MAP_VERSION, asctime( localtime( &t ) ) );
+
+	/* asctime adds an implicit trailing \n */
+	sprintf( marker, "I LOVE MY Q3MAP2 %s on %s", Q3MAP_VERSION, asctime( localtime( &t ) ) );
 	AddLump( file, (bspHeader_t*) header, 0, marker, strlen( marker ) + 1 );
 
 	/* add lumps */

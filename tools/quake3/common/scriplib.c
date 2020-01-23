@@ -199,7 +199,7 @@ qboolean GetToken( qboolean crossline ){
 // skip space
 //
 skipspace:
-	while ( *script->script_p <= 32 )
+	while ( script->script_p < script->end_p && *script->script_p <= 32 )
 	{
 		if ( script->script_p >= script->end_p ) {
 			return EndOfScript( crossline );

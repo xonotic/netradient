@@ -133,7 +133,7 @@ int EmitShader( const char *shader, int *contentFlags, int *surfaceFlags ){
 	si = ShaderInfoForShader( shader );
 
 	/* emit a new shader */
-	AUTOEXPAND_BY_REALLOC_BSP( Shaders, 1024 );
+	AUTOEXPAND_BY_REALLOC0_BSP( Shaders, 1024 );
 
 	numBSPShaders++;
 	strcpy( bspShaders[ i ].shader, shader );

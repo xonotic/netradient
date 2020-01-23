@@ -335,6 +335,8 @@ void FixSurfaceJunctions( mapDrawSurface_t *ds ) {
 	float start, end, frac, c;
 	vec3_t delta;
 
+	// zero the verts array, verts are tested to not be null in FindMetaVertex()
+	memset( verts, 0, sizeof( verts ) );
 
 	numVerts = 0;
 	for ( i = 0 ; i < ds->numVerts ; i++ )

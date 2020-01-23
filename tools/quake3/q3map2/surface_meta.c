@@ -656,6 +656,7 @@ void FanFaceSurface( mapDrawSurface_t *ds ){
 
 	/* add a new vertex at the beginning of the surface */
 	verts = safe_malloc( ( ds->numVerts + 1 ) * sizeof( bspDrawVert_t ) );
+	/* beware to only zero the new vertexi at the beginning, nor more! */
 	memset( verts, 0, sizeof( bspDrawVert_t ) );
 	memcpy( &verts[ 1 ], ds->verts, ds->numVerts * sizeof( bspDrawVert_t ) );
 	free( ds->verts );
@@ -1201,13 +1202,11 @@ void SmoothMetaTriangles( void ){
 	Sys_FPrintf( SYS_VRB, "--- SmoothMetaTriangles ---\n" );
 
 	/* allocate shade angle table */
-	shadeAngles = safe_malloc( numMetaVerts * sizeof( float ) );
-	memset( shadeAngles, 0, numMetaVerts * sizeof( float ) );
+	shadeAngles = safe_malloc0( numMetaVerts * sizeof( float ) );
 
 	/* allocate smoothed table */
 	cs = ( numMetaVerts / 8 ) + 1;
-	smoothed = safe_malloc( cs );
-	memset( smoothed, 0, cs );
+	smoothed = safe_malloc0( cs );
 
 	/* set default shade angle */
 	defaultShadeAngle = DEG2RAD( npDegrees );

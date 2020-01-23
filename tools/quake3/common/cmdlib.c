@@ -47,7 +47,6 @@
 #define BASEDIRNAME "quake" // assumed to have a 2 or 3 following
 #define PATHSEPERATOR '/'
 
-#ifdef SAFE_MALLOC
 void *safe_malloc( size_t size ){
 	void *p;
 
@@ -69,7 +68,28 @@ void *safe_malloc_info( size_t size, char* info ){
 
 	return p;
 }
-#endif // !SAFE_MALLOC
+
+void *safe_malloc0( size_t size ){
+	void *p;
+
+	p = calloc( 1, size );
+	if ( !p ) {
+		Error( "safe_malloc0 failed on allocation of %i bytes", size );
+	}
+
+	return p;
+}
+
+void *safe_malloc0_info( size_t size, char* info ){
+	void *p;
+
+	p = calloc( 1, size );
+	if ( !p ) {
+		Error( "%s: safe_malloc0 failed on allocation of %i bytes", info, size );
+	}
+
+	return p;
+}
 
 // set these before calling CheckParm
 int myargc;
@@ -655,8 +675,7 @@ int    LoadFileBlock( const char *filename, void **bufferptr ){
 	if ( nBlock > 0 ) {
 		nAllocSize += MEM_BLOCKSIZE - nBlock;
 	}
-	buffer = safe_malloc( nAllocSize + 1 );
-	memset( buffer, 0, nAllocSize + 1 );
+	buffer = safe_malloc0( nAllocSize + 1 );
 	SafeRead( f, buffer, length );
 	fclose( f );
 

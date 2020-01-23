@@ -149,17 +149,19 @@ void ScaleTris( vec3_t min, vec3_t max, int Width, int Height, float* u, float* 
 void NewDrawLine( int x1, int y1, int x2, int y2, unsigned char* picture, int width, int height );
 
 #if !GDEF_OS_WINDOWS
-
-void strupr( char *string ){
-	int i;
-
-	for ( i = 0 ; i < strlen( string ); i++ )
-		toupper( string[i] );
-
-	return;
+char *strupr (char *start)
+{
+	char *in;
+	in = start;
+	while (*in)
+	{
+		*in = toupper(*in);
+		in++;
+	}
+	return start;
 }
-
 #endif
+
 //==============================================================
 
 /*

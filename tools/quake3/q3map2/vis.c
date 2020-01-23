@@ -66,8 +66,7 @@ fixedWinding_t *NewFixedWinding( int points ){
 	}
 
 	size = (int)( (size_t)( (fixedWinding_t *)0 )->points[points] );
-	w = safe_malloc( size );
-	memset( w, 0, size );
+	w = safe_malloc0( size );
 
 	return w;
 }
@@ -936,11 +935,9 @@ void LoadPortals( char *name ){
 	portallongs = portalbytes / sizeof( long );
 
 	// each file portal is split into two memory portals
-	portals = safe_malloc( 2 * numportals * sizeof( vportal_t ) );
-	memset( portals, 0, 2 * numportals * sizeof( vportal_t ) );
+	portals = safe_malloc0( 2 * numportals * sizeof( vportal_t ) );
 
-	leafs = safe_malloc( portalclusters * sizeof( leaf_t ) );
-	memset( leafs, 0, portalclusters * sizeof( leaf_t ) );
+	leafs = safe_malloc0( portalclusters * sizeof( leaf_t ) );
 
 	for ( i = 0; i < portalclusters; i++ )
 		leafs[i].merged = -1;
@@ -1036,11 +1033,9 @@ void LoadPortals( char *name ){
 
 	}
 
-	faces = safe_malloc( 2 * numfaces * sizeof( vportal_t ) );
-	memset( faces, 0, 2 * numfaces * sizeof( vportal_t ) );
+	faces = safe_malloc0( 2 * numfaces * sizeof( vportal_t ) );
 
-	faceleafs = safe_malloc( portalclusters * sizeof( leaf_t ) );
-	memset( faceleafs, 0, portalclusters * sizeof( leaf_t ) );
+	faceleafs = safe_malloc0( portalclusters * sizeof( leaf_t ) );
 
 	for ( i = 0, p = faces; i < numfaces; i++ )
 	{

@@ -230,7 +230,8 @@ static void LoadPNGBuffer( byte *buffer, int size, byte **pixels, int *width, in
 	/* create image pixel buffer */
 	*width = w;
 	*height = h;
-	*pixels = safe_malloc( w * h * 4 );
+	/* initialize with zeros, this memory area may not be entirely rewritten */
+	*pixels = safe_malloc0( w * h * 4 );
 
 	/* create row pointers */
 	rowPointers = safe_malloc( h * sizeof( byte* ) );
@@ -243,7 +244,6 @@ static void LoadPNGBuffer( byte *buffer, int size, byte **pixels, int *width, in
 	/* clean up */
 	free( rowPointers );
 	png_destroy_read_struct( &png, &info, &end );
-
 }
 
 

@@ -532,8 +532,7 @@ static void RadSubdivideDiffuseLight( int lightmapNum, bspDrawSurface_t *ds, raw
 	}
 
 	/* create a light */
-	light = safe_malloc( sizeof( *light ) );
-	memset( light, 0, sizeof( *light ) );
+	light = safe_malloc0( sizeof( *light ) );
 
 	/* attach it */
 	ThreadLock();
@@ -579,8 +578,7 @@ static void RadSubdivideDiffuseLight( int lightmapNum, bspDrawSurface_t *ds, raw
 		/* optionally create a point splashsplash light for first pass */
 		if ( original && si->backsplashFraction > 0 ) {
 			/* allocate a new point light */
-			splash = safe_malloc( sizeof( *splash ) );
-			memset( splash, 0, sizeof( *splash ) );
+			splash = safe_malloc0( sizeof( *splash ) );
 			splash->next = lights;
 			lights = splash;
 

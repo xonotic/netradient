@@ -162,13 +162,11 @@ void SmoothNormals( void ){
 
 
 	/* allocate shade angle table */
-	shadeAngles = safe_malloc( numBSPDrawVerts * sizeof( float ) );
-	memset( shadeAngles, 0, numBSPDrawVerts * sizeof( float ) );
+	shadeAngles = safe_malloc0( numBSPDrawVerts * sizeof( float ) );
 
 	/* allocate smoothed table */
 	cs = ( numBSPDrawVerts / 8 ) + 1;
-	smoothed = safe_malloc( cs );
-	memset( smoothed, 0, cs );
+	smoothed = safe_malloc0( cs );
 
 	/* set default shade angle */
 	defaultShadeAngle = DEG2RAD( shadeAngleDegrees );
@@ -2392,8 +2390,7 @@ void IlluminateRawLightmap( int rawLightmapNum ){
 			if ( lm->superLuxels[ lightmapNum ] == NULL ) {
 				/* allocate sampling lightmap storage */
 				size = lm->sw * lm->sh * SUPER_LUXEL_SIZE * sizeof( float );
-				lm->superLuxels[ lightmapNum ] = safe_malloc( size );
-				memset( lm->superLuxels[ lightmapNum ], 0, size );
+				lm->superLuxels[ lightmapNum ] = safe_malloc0( size );
 			}
 
 			/* set style */

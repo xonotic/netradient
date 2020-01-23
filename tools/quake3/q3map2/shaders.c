@@ -1272,8 +1272,7 @@ static void ParseShaderFile( const char *filename ){
 			else if ( !Q_stricmp( token, "sun" ) /* sof2 */ || !Q_stricmp( token, "q3map_sun" ) || !Q_stricmp( token, "q3map_sunExt" ) ) {
 				float a, b;
 				sun_t       *sun;
-				qboolean ext;
-
+				qboolean ext = qfalse;
 
 				/* ydnar: extended sun directive? */
 				if ( !Q_stricmp( token, "q3map_sunext" ) ) {
@@ -1281,8 +1280,7 @@ static void ParseShaderFile( const char *filename ){
 				}
 
 				/* allocate sun */
-				sun = safe_malloc( sizeof( *sun ) );
-				memset( sun, 0, sizeof( *sun ) );
+				sun = safe_malloc0( sizeof( *sun ) );
 
 				/* set style */
 				sun->style = si->lightStyle;
@@ -1382,8 +1380,7 @@ static void ParseShaderFile( const char *filename ){
 					surfaceModel_t  *model;
 
 					/* allocate new model and attach it */
-					model = safe_malloc( sizeof( *model ) );
-					memset( model, 0, sizeof( *model ) );
+					model = safe_malloc0( sizeof( *model ) );
 					model->next = si->surfaceModel;
 					si->surfaceModel = model;
 
@@ -1416,8 +1413,7 @@ static void ParseShaderFile( const char *filename ){
 
 
 					/* allocate new foliage struct and attach it */
-					foliage = safe_malloc( sizeof( *foliage ) );
-					memset( foliage, 0, sizeof( *foliage ) );
+					foliage = safe_malloc0( sizeof( *foliage ) );
 					foliage->next = si->foliage;
 					si->foliage = foliage;
 
@@ -1747,8 +1743,7 @@ static void ParseShaderFile( const char *filename ){
 					alpha = ( !Q_stricmp( token, "q3map_alphaGen" ) || !Q_stricmp( token, "q3map_alphaMod" ) ) ? 1 : 0;
 
 					/* allocate new colormod */
-					cm = safe_malloc( sizeof( *cm ) );
-					memset( cm, 0, sizeof( *cm ) );
+					cm = safe_malloc0( sizeof( *cm ) );
 
 					/* attach to shader */
 					if ( si->colorMod == NULL ) {

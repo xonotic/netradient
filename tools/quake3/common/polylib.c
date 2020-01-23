@@ -66,8 +66,7 @@ winding_t   *AllocWinding( int points ){
 		}
 	}
 	s = sizeof( *w ) + ( points ? sizeof( w->p[0] ) * ( points - 1 ) : 0 );
-	w = safe_malloc( s );
-	memset( w, 0, s );
+	w = safe_malloc0( s );
 	return w;
 }
 
@@ -94,8 +93,7 @@ winding_accu_t *AllocWindingAccu( int points ){
 		}
 	}
 	s = sizeof( *w ) + ( points ? sizeof( w->p[0] ) * ( points - 1 ) : 0 );
-	w = safe_malloc( s );
-	memset( w, 0, s );
+	w = safe_malloc0( s );
 	return w;
 }
 

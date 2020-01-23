@@ -117,14 +117,14 @@ void LokiInitPaths( char *argv0 ){
 
 	#if GDEF_OS_MACOS
 	char *subPath = "/Library/Application Support";
-	macLibraryApplicationSupportPath = safe_malloc( sizeof( char ) * ( strlen( home ) + strlen( subPath ) ) );
+	macLibraryApplicationSupportPath = safe_malloc( sizeof( char ) * ( strlen( home ) + strlen( subPath ) ) + 1 );
 	sprintf( macLibraryApplicationSupportPath, "%s%s", home, subPath );
 	#elif GDEF_OS_XDG
 	xdgDataHomePath = getenv( "XDG_DATA_HOME" );
 
 	if ( xdgDataHomePath == NULL ) {
 		char *subPath = "/.local/share";
-		xdgDataHomePath = safe_malloc( sizeof( char ) * ( strlen( home ) + strlen( subPath ) ) );
+		xdgDataHomePath = safe_malloc( sizeof( char ) * ( strlen( home ) + strlen( subPath ) ) + 1 );
 		sprintf( xdgDataHomePath, "%s%s", home, subPath );
 	}
 	#endif // GDEF_OS_XDG

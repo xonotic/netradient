@@ -73,13 +73,8 @@
 // the dec offsetof macro doesnt work very well...
 #define myoffsetof( type,identifier ) ( (size_t)& ( (type *)0 )->identifier )
 
-#define SAFE_MALLOC
-#ifdef SAFE_MALLOC
 void *safe_malloc( size_t size );
 void *safe_malloc_info( size_t size, char* info );
-#else
-#define safe_malloc( a ) malloc( a )
-#endif /* SAFE_MALLOC */
 
 // set these before calling CheckParm
 extern int myargc;

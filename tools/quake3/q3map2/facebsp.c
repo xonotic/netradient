@@ -49,8 +49,7 @@ int c_faceLeafs;
 face_t  *AllocBspFace( void ) {
 	face_t  *f;
 
-	f = safe_malloc( sizeof( *f ) );
-	memset( f, 0, sizeof( *f ) );
+	f = safe_malloc0( sizeof( *f ) );
 
 	return f;
 }

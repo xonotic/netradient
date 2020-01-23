@@ -50,8 +50,6 @@ qboolean g_dokeypress = false;
 
 qboolean g_nomkdir = false;
 
-
-#ifdef SAFE_MALLOC
 void *safe_malloc( size_t size ){
 	void *p;
 
@@ -73,7 +71,6 @@ void *safe_malloc_info( size_t size, char* info ){
 
 	return p;
 }
-#endif // !SAFE_MALLOC
 
 void *SafeMalloc( size_t n, char *desc ){
 	void *p;

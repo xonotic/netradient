@@ -67,6 +67,8 @@ void WriteTGA24( char *filename, byte *data, int width, int height, qboolean fli
 
 	/* allocate a buffer and set it up */
 	buffer = safe_malloc( width * height * 3 + 18 );
+	/* we may also use safe_malloc0 on the whole instead,
+	 * this would just be a bit slower */
 	memset( buffer, 0, 18 );
 	buffer[ 2 ] = 2;
 	buffer[ 12 ] = width & 255;
@@ -809,8 +811,7 @@ qboolean AddSurfaceToRawLightmap( int num, rawLightmap_t *lm ){
 	/* for planar surfaces, create lightmap vectors for st->xyz conversion */
 	if ( VectorLength( ds->lightmapVecs[ 2 ] ) || 1 ) {  /* ydnar: can't remember what exactly i was thinking here... */
 		/* allocate space for the vectors */
-		lm->vecs = safe_malloc( 3 * sizeof( vec3_t ) );
-		memset( lm->vecs, 0, 3 * sizeof( vec3_t ) );
+		lm->vecs = safe_malloc0( 3 * sizeof( vec3_t ) );
 		VectorCopy( ds->lightmapVecs[ 2 ], lm->vecs[ 2 ] );
 
 		/* project stepped lightmap blocks and subtract to get planevecs */
@@ -980,18 +981,15 @@ void SetupSurfaceLightmaps( void ){
 	/* allocate a list of surface clusters */
 	numSurfaceClusters = 0;
 	maxSurfaceClusters = numBSPLeafSurfaces;
-	surfaceClusters = safe_malloc( maxSurfaceClusters * sizeof( *surfaceClusters ) );
-	memset( surfaceClusters, 0, maxSurfaceClusters * sizeof( *surfaceClusters ) );
+	surfaceClusters = safe_malloc0( maxSurfaceClusters * sizeof( *surfaceClusters ) );
 
 	/* allocate a list for per-surface info */
-	surfaceInfos = safe_malloc( numBSPDrawSurfaces * sizeof( *surfaceInfos ) );
-	memset( surfaceInfos, 0, numBSPDrawSurfaces * sizeof( *surfaceInfos ) );
+	surfaceInfos = safe_malloc0( numBSPDrawSurfaces * sizeof( *surfaceInfos ) );
 	for ( i = 0; i < numBSPDrawSurfaces; i++ )
 		surfaceInfos[ i ].childSurfaceNum = -1;
 
 	/* allocate a list of surface indexes to be sorted */
-	sortSurfaces = safe_malloc( numBSPDrawSurfaces * sizeof( int ) );
-	memset( sortSurfaces, 0, numBSPDrawSurfaces * sizeof( int ) );
+	sortSurfaces = safe_malloc0( numBSPDrawSurfaces * sizeof( int ) );
 
 	/* walk each model in the bsp */
 	for ( i = 0; i < numBSPModels; i++ )
@@ -1111,14 +1109,12 @@ void SetupSurfaceLightmaps( void ){
 
 	/* allocate a list of surfaces that would go into raw lightmaps */
 	numLightSurfaces = 0;
-	lightSurfaces = safe_malloc( numSurfsLightmapped * sizeof( int ) );
-	memset( lightSurfaces, 0, numSurfsLightmapped * sizeof( int ) );
+	lightSurfaces = safe_malloc0( numSurfsLightmapped * sizeof( int ) );
 
 	/* allocate a list of raw lightmaps */
 	numRawSuperLuxels = 0;
 	numRawLightmaps = 0;
-	rawLightmaps = safe_malloc( numSurfsLightmapped * sizeof( *rawLightmaps ) );
-	memset( rawLightmaps, 0, numSurfsLightmapped * sizeof( *rawLightmaps ) );
+	rawLightmaps = safe_malloc0( numSurfsLightmapped * sizeof( *rawLightmaps ) );
 
 	/* walk the list of sorted surfaces */
 	for ( i = 0; i < numBSPDrawSurfaces; i++ )
@@ -1203,10 +1199,8 @@ void SetupSurfaceLightmaps( void ){
 	/* allocate vertex luxel storage */
 	for ( k = 0; k < MAX_LIGHTMAPS; k++ )
 	{
-		vertexLuxels[ k ] = safe_malloc( numBSPDrawVerts * VERTEX_LUXEL_SIZE * sizeof( float ) );
-		memset( vertexLuxels[ k ], 0, numBSPDrawVerts * VERTEX_LUXEL_SIZE * sizeof( float ) );
-		radVertexLuxels[ k ] = safe_malloc( numBSPDrawVerts * VERTEX_LUXEL_SIZE * sizeof( float ) );
-		memset( radVertexLuxels[ k ], 0, numBSPDrawVerts * VERTEX_LUXEL_SIZE * sizeof( float ) );
+		vertexLuxels[ k ] = safe_malloc0( numBSPDrawVerts * VERTEX_LUXEL_SIZE * sizeof( float ) );
+		radVertexLuxels[ k ] = safe_malloc0( numBSPDrawVerts * VERTEX_LUXEL_SIZE * sizeof( float ) );
 	}
 
 	/* emit some stats */
@@ -1957,13 +1951,10 @@ static void SetupOutLightmap( rawLightmap_t *lm, outLightmap_t *olm ){
 	olm->numShaders = 0;
 
 	/* allocate buffers */
-	olm->lightBits = safe_malloc( ( olm->customWidth * olm->customHeight / 8 ) + 8 );
-	memset( olm->lightBits, 0, ( olm->customWidth * olm->customHeight / 8 ) + 8 );
-	olm->bspLightBytes = safe_malloc( olm->customWidth * olm->customHeight * 3 );
-	memset( olm->bspLightBytes, 0, olm->customWidth * olm->customHeight * 3 );
+	olm->lightBits = safe_malloc0( ( olm->customWidth * olm->customHeight / 8 ) + 8 );
+	olm->bspLightBytes = safe_malloc0( olm->customWidth * olm->customHeight * 3 );
 	if ( deluxemap ) {
-		olm->bspDirBytes = safe_malloc( olm->customWidth * olm->customHeight * 3 );
-		memset( olm->bspDirBytes, 0, olm->customWidth * olm->customHeight * 3 );
+		olm->bspDirBytes = safe_malloc0( olm->customWidth * olm->customHeight * 3 );
 	}
 }
 
@@ -2526,8 +2517,7 @@ void StoreSurfaceLightmaps( qboolean fastLightmapSearch, qboolean storeForReal )
 			/* allocate bsp luxel storage */
 			if ( lm->bspLuxels[ lightmapNum ] == NULL ) {
 				size = lm->w * lm->h * BSP_LUXEL_SIZE * sizeof( float );
-				lm->bspLuxels[ lightmapNum ] = safe_malloc( size );
-				memset( lm->bspLuxels[ lightmapNum ], 0, size );
+				lm->bspLuxels[ lightmapNum ] = safe_malloc0( size );
 			}
 
 			/* allocate radiosity lightmap storage */
@@ -3126,8 +3116,7 @@ void StoreSurfaceLightmaps( qboolean fastLightmapSearch, qboolean storeForReal )
 		else
 		{
 			numBSPLightBytes = ( numBSPLightmaps * game->lightmapSize * game->lightmapSize * 3 );
-			bspLightBytes = safe_malloc( numBSPLightBytes );
-			memset( bspLightBytes, 0, numBSPLightBytes );
+			bspLightBytes = safe_malloc0( numBSPLightBytes );
 		}
 
 		/* walk the list of output lightmaps */

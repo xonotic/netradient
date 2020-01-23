@@ -1364,8 +1364,7 @@ void CreatePassages( int portalnum ){
 			continue;
 		}
 
-		passage = (passage_t *) safe_malloc( sizeof( passage_t ) + portalbytes );
-		memset( passage, 0, sizeof( passage_t ) + portalbytes );
+		passage = (passage_t *) safe_malloc0( sizeof( passage_t ) + portalbytes );
 		numseperators = AddSeperators( portal->winding, target->winding, qfalse, seperators, MAX_SEPERATORS * 2 );
 		numseperators += AddSeperators( target->winding, portal->winding, qtrue, &seperators[numseperators], MAX_SEPERATORS * 2 - numseperators );
 
@@ -1585,14 +1584,11 @@ void BasePortalVis( int portalnum ){
 		return;
 	}
 
-	p->portalfront = safe_malloc( portalbytes );
-	memset( p->portalfront, 0, portalbytes );
+	p->portalfront = safe_malloc0( portalbytes );
 
-	p->portalflood = safe_malloc( portalbytes );
-	memset( p->portalflood, 0, portalbytes );
+	p->portalflood = safe_malloc0( portalbytes );
 
-	p->portalvis = safe_malloc( portalbytes );
-	memset( p->portalvis, 0, portalbytes );
+	p->portalvis = safe_malloc0( portalbytes );
 
 	for ( j = 0, tp = portals ; j < numportals * 2 ; j++, tp++ )
 	{

@@ -98,8 +98,7 @@ brush_t *AllocBrush( int numSides ){
 		Error( "AllocBrush called with numsides = %d", numSides );
 	}
 	c = (size_t)&( ( (brush_t*) 0 )->sides[ numSides ] );
-	bb = safe_malloc( c );
-	memset( bb, 0, c );
+	bb = safe_malloc0( c );
 	if ( numthreads == 1 ) {
 		numActiveBrushes++;
 	}
@@ -829,8 +828,7 @@ void FilterStructuralBrushesIntoTree( entity_t *e, tree_t *tree ) {
 tree_t *AllocTree( void ){
 	tree_t  *tree;
 
-	tree = safe_malloc( sizeof( *tree ) );
-	memset( tree, 0, sizeof( *tree ) );
+	tree = safe_malloc0( sizeof( *tree ) );
 	ClearBounds( tree->mins, tree->maxs );
 
 	return tree;
@@ -844,8 +842,7 @@ tree_t *AllocTree( void ){
 node_t *AllocNode( void ){
 	node_t  *node;
 
-	node = safe_malloc( sizeof( *node ) );
-	memset( node, 0, sizeof( *node ) );
+	node = safe_malloc0( sizeof( *node ) );
 
 	return node;
 }

@@ -62,8 +62,7 @@ portal_t *AllocPortal( void ){
 		c_peak_portals = c_active_portals;
 	}
 
-	p = safe_malloc( sizeof( portal_t ) );
-	memset( p, 0, sizeof( portal_t ) );
+	p = safe_malloc0( sizeof( portal_t ) );
 
 	return p;
 }
