@@ -2981,6 +2981,11 @@ int LightMain( int argc, char **argv ){
 		Sys_Printf( "Restricted lightmap searching enabled - block size adjusted to %d\n", lightmapSearchBlockSize );
 	}
 
+	/* arg checking */
+	if ( i != ( argc - 1 ) ) {
+		Error( "usage: q3map -light [options] <bspfile>" );
+	}
+
 	strcpy( source, ExpandArg( argv[ i ] ) );
 	StripExtension( source );
 	DefaultExtension( source, ".map" );
