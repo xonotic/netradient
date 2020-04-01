@@ -177,6 +177,8 @@ Options:
   Do not build NetRadiant (default: `ON`, build netradiant graphical editor);
 * `BUILD_TOOLS=OFF`  
   Do not build q3map2 and other tools (default: `ON`, build command line tools);
+* `BUILD_DAEMONMAP=OFF`  
+  Do not build daemonmap tool (default: `ON` if submodule is there, buils daemonmap navigation mesh generator);
 * `BUILD_CRUNCH=OFF`  
   Disable crunch support (default: `ON` if submodule is there, enable crunch support);
 * `RADIANT_ABOUTMSG="Custom build by $(whoami)"`  
@@ -184,16 +186,18 @@ Options:
 
 Targets:
 
-* `binaries`          Compiles all binaries;
-  - `netradiant`      Compiles the netradiant editor;
-  - `modules`         Compiles all modules (each module has its own target as well);
-  - `plugins`         Compiles all plugins (each plugin has its own target as well);
-  - `tools`           Compiles all tools (each tool has its own target as well);
-     * `quake2`       Compiles all the Quake 2 tools: `q2map`, `qdata3`;
-     * `heretic2`     Compiles all the Heretic2 tools: `q2map`, `h2data`;
-     * `quake3`       Compiles all the Quake 3 tools:
-         - `q3map2`   Compiles the quake3 map compiler;
-         - `q3data`   Compiles the q3data tool.
+* `binaries`            Compile all binaries;
+  - `netradiant`        Compile the netradiant editor;
+  - `modules`           Compile all modules (each module has its own target as well);
+  - `plugins`           Compile all plugins (each plugin has its own target as well);
+  - `tools`             Compile all tools (each tool has its own target as well);
+     * `quake2`         Compile all the Quake 2 tools: `q2map`, `qdata3`;
+     * `heretic2`       Compile all the Heretic2 tools: `q2map`, `h2data`;
+     * `quake3`         Compile all the Quake 3 tools:
+         - `q3map2`     Compile the Quake 3 map compiler;
+         - `q3data`     Compile the q3data tool;
+     * `unvanquished`   Compile all the Unvanquished tool: `daemonmap`, `q3map3`, `q4data`;
+         - `daemonmap`  Compile the daemonmap navigation mesh generator.
 
 Type `make help` to get an exhaustive list of targets.
 
