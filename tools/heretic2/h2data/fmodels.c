@@ -84,7 +84,7 @@ extern fmstvert_t base_st[MAX_FM_VERTS];
 extern fmtriangle_t triangles[MAX_FM_TRIANGLES];
 
 // Frames
-fmframe_t g_frames[MAX_FM_FRAMES];
+extern fmframe_t g_frames[MAX_FM_FRAMES];
 //fmframe_t	*g_FMframes;
 
 // GL Commands

@@ -25,14 +25,7 @@
 #define MAX_SPRFRAMES           MAX_MD2SKINS
 
 dsprite_t sprite;
-dsprframe_t frames[MAX_SPRFRAMES];
-
-byte            *byteimage, *lbmpalette;
-int byteimagewidth, byteimageheight;
-
-qboolean TrueColorImage;
-unsigned        *longimage;
-int longimagewidth, longimageheight;
+static dsprframe_t frames[MAX_SPRFRAMES];
 
 char spritename[1024];
 
@@ -41,7 +34,6 @@ void FinishSprite( void );
 void Cmd_Spritename( void );
 
 char spr_prefix[1024];
-char pic_prefix[1024];
 
 extern char        *g_outputDir;
 

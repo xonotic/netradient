@@ -35,6 +35,12 @@
 extern char     *g_outputDir;
 #endif // _QDATA
 
+byte *byteimage, *lbmpalette;
+int byteimagewidth, byteimageheight;
+qboolean TrueColorImage;
+unsigned *longimage;
+int longimagewidth, longimageheight;
+
 char mip_prefix[1024];              // directory to dump the textures in
 
 qboolean colormap_issued;

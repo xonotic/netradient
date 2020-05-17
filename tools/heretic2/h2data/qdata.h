@@ -135,10 +135,10 @@ void Cmd_Video( void );
 
 void ReleaseFile( char *filename );
 
-extern byte        *byteimage, *lbmpalette;
+extern byte *byteimage, *lbmpalette;
 extern int byteimagewidth, byteimageheight;
 extern qboolean TrueColorImage;
-extern unsigned    *longimage;
+extern unsigned *longimage;
 extern int longimagewidth, longimageheight;
 
 extern qboolean g_release;              // don't grab, copy output data to new tree

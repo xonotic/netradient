@@ -44,7 +44,8 @@ vec3_t illumination[MAX_PATCHES];       // light arriving at a patch
 vec3_t face_offset[MAX_MAP_FACES];          // for rotating bmodels
 dplane_t backplanes[MAX_MAP_PLANES];
 
-char inbase[32], outbase[32];
+extern char inbase[32];
+extern char outbase[32];
 
 int fakeplanes;                         // created planes for origin offset
 
@@ -64,11 +65,11 @@ float maxlight = 196;
 
 float lightscale = 1.0;
 
-qboolean glview;
+extern qboolean glview;
 
 qboolean nopvs;
 
-char source[1024];
+extern char source[1024];
 
 float direct_scale =  0.4;
 float entity_scale =  1.0;
@@ -582,7 +583,6 @@ void RadWorld( void ){
 	RunThreadsOnIndividual( numfaces, true, FinalLightFace );
 }
 
-
 /*
    ========
    main
@@ -602,6 +602,8 @@ int RAD_Main(){
 	}
 
 	start = I_FloatTime();
+
+	void ( *CalcTextureReflectivity )( void );
 
 	if ( !strcmp( game, "heretic2" ) ) {
 		CalcTextureReflectivity = &CalcTextureReflectivity_Heretic2;

@@ -60,6 +60,7 @@ extern float subdivide_size;
 
 // VIS
 extern char inbase[32];
+extern char outbase[32];
 extern qboolean fastvis;
 extern qboolean nosort;
 extern int testlevel;
