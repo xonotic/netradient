@@ -327,11 +327,8 @@ String( StringRange range )
 	: Buffer( range ){
 }
 
-String& operator=( const String& other ){
-	String temp( other );
-	temp.swap( *this );
-	return *this;
-}
+String& operator=( const String& other ) = default;
+
 String& operator=( const char* string ){
 	String temp( string );
 	temp.swap( *this );
