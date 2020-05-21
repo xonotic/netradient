@@ -1,4 +1,4 @@
-add_library(uilib
+add_library(uilib STATIC
         uilib.cpp
         )
 

@@ -1,4 +1,4 @@
-add_library(container
+add_library(container STATIC
         array.cpp array.h
         cache.h
         container.h

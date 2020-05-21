@@ -1,4 +1,4 @@
-add_library(math
+add_library(math STATIC
         _.cpp
         aabb.h
         curve.h

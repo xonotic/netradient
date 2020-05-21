@@ -1,4 +1,4 @@
-add_library(generic
+add_library(generic STATIC
         arrayrange.h
         bitfield.h
         callback.cpp callback.h

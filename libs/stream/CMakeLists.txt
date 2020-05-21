@@ -1,4 +1,4 @@
-add_library(stream
+add_library(stream STATIC
         _.cpp
         filestream.h
         memstream.h

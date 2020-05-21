@@ -1,4 +1,4 @@
-add_library(splines
+add_library(splines STATIC
         math_angles.cpp math_angles.h
         math_matrix.cpp math_matrix.h
         math_quaternion.cpp math_quaternion.h

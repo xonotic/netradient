@@ -7,7 +7,7 @@ else ()
     list(APPEND L_NETLIST l_net_berkley.c)
 endif ()
 
-add_library(l_net ${L_NETLIST})
+add_library(l_net STATIC ${L_NETLIST})
 
 if (WIN32)
     target_link_libraries(l_net PRIVATE ws2_32)

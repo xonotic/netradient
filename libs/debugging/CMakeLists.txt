@@ -1,3 +1,3 @@
-add_library(debugging
+add_library(debugging STATIC
         debugging.cpp debugging.h
         )

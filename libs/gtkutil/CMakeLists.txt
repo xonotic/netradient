@@ -1,4 +1,4 @@
-add_library(gtkutil
+add_library(gtkutil STATIC
         accelerator.cpp accelerator.h
         button.cpp button.h
         clipboard.cpp clipboard.h

@@ -1,4 +1,4 @@
-add_library(os
+add_library(os STATIC
         _.cpp
         dir.h
         file.h

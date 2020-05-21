@@ -1,3 +1,3 @@
-add_library(filematch
+add_library(filematch STATIC
         ../filematch.c ../filematch.h
         )

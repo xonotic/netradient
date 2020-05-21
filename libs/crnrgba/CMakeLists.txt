@@ -1,4 +1,4 @@
-add_library(crnrgba
+add_library(crnrgba STATIC
         crn_rgba.h
         crn_rgba.cpp
         ../crunch/inc/crn_decomp.h

@@ -1,4 +1,4 @@
-add_library(xmllib
+add_library(xmllib STATIC
         ixml.h
         xmlelement.h
         xmlparser.h

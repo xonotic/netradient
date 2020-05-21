@@ -1,4 +1,4 @@
-add_library(picomodel
+add_library(picomodel STATIC
         lwo/clip.c
         lwo/envelope.c
         lwo/list.c
