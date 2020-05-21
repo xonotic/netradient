@@ -145,7 +145,7 @@ void            set( const float x, const float y, const float z );
 
 idVec3 operator-() const;
 
-idVec3          &operator=( const idVec3 &a );
+idVec3          &operator=( const idVec3 &a ) = default;
 
 float operator*( const idVec3 &a ) const;
 idVec3 operator*( const float a ) const;
@@ -204,14 +204,6 @@ ID_INLINE idVec3::operator float *( void ) {
 
 ID_INLINE idVec3 idVec3::operator-() const {
 	return idVec3( -x, -y, -z );
-}
-
-ID_INLINE idVec3 &idVec3::operator=( const idVec3 &a ) {
-	x = a.x;
-	y = a.y;
-	z = a.z;
-
-	return *this;
 }
 
 ID_INLINE void idVec3::set( const float x, const float y, const float z ) {

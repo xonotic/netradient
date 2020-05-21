@@ -651,6 +651,8 @@ Vector3 m_funcStaticOrigin;
 
 static EBrushType m_type;
 
+FacePlane &operator=( const FacePlane &a ) = default;
+
 static bool isDoom3Plane(){
 	return FacePlane::m_type == eBrushTypeDoom3 || FacePlane::m_type == eBrushTypeQuake4;
 }

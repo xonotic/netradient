@@ -50,7 +50,7 @@ float           &operator[]( int index );
 
 void            set( float x, float y, float z, float w );
 
-void operator=( quat_t a );
+quat_t &operator=( const quat_t &a ) = default;
 
 friend quat_t operator+( quat_t a, quat_t b );
 quat_t          &operator+=( quat_t a );
@@ -100,13 +100,6 @@ inline void quat_t::set( float x, float y, float z, float w ) {
 	this->y = y;
 	this->z = z;
 	this->w = w;
-}
-
-inline void quat_t::operator=( quat_t a ) {
-	x = a.x;
-	y = a.y;
-	z = a.z;
-	w = a.w;
 }
 
 inline quat_t operator+( quat_t a, quat_t b ) {
