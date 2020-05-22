@@ -815,12 +815,17 @@ class TexturesDependencies :
 	public GlobalPreferenceSystemModuleRef
 {
 ImageModulesRef m_image_modules;
+ImageModulesRef m_fallback_image_modules;
 public:
 TexturesDependencies() :
-	m_image_modules( GlobalRadiant().getRequiredGameDescriptionKeyValue( "texturetypes" ) ){
+	m_image_modules( GlobalRadiant().getRequiredGameDescriptionKeyValue( "texturetypes" ) ),
+	m_fallback_image_modules( "png" ){
 }
 ImageModules& getImageModules(){
 	return m_image_modules.get();
+}
+ImageModules& getFallbackImageModules(){
+	return m_fallback_image_modules.get();
 }
 };
 
@@ -850,4 +855,7 @@ StaticRegisterModule staticRegisterTextures( StaticTexturesModule::instance() );
 
 ImageModules& Textures_getImageModules(){
 	return StaticTexturesModule::instance().getDependencies().getImageModules();
+}
+ImageModules& Textures_getFallbackImageModules(){
+	return StaticTexturesModule::instance().getDependencies().getFallbackImageModules();
 }

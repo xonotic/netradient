@@ -108,6 +108,8 @@ virtual qtexture_t* getBump() const = 0;
 virtual qtexture_t* getSpecular() const = 0;
 // get shader name
 virtual const char* getName() const = 0;
+virtual const char* getWadName() const = 0;
+virtual void setWadName( const char* name ) = 0;
 virtual bool IsInUse() const = 0;
 virtual void SetInUse( bool bInUse ) = 0;
 // get the editor flags (QER_NOCARVE QER_TRANS)

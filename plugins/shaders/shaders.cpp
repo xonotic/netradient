@@ -273,6 +273,7 @@ class ShaderTemplate
 {
 std::size_t m_refcount;
 CopiedString m_Name;
+CopiedString m_WadName;
 public:
 
 ShaderParameters m_params;
@@ -844,6 +845,7 @@ const ShaderArguments& m_args;
 const char* m_filename;
 // name is shader-name, otherwise texture-name ( if not a real shader )
 CopiedString m_Name;
+CopiedString m_WadName;
 
 qtexture_t* m_pTexture;
 qtexture_t* m_notfound;
@@ -919,6 +921,10 @@ qtexture_t* getSpecular() const {
 // get shader name
 const char* getName() const {
 	return m_Name.c_str();
+}
+
+const char* getWadName() const {
+	return m_WadName.c_str();
 }
 
 bool IsInUse() const {
@@ -1054,6 +1060,10 @@ void unrealiseLighting(){
 // set shader name
 void setName( const char* name ){
 	m_Name = name;
+}
+
+void setWadName( const char* name ){
+	m_WadName = name;
 }
 
 class MapLayer : public ShaderLayer

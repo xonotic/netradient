@@ -79,44 +79,58 @@ void QE_InitVFS(){
 	// we need to call in order, the mod ones first, then the base ones .. they will be searched in this order
 	// *nix systems have a dual filesystem in ~/.q3a, which is searched first .. so we need to add that too
 
-	const char* gamename = gamename_get();
+	const char* enginepath = EnginePath_get();
+	const char* homepath = g_qeglobals.m_userEnginePath.c_str(); // returns enginepath if not homepath is not set
+
 	const char* basegame = basegame_get();
-	const char* userRoot = g_qeglobals.m_userEnginePath.c_str();
-	const char* globalRoot = EnginePath_get();
+	const char* gamename = gamename_get(); // returns basegame if gamename is not set
 
 	// editor builtin VFS
 	StringOutputStream editorGamePath( 256 );
 	editorGamePath << GlobalRadiant().getDataPath() << DEFAULT_EDITORVFS_DIRNAME;
 	GlobalFileSystem().initDirectory( editorGamePath.c_str() );
 
+	globalOutputStream() << "engine path: " << enginepath << "\n";
+	globalOutputStream() << "home path: " << homepath << "\n";
+	globalOutputStream() << "base game: " << basegame << "\n";
+	globalOutputStream() << "game name: " << gamename << "\n";
+
 	// if we have a mod dir
 	if ( !string_equal( gamename, basegame ) ) {
-		// ~/.<gameprefix>/<fs_game>
-		if ( userRoot && !g_disableHomePath ) {
-			StringOutputStream userGamePath( 256 );
-			userGamePath << userRoot << gamename << '/';
-			GlobalFileSystem().initDirectory( userGamePath.c_str() );
+		// if we have a home dir
+		if ( !string_equal( homepath, enginepath ) )
+		{
+			// ~/.<gameprefix>/<fs_game>
+			if ( homepath && !g_disableHomePath ) {
+				StringOutputStream userGamePath( 256 );
+				userGamePath << homepath << gamename << '/';
+				GlobalFileSystem().initDirectory( userGamePath.c_str() );
+			}
 		}
 
 		// <fs_basepath>/<fs_game>
 		if ( !g_disableEnginePath ) {
 			StringOutputStream globalGamePath( 256 );
-			globalGamePath << globalRoot << gamename << '/';
+			globalGamePath << enginepath << gamename << '/';
 			GlobalFileSystem().initDirectory( globalGamePath.c_str() );
 		}
 	}
 
-	// ~/.<gameprefix>/<fs_main>
-	if ( userRoot && !g_disableHomePath ) {
-		StringOutputStream userBasePath( 256 );
-		userBasePath << userRoot << basegame << '/';
-		GlobalFileSystem().initDirectory( userBasePath.c_str() );
+	// if we have a home dir
+	if ( !string_equal( homepath, enginepath ) )
+	{
+		// ~/.<gameprefix>/<fs_main>
+		if ( homepath && !g_disableHomePath ) {
+			StringOutputStream userBasePath( 256 );
+			userBasePath << homepath << basegame << '/';
+			GlobalFileSystem().initDirectory( userBasePath.c_str() );
+		}
 	}
 
 	// <fs_basepath>/<fs_main>
 	if ( !g_disableEnginePath ) {
 		StringOutputStream globalBasePath( 256 );
-		globalBasePath << globalRoot << basegame << '/';
+		globalBasePath << enginepath << basegame << '/';
 		GlobalFileSystem().initDirectory( globalBasePath.c_str() );
 	}
 

@@ -30,9 +30,9 @@
 #include "os/path.h"
 #include "stream/stringstream.h"
 
-
 typedef Modules<_QERPlugImageTable> ImageModules;
 ImageModules& Textures_getImageModules();
+ImageModules& Textures_getFallbackImageModules();
 
 /// \brief Returns a new image for the first file matching \p name in one of the available texture formats, or 0 if no file is found.
 Image* QERApp_LoadImage( void* environment, const char* name ){
@@ -59,6 +59,13 @@ public:
 	};
 
 	Textures_getImageModules().foreachModule( LoadImageVisitor( name, image ) );
+
+	// Games can provide their own fallback, so only do this when previous
+	// loading attempt did not work.
+	if ( image == 0 && !!string_compare_nocase( name, "textures/radiant" ) )
+	{
+		Textures_getFallbackImageModules().foreachModule( LoadImageVisitor( name, image ) );
+	}
 
 	return image;
 }

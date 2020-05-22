@@ -72,6 +72,12 @@ inline bool path_equal( const char* path, const char* other ){
 #endif
 }
 
+/// \brief Returns true if \p path and \p other refer to the same file or directory, case insensitively.
+/// O(n)
+inline bool path_equal_i( const char* path, const char* other ){
+	return string_equal_nocase( path, other );
+}
+
 /// \brief Returns true if the first \p n bytes of \p path and \p other form paths that refer to the same file or directory.
 /// If the paths are UTF-8 encoded, [\p path, \p path + \p n) must be a complete path.
 /// O(n)
@@ -173,6 +179,12 @@ inline const char* path_get_extension( const char* path ){
 /// O(n)
 inline bool extension_equal( const char* extension, const char* other ){
 	return path_equal( extension, other );
+}
+
+/// \brief Returns true if \p extension is of the same type as \p other, case insensitively.
+/// O(n)
+inline bool extension_equal_i( const char* extension, const char* other ){
+	return path_equal_i( extension, other );
 }
 
 template<typename Functor>
