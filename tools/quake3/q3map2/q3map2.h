@@ -124,10 +124,10 @@
 /* general */
 #define MAX_QPATH               64
 
-#define MAX_IMAGES              512
+#define MAX_IMAGES              2048
 #define DEFAULT_IMAGE           "*default"
 
-#define MAX_MODELS              512
+#define MAX_MODELS              2048
 
 #define DEF_BACKSPLASH_FRACTION 0.05f   /* 5% backsplash by default */
 #define DEF_BACKSPLASH_DISTANCE 23
