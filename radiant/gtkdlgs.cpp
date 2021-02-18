@@ -451,14 +451,21 @@ void DoAbout(){
 			{
 				char const *label_text = RADIANT_NAME " " RADIANT_VERSION_STRING " (" __DATE__ ")\n"
 										RADIANT_ABOUTMSG "\n\n"
-										"Get news and updates on "
+										RADIANT_NAME " is a community project "
+										"maintained by Xonotic\n"
+										" and developed with help from"
+										" other game projects and\n"
+										" individuals.\n\n"
+										"Get news and latest build at "
 										"<a href='https://netradiant.gitlab.io/'>"
 											"netradiant.gitlab.io"
 										"</a>\n"
-										"Please report your issues on "
+										"Please report your issues at "
 										"<a href='https://gitlab.com/xonotic/netradiant/issues'>"
 											"gitlab.com/xonotic/netradiant/issues"
 										"</a>\n\n"
+										"The team cannot provide support"
+										" for custom builds.\n\n"
 										"This program is free software licensed under the GNU GPL.";
 
 				auto label = ui::Label( label_text );
