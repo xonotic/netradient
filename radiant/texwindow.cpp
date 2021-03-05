@@ -1813,7 +1813,7 @@ ui::MenuItem TextureBrowser_constructTagsMenu( ui::Menu menu ){
 	return textures_menu_item;
 }
 
-gboolean TextureBrowser_tagMoveHelper( ui::TreeModel model, ui::TreePath path, GtkTreeIter iter, GSList** selected ){
+gboolean TextureBrowser_tagMoveHelper( ui::TreeModel model, ui::TreePath path, GtkTreeIter* iter, GSList** selected ){
 	g_assert( selected != NULL );
 
     auto rowref = gtk_tree_row_reference_new( model, path );
