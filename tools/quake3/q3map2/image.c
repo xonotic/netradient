@@ -507,9 +507,6 @@ image_t *ImageLoad( const char *filename ){
 
 	image_load_success:
 
-	/* tell user which image file is found for the given texture path */
-	Sys_FPrintf( SYS_VRB, "Loaded image: \"%s\"\n", name );
-
 	/* free file buffer */
 	free( buffer );
 
@@ -521,6 +518,9 @@ image_t *ImageLoad( const char *filename ){
 		image->name = NULL;
 		return NULL;
 	}
+
+	/* tell user which image file is found for the given texture path */
+	Sys_FPrintf( SYS_VRB, "Loaded image: \"%s\"\n", name );
 
 	/* set filename */
 	image->filename = safe_malloc( strlen( name ) + 1 );

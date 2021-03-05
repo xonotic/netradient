@@ -61,7 +61,7 @@ public:
 
 			if ( file != 0 ) {
 				// tell user which image file is found for the given texture path
-				globalOutputStream() << "Found image file: \"" << fullname.c_str() << "\"\n";
+				globalOutputStream() << "Found image file: " << makeQuoted( fullname.c_str() ) << "\n";
 
 				m_image = table.loadImage( *file );
 				file->release();
