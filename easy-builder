@@ -17,10 +17,15 @@ build_type='Release'
 case "$(uname -s)" in
 	# Stripping is known to make non-PIE Linux netradiant binary unusable.
 	# Maybe that's related to the way we patch rpath?
+	#
 	# Building NetRadiant as non-PIE is required because of
 	# a mistake in the mimetype-library that prevents users
 	# to run the application from file managers on Linux.
+	#
 	# See: https://gitlab.freedesktop.org/xdg/shared-mime-info/-/issues/11
+	#
+	# After installation it's possible to strip manually all binaries except
+	# the netradiant one.
 	'Linux')
 		install_target='install'
 		;;
