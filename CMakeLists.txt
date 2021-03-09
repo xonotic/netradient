@@ -352,35 +352,55 @@ if (BUILTIN_GTKGLEXT OR BUILTIN_GTKTHEME_MOJAVE)
 endif ()
 
 if (BUILTIN_GTKGLEXT)
-    execute_process(COMMAND pkg-config --libs gdk-2.0 gtk+-2.0 glib-2.0 gl
+    set(GTKGLEXT_PKGNAMES "gdk-2.0 gtk+-2.0 glib-2.0")
+
+    if (NOT APPLE)
+        set(GTKGLEXT_PKGNAMES "${GTKGLEXT_PKGNAMES} gl")
+    endif ()
+
+    execute_process(COMMAND pkg-config --libs ${GTKGLEXT_PKGNAMES}
         OUTPUT_VARIABLE GTKGLEXT_LDFLAGS
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+
     set(GTKGLEXT_LDFLAGS "$ENV{LDFLAGS} -lm ${GTKGLEXT_LDFLAGS}")
 
+    execute_process(COMMAND pkg-config --cflags ${GTKGLEXT_PKGNAMES}
+        OUTPUT_VARIABLE GTKGLEXT_CFLAGS
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    set(GTKGLEXT_CFLAGS "$ENV{CFLAGS} ${GTKGLEXT_CFLAGS}")
+
     if (NOT CMAKE_BUILD_TYPE MATCHES Release)
-        set(GTKGLEXT_CFLAGS "$ENV{CFLAGS} -g")
-    else ()
-        set(GTKGLEXT_CFLAGS "$ENV{CFLAGS}")
-    endif()
+        set(GTKGLEXT_CFLAGS "${GTKGLEXT_CFLAGS} -g")
+    endif ()
 
     set(CONFIGURE_OPTIONS --disable-gtk-doc --disable-gtk-doc-html --disable-gtk-doc-pdf)
 
     if (APPLE)
         set(GTKGLEXT_GIT_TAG macos)
-        set(GTKGLEXT_CFLAGS "${GTKGLEXT_CFLAGS} -DGL_SILENCE_DEPRECATION=1")
     else ()
         set(GTKGLEXT_GIT_TAG fixes)
+    endif ()
+
+    if (APPLE)
+        set(GTKGLEXT_CFLAGS "${GTKGLEXT_CFLAGS} -DGL_SILENCE_DEPRECATION=1")
+        set(OBJC "${OBJC} -DGL_SILENCE_DEPRECATION=1")
     endif ()
 
     ExternalProject_Add(gtkglext
         GIT_REPOSITORY https://gitlab.gnome.org/illwieckz/gtkglext.git
         GIT_TAG ${GTKGLEXT_GIT_TAG}
         BUILD_IN_SOURCE ON
-        CONFIGURE_COMMAND export LDFLAGS=${GTKGLEXT_LDFLAGS}
-        CONFIGURE_COMMAND && NOCONFIGURE=1 ./autogen.sh
+        CONFIGURE_COMMAND export CFLAGS=${GTKGLEXT_LDFLAGS}
+        CONFIGURE_COMMAND && export LDFLAGS=${GTKGLEXT_CFLAGS}
+        CONFIGURE_COMMAND && export NOCONFIGURE=1
+        CONFIGURE_COMMAND && ./autogen.sh
         CONFIGURE_COMMAND && ./configure --prefix "${BUILTINS_INSTALL_DIR}" ${CONFIGURE_OPTIONS}
-        BUILD_COMMAND $(MAKE) CFLAGS=${GTKGLEXT_CFLAGS} LDFLAGS=${GTKGLEXT_LDFLAGS}
+        BUILD_COMMAND $(MAKE)
+        BUILD_COMMAND CFLAGS=${GTKGLEXT_CFLAGS}
+        BUILD_COMMAND LDFLAGS=${GTKGLEXT_LDFLAGS}
         INSTALL_COMMAND $(MAKE) install
     )
 
