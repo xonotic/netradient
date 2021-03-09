@@ -96,7 +96,7 @@ If you plan to build a bundle, you also need to install `patchelf`
 ### macOS:
 
 ```sh
-brew install cmake glib gtk+ pkgconfig minizip webp coreutils gnu-sed wget
+brew install cmake glib gtk+ pkgconfig minizip webp coreutils gnu-sed wget sassc
 brew link --force gettext
 ```
 
