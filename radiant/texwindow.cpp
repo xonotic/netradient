@@ -1117,11 +1117,11 @@ void TextureBrowser_trackingDelta( int x, int y, unsigned int state, void* data 
 }
 
 void TextureBrowser_Tracking_MouseDown( TextureBrowser& textureBrowser ){
-	textureBrowser.m_freezePointer.freeze_pointer( textureBrowser.m_parent, TextureBrowser_trackingDelta, &textureBrowser );
+	textureBrowser.m_freezePointer.freeze_pointer( textureBrowser.m_gl_widget, TextureBrowser_trackingDelta, &textureBrowser );
 }
 
 void TextureBrowser_Tracking_MouseUp( TextureBrowser& textureBrowser ){
-	textureBrowser.m_freezePointer.unfreeze_pointer( textureBrowser.m_parent );
+	textureBrowser.m_freezePointer.unfreeze_pointer( textureBrowser.m_gl_widget );
 }
 
 void TextureBrowser_Selection_MouseDown( TextureBrowser& textureBrowser, guint32 flags, int pointx, int pointy ){

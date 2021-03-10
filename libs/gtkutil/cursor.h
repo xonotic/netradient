@@ -34,8 +34,8 @@ GdkCursor* create_blank_cursor();
 void set_cursor( ui::Widget widget, GdkCursorType cursor_type );
 void blank_cursor( ui::Widget widget );
 void default_cursor( ui::Widget widget );
-void Sys_GetCursorPos( ui::Window window, int *x, int *y );
-void Sys_SetCursorPos( ui::Window window, int x, int y );
+void Sys_GetCursorPos( ui::Widget widget, int *x, int *y );
+void Sys_SetCursorPos( ui::Widget widget, int x, int y );
 
 class DeferredMotion
 {
@@ -114,11 +114,11 @@ void* m_data;
 public:
 FreezePointer() : handle_motion( 0 ), m_function( 0 ), m_data( 0 ){
 }
-static gboolean motion_delta( ui::Window widget, GdkEventMotion *event, FreezePointer* self );
+static gboolean motion_delta( ui::Widget widget, GdkEventMotion *event, FreezePointer* self );
 
-void freeze_pointer( ui::Window window, MotionDeltaFunction function, void* data );
+void freeze_pointer( ui::Widget widget, MotionDeltaFunction function, void* data );
 
-void unfreeze_pointer( ui::Window window );
+void unfreeze_pointer( ui::Widget widget );
 };
 
 #endif

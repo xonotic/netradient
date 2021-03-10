@@ -1183,13 +1183,13 @@ void XYWnd::Move_Begin(){
 		Move_End();
 	}
 	m_move_started = true;
-	g_xywnd_freezePointer.freeze_pointer( m_parent  ? m_parent : MainFrame_getWindow(), XYWnd_moveDelta, this );
+	g_xywnd_freezePointer.freeze_pointer( m_gl_widget, XYWnd_moveDelta, this );
 	m_move_focusOut = m_gl_widget.connect( "focus_out_event", G_CALLBACK( XYWnd_Move_focusOut ), this );
 }
 
 void XYWnd::Move_End(){
 	m_move_started = false;
-	g_xywnd_freezePointer.unfreeze_pointer( m_parent ? m_parent : MainFrame_getWindow() );
+	g_xywnd_freezePointer.unfreeze_pointer( m_gl_widget );
 	g_signal_handler_disconnect( G_OBJECT( m_gl_widget ), m_move_focusOut );
 }
 

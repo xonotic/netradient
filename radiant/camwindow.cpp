@@ -1264,7 +1264,7 @@ void CamWnd::Cam_PositionDrag(){
 		CamWnd_Update( camwnd );
 		CameraMovedNotify();
 
-		Sys_SetCursorPos( m_parent, m_PositionDragCursorX, m_PositionDragCursorY );
+		Sys_SetCursorPos( m_gl_widget, m_PositionDragCursorX, m_PositionDragCursorY );
 	}
 }
 #endif
@@ -1289,7 +1289,7 @@ void CamWnd::EnableFreeMove(){
 
 	gtk_window_set_focus( m_parent, m_gl_widget );
 	m_freemove_handle_focusout = m_gl_widget.connect( "focus_out_event", G_CALLBACK( camwindow_freemove_focusout ), this );
-	m_freezePointer.freeze_pointer( m_parent, Camera_motionDelta, &m_Camera );
+	m_freezePointer.freeze_pointer( m_gl_widget, Camera_motionDelta, &m_Camera );
 
 	CamWnd_Update( *this );
 }
@@ -1304,7 +1304,7 @@ void CamWnd::DisableFreeMove(){
 	CamWnd_Remove_Handlers_FreeMove( *this );
 	CamWnd_Add_Handlers_Move( *this );
 
-	m_freezePointer.unfreeze_pointer( m_parent );
+	m_freezePointer.unfreeze_pointer( m_gl_widget );
 	g_signal_handler_disconnect( G_OBJECT( m_gl_widget ), m_freemove_handle_focusout );
 
 	CamWnd_Update( *this );

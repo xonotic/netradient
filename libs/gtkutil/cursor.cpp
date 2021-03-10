@@ -45,11 +45,11 @@ void default_cursor( ui::Widget widget ){
 	gdk_window_set_cursor( gtk_widget_get_window( widget ), NULL );
 }
 
-void Sys_GetCursorPos( ui::Window window, int *x, int *y ){
+void Sys_GetCursorPos( ui::Widget widget, int *x, int *y ){
 	gdk_display_get_pointer( gdk_display_get_default(), 0, x, y, 0 );
 }
 
-void Sys_SetCursorPos( ui::Window window, int x, int y ){
+void Sys_SetCursorPos( ui::Widget widget, int x, int y ){
 	GdkScreen *screen;
 	gdk_display_get_pointer( gdk_display_get_default(), &screen, 0, 0, 0 );
 	gdk_display_warp_pointer( gdk_display_get_default(), screen, x, y );
@@ -61,18 +61,18 @@ gboolean DeferredMotion::gtk_motion(ui::Widget widget, GdkEventMotion *event, De
     return FALSE;
 }
 
-gboolean FreezePointer::motion_delta(ui::Window widget, GdkEventMotion *event, FreezePointer *self)
+gboolean FreezePointer::motion_delta(ui::Widget widget, GdkEventMotion *event, FreezePointer *self)
 {
 	int current_x, current_y;
 	Sys_GetCursorPos( widget, &current_x, &current_y );
 	int dx = current_x - self->last_x;
 	int dy = current_y - self->last_y;
-	int ddx = current_x - self->recorded_x;
-	int ddy = current_y - self->recorded_y;
 	self->last_x = current_x;
 	self->last_y = current_y;
 	if ( dx != 0 || dy != 0 ) {
 		//globalOutputStream() << "motion x: " << dx << ", y: " << dy << "\n";
+		int ddx = current_x - self->recorded_x;
+		int ddy = current_y - self->recorded_y;
 		if (ddx < -32 || ddx > 32 || ddy < -32 || ddy > 32) {
 			Sys_SetCursorPos( widget, self->recorded_x, self->recorded_y );
 			self->last_x = self->recorded_x;
@@ -83,7 +83,7 @@ gboolean FreezePointer::motion_delta(ui::Window widget, GdkEventMotion *event, F
 	return FALSE;
 }
 
-void FreezePointer::freeze_pointer(ui::Window window, FreezePointer::MotionDeltaFunction function, void *data)
+void FreezePointer::freeze_pointer(ui::Widget widget, FreezePointer::MotionDeltaFunction function, void *data)
 {
 	ASSERT_MESSAGE( m_function == 0, "can't freeze pointer" );
 
@@ -99,12 +99,12 @@ void FreezePointer::freeze_pointer(ui::Window window, FreezePointer::MotionDelta
 
 	GdkCursor* cursor = create_blank_cursor();
 	//GdkGrabStatus status =
-	gdk_pointer_grab( gtk_widget_get_window(window), TRUE, mask, 0, cursor, GDK_CURRENT_TIME );
+	gdk_pointer_grab( gtk_widget_get_window( widget ), TRUE, mask, 0, cursor, GDK_CURRENT_TIME );
 	gdk_cursor_unref( cursor );
 
-	Sys_GetCursorPos( window, &recorded_x, &recorded_y );
+	Sys_GetCursorPos( widget, &recorded_x, &recorded_y );
 
-	Sys_SetCursorPos( window, recorded_x, recorded_y );
+	Sys_SetCursorPos( widget, recorded_x, recorded_y );
 
 	last_x = recorded_x;
 	last_y = recorded_y;
@@ -112,17 +112,17 @@ void FreezePointer::freeze_pointer(ui::Window window, FreezePointer::MotionDelta
 	m_function = function;
 	m_data = data;
 
-	handle_motion = window.connect( "motion_notify_event", G_CALLBACK( motion_delta ), this );
+	handle_motion = widget.connect( "motion_notify_event", G_CALLBACK( motion_delta ), this );
 }
 
-void FreezePointer::unfreeze_pointer(ui::Window window)
+void FreezePointer::unfreeze_pointer(ui::Widget widget)
 {
-	g_signal_handler_disconnect( G_OBJECT( window ), handle_motion );
+	g_signal_handler_disconnect( G_OBJECT( widget ), handle_motion );
 
 	m_function = 0;
 	m_data = 0;
 
-	Sys_SetCursorPos( window, recorded_x, recorded_y );
+	Sys_SetCursorPos( widget, recorded_x, recorded_y );
 
 	gdk_pointer_ungrab( GDK_CURRENT_TIME );
 }
