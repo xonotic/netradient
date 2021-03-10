@@ -2393,7 +2393,9 @@ void TextureBrowser_hideGLWidget(){
 		GlobalTextureBrowser().m_vframe.set_child_packing( GlobalTextureBrowser().m_gl_widget, FALSE, FALSE, 0, ui::Packing::END );
 		GdkEventExpose event = {};
 		TextureBrowser_expose( GlobalTextureBrowser().m_gl_widget, &event, &GlobalTextureBrowser() );
-		GlobalTextureBrowser().m_gl_widget.hide();
+		// The hack needs the GL widget to not be hidden to work,
+		// so resizing it triggers the redraw of it with the new size.
+		// GlobalTextureBrowser().m_gl_widget.hide();
 	}
 }
 #endif // WORKAROUND_MACOS_GTK2_GLWIDGET
