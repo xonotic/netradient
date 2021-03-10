@@ -65,6 +65,8 @@ gboolean DeferredMotion::gtk_motion(ui::Widget widget, GdkEventMotion *event, De
 
 gboolean FreezePointer::motion_delta(ui::Widget widget, GdkEventMotion *event, FreezePointer *self)
 {
+	/* FIXME: The pointer can be lost outside of the XY Window
+	or the Camera Window, see the comment in freeze_pointer function */
 	int current_x, current_y;
 	Sys_GetCursorPos( widget, &current_x, &current_y );
 	int dx = current_x - self->last_x;
@@ -73,6 +75,67 @@ gboolean FreezePointer::motion_delta(ui::Widget widget, GdkEventMotion *event, F
 	self->last_y = current_y;
 	if ( dx != 0 || dy != 0 ) {
 		//globalOutputStream() << "motion x: " << dx << ", y: " << dy << "\n";
+#if defined(WORKAROUND_MACOS_GTK2_LAGGYPOINTER)
+		ui::Dimensions dimensions = widget.dimensions();
+		int window_x, window_y;
+		int translated_x, translated_y;
+
+		gdk_window_get_origin( gtk_widget_get_window( widget ), &window_x, &window_y);
+
+
+		translated_x = current_x - ( window_x );
+		translated_y = current_y - ( window_y );
+
+#if 0
+		int widget_x, widget_y;
+		gtk_widget_translate_coordinates( GTK_WIDGET( widget ), gtk_widget_get_toplevel( GTK_WIDGET( widget ) ), 0, 0, &widget_x, &widget_y);
+
+		globalOutputStream()
+			<< "window_x: " << window_x
+			<< ", window_y: " << window_y
+			<< ", widget_x: " << widget_x
+			<< ", widget_y: " << widget_y
+			<< ", current x: " << current_x
+			<< ", current_y: " << current_y
+			<< ", translated x: " << translated_x
+			<< ", translated_y: " << translated_y
+			<< ", width: " << dimensions.width
+			<< ", height: " << dimensions.height
+			<< "\n";
+#endif
+
+		if ( translated_x < 32 || translated_x > dimensions.width - 32
+			|| translated_y < 32 || translated_y > dimensions.height - 32 ) {
+#if 0
+			// Reposition the pointer to the widget center.
+			int reposition_x = window_x + dimensions.width / 2;
+			int reposition_y = window_y + dimensions.height / 2;
+#else
+			// Move the pointer to the opposite side of the XY Window
+			// to maximize the distance that can be moved again.
+			int reposition_x = current_x;
+			int reposition_y = current_y;
+
+			if ( translated_x < 32 ) {
+				reposition_x = window_x + dimensions.width - 32;
+			}
+			else if ( translated_x > dimensions.width - 32 ) {
+				reposition_x = window_x + 32;
+			}
+
+			if ( translated_y < 32 ) {
+				reposition_y = window_y + dimensions.height - 32;
+			}
+			else if ( translated_y > dimensions.height - 32 ) {
+				reposition_y = window_y + 32;
+			}
+#endif
+
+			Sys_SetCursorPos( widget, reposition_x, reposition_y );
+			self->last_x = reposition_x;
+			self->last_y = reposition_y;
+		}
+#else
 		int ddx = current_x - self->recorded_x;
 		int ddy = current_y - self->recorded_y;
 		if (ddx < -32 || ddx > 32 || ddy < -32 || ddy > 32) {
@@ -80,6 +143,7 @@ gboolean FreezePointer::motion_delta(ui::Widget widget, GdkEventMotion *event, F
 			self->last_x = self->recorded_x;
 			self->last_y = self->recorded_y;
 		}
+#endif
 		self->m_function( dx, dy, event->state, self->m_data );
 	}
 	return FALSE;
@@ -87,6 +151,22 @@ gboolean FreezePointer::motion_delta(ui::Widget widget, GdkEventMotion *event, F
 
 void FreezePointer::freeze_pointer(ui::Widget widget, FreezePointer::MotionDeltaFunction function, void *data)
 {
+	/* FIXME: This bug can happen if the pointer goes outside of the
+	XY Window while the right mouse button is not released,
+	the XY Window loses focus and can't read the right mouse button
+	release event and then cannot unfreeze the pointer, meaning the
+	user can attempt to freeze the pointer in another XY window.
+
+	This can happen with touch screen, especially those used to drive
+	virtual machine pointers, the cursor can be teleported outside of
+	the XY Window while maintaining pressure on the right mouse button.
+	This can also happen when the render is slow.
+
+	The bug also occurs with the Camera Window.
+
+	FIXME: It's would be possible to tell the user to save the map
+	at assert time before crashing because this bug does not corrupt
+	map saving. */
 	ASSERT_MESSAGE( m_function == 0, "can't freeze pointer" );
 
 	const GdkEventMask mask = static_cast<GdkEventMask>( GDK_POINTER_MOTION_MASK
@@ -99,10 +179,20 @@ void FreezePointer::freeze_pointer(ui::Widget widget, FreezePointer::MotionDelta
 														 | GDK_BUTTON_RELEASE_MASK
 														 | GDK_VISIBILITY_NOTIFY_MASK );
 
+#if defined(WORKAROUND_MACOS_GTK2_LAGGYPOINTER)
+	/* Keep the pointer visible during the move operation.
+	Because of a bug, it remains visible even if we give
+	the order to hide it anyway.
+	Other parts of the code assume the pointer is visible,
+	so make sure it is consistently visible accross
+	third-party updates that may fix the mouse pointer
+	visibility issue. */
+#else
 	GdkCursor* cursor = create_blank_cursor();
 	//GdkGrabStatus status =
 	gdk_pointer_grab( gtk_widget_get_window( widget ), TRUE, mask, 0, cursor, GDK_CURRENT_TIME );
 	gdk_cursor_unref( cursor );
+#endif
 
 	Sys_GetCursorPos( widget, &recorded_x, &recorded_y );
 
@@ -124,7 +214,12 @@ void FreezePointer::unfreeze_pointer(ui::Widget widget)
 	m_function = 0;
 	m_data = 0;
 
+#if defined(WORKAROUND_MACOS_GTK2_LAGGYPOINTER)
+	/* The pointer was visible during all the move operation,
+	so, keep the current position. */
+#else
 	Sys_SetCursorPos( widget, recorded_x, recorded_y );
+#endif
 
 	gdk_pointer_ungrab( GDK_CURRENT_TIME );
 }
