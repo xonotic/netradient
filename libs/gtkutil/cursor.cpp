@@ -46,13 +46,15 @@ void default_cursor( ui::Widget widget ){
 }
 
 void Sys_GetCursorPos( ui::Widget widget, int *x, int *y ){
-	gdk_display_get_pointer( gdk_display_get_default(), 0, x, y, 0 );
+	GdkDisplay *display = gtk_widget_get_display( GTK_WIDGET( widget ) );
+	// No need to store the screen, it will be recovered from widget again.
+	gdk_display_get_pointer( display, NULL, x, y, NULL );
 }
 
 void Sys_SetCursorPos( ui::Widget widget, int x, int y ){
-	GdkScreen *screen;
-	gdk_display_get_pointer( gdk_display_get_default(), &screen, 0, 0, 0 );
-	gdk_display_warp_pointer( gdk_display_get_default(), screen, x, y );
+	GdkDisplay *display = gtk_widget_get_display( GTK_WIDGET( widget ) );
+	GdkScreen *screen = gtk_widget_get_screen( GTK_WIDGET( widget ) );
+	gdk_display_warp_pointer( display, screen, x, y );
 }
 
 gboolean DeferredMotion::gtk_motion(ui::Widget widget, GdkEventMotion *event, DeferredMotion *self)
