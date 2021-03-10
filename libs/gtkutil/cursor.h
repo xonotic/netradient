@@ -22,6 +22,7 @@
 #if !defined( INCLUDED_GTKUTIL_CURSOR_H )
 #define INCLUDED_GTKUTIL_CURSOR_H
 
+#include <gdk/gdk.h>
 #include <uilib/uilib.h>
 
 #include "debugging/debugging.h"
@@ -30,12 +31,11 @@ typedef struct _GdkCursor GdkCursor;
 typedef struct _GdkEventMotion GdkEventMotion;
 
 GdkCursor* create_blank_cursor();
+void set_cursor( ui::Widget widget, GdkCursorType cursor_type );
 void blank_cursor( ui::Widget widget );
 void default_cursor( ui::Widget widget );
 void Sys_GetCursorPos( ui::Window window, int *x, int *y );
 void Sys_SetCursorPos( ui::Window window, int x, int y );
-
-
 
 class DeferredMotion
 {

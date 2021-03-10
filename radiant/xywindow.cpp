@@ -58,6 +58,7 @@
 #include "gtkutil/widget.h"
 #include "gtkutil/glwidget.h"
 #include "gtkutil/filechooser.h"
+#include "gtkutil/cursor.h"
 #include "gtkmisc.h"
 #include "select.h"
 #include "csg.h"
@@ -945,14 +946,11 @@ void XYWnd::Clipper_Crosshair_OnMouseMoved( int x, int y ){
 	Vector3 mousePosition;
 	XY_ToPoint( x, y, mousePosition );
 	if ( ClipMode() && GlobalClipPoints_Find( mousePosition, (VIEWTYPE)m_viewType, m_fScale ) != 0 ) {
-		GdkCursor *cursor;
-		cursor = gdk_cursor_new( GDK_CROSSHAIR );
-		gdk_window_set_cursor( gtk_widget_get_window(m_gl_widget), cursor );
-		gdk_cursor_unref( cursor );
+		set_cursor ( m_gl_widget, GDK_CROSSHAIR );
 	}
 	else
 	{
-		gdk_window_set_cursor( gtk_widget_get_window(m_gl_widget), 0 );
+		default_cursor( m_gl_widget );
 	}
 }
 
