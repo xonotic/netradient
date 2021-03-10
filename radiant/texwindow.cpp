@@ -397,7 +397,7 @@ void ( *TextureBrowser_textureSelected )( const char* shader );
 void TextureBrowser_updateScroll( TextureBrowser& textureBrowser );
 
 
-const char* TextureBrowser_getComonShadersName(){
+const char* TextureBrowser_getCommonShadersName(){
 	const char* value = g_pGameDescription->getKeyValue( "common_shaders_name" );
 	if ( !string_empty( value ) ) {
 		return value;
@@ -405,7 +405,7 @@ const char* TextureBrowser_getComonShadersName(){
 	return "Common";
 }
 
-const char* TextureBrowser_getComonShadersDir(){
+const char* TextureBrowser_getCommonShadersDir(){
 	const char* value = g_pGameDescription->getKeyValue( "common_shaders_dir" );
 	if ( !string_empty( value ) ) {
 		return value;
@@ -981,7 +981,7 @@ void TextureBrowser_SetHideUnused( TextureBrowser& textureBrowser, bool hideUnus
 
 void TextureBrowser_ShowStartupShaders( TextureBrowser& textureBrowser ){
 	if ( textureBrowser.m_startupShaders == STARTUPSHADERS_COMMON ) {
-		TextureBrowser_ShowDirectory( textureBrowser, TextureBrowser_getComonShadersDir() );
+		TextureBrowser_ShowDirectory( textureBrowser, TextureBrowser_getCommonShadersDir() );
 	}
 }
 
@@ -2761,7 +2761,7 @@ void TextureBrowser_constructPreferences( PreferencesPage& page ){
 	);
 	page.appendEntry( "Mousewheel Increment", GlobalTextureBrowser().m_mouseWheelScrollIncrement );
 	{
-		const char* startup_shaders[] = { "None", TextureBrowser_getComonShadersName() };
+		const char* startup_shaders[] = { "None", TextureBrowser_getCommonShadersName() };
 		page.appendCombo( "Load Shaders at Startup", reinterpret_cast<int&>( GlobalTextureBrowser().m_startupShaders ), STRING_ARRAY_RANGE( startup_shaders ) );
 	}
 }
