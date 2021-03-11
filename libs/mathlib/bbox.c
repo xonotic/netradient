@@ -174,7 +174,7 @@ const int MIDDLE  = 2;
 int aabb_intersect_ray( const aabb_t *aabb, const ray_t *ray, vec3_t intersection ){
 	int inside = 1;
 	char quadrant[NUMDIM];
-	register int i;
+	int i;
 	int whichPlane;
 	double maxT[NUMDIM];
 	double candidatePlane[NUMDIM];
