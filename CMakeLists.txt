@@ -387,7 +387,8 @@ if (BUILTIN_GTKGLEXT)
 
     if (APPLE)
         set(GTKGLEXT_CFLAGS "${GTKGLEXT_CFLAGS} -DGL_SILENCE_DEPRECATION=1")
-        set(OBJC "${OBJC} -DGL_SILENCE_DEPRECATION=1")
+        # FIXME: OpenGL deprecation warnings are not silenced
+        # in Objective C code.
     endif ()
 
     ExternalProject_Add(gtkglext
