@@ -34,6 +34,7 @@
 
 #include "defaults.h"
 #include "ifilesystem.h"
+#include "itextures.h"
 #include "iundo.h"
 #include "igl.h"
 #include "iarchive.h"
@@ -1189,6 +1190,9 @@ void Texture_Draw( TextureBrowser& textureBrowser ){
 			break;
 		}
 
+		ViewportId v = VP_TEXWINDOW;
+
+		GLuint texture_number = RequestBindTextureNumber( v, q );
 		int nWidth = textureBrowser.getTextureWidth( q );
 		int nHeight = textureBrowser.getTextureHeight( q );
 
@@ -1284,7 +1288,14 @@ void Texture_Draw( TextureBrowser& textureBrowser ){
 			}
 
 			// Draw the texture
-			glBindTexture( GL_TEXTURE_2D, q->texture_number );
+
+#ifdef DEBUG_TEXTURES
+			// It is known to produces an infinite loop on macOS with default layout:
+			// Log → Redraw → Log → Redraw…
+			globalOutputStream() << "Texture_Draw: " << v << ", " << q->name << ", " << texture_number << "\n";
+#endif
+
+			glBindTexture( GL_TEXTURE_2D, texture_number );
 			GlobalOpenGL_debugAssertNoErrors();
 			glColor3f( 1,1,1 );
 			glBegin( GL_QUADS );
@@ -1316,7 +1327,6 @@ void Texture_Draw( TextureBrowser& textureBrowser ){
 
 		//int totalHeight = abs(y) + last_height + TextureBrowser_fontHeight(textureBrowser) + 4;
 	}
-
 
 	// reset the current texture
 	glBindTexture( GL_TEXTURE_2D, 0 );
@@ -2608,10 +2618,12 @@ void TextureBrowser_pasteTag(){
 	BuildStoreAvailableTags( textureBrowser.m_available_store, textureBrowser.m_assigned_store, textureBrowser.m_all_tags, &textureBrowser );
 }
 
+#include <cstdio>
 void TextureBrowser_RefreshShaders(){
 	TextureBrowser &textureBrowser = GlobalTextureBrowser();
 	ScopeDisableScreenUpdates disableScreenUpdates( "Processing...", "Loading Shaders" );
-	GlobalShaderSystem().refresh();
+	// GlobalShaderSystem is refreshed by camwindow
+	GlobalShaderSystem().triggerRefresh();
 	UpdateAllWindows();
     auto selection = gtk_tree_view_get_selection(GlobalTextureBrowser().m_treeViewTree);
 	GtkTreeModel* model = NULL;

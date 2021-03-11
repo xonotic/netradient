@@ -502,6 +502,8 @@ void user_shortcuts_save(){
 	SaveCommandMap( path.c_str() );
 }
 
+const char *g_startupMap = nullptr;
+
 int main( int argc, char* argv[] ){
 #if GTK_TARGET == 3
 	// HACK: force legacy GL backend as we don't support GL3 yet
@@ -615,21 +617,18 @@ int main( int argc, char* argv[] ){
 
 	hide_splash();
 
+	Map_New();
+	
 	if ( mapname != NULL ) {
-		Map_LoadFile( mapname );
+		g_startupMap = mapname;
 	}
 	else if ( g_bLoadLastMap && !g_strLastMap.empty() ) {
-		Map_LoadFile( g_strLastMap.c_str() );
-	}
-	else
-	{
-		Map_New();
+		g_startupMap = g_strLastMap.c_str();
 	}
 
 	// load up shaders now that we have the map loaded
 	// eviltypeguy
 	TextureBrowser_ShowStartupShaders( GlobalTextureBrowser() );
-
 
 	remove_local_pid();
 
