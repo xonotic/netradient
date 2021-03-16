@@ -135,6 +135,11 @@ task_build_builtins () {
 	make -j"${job_count}" builtins
 }
 
+task_discover_builtins () {
+	sync
+	cmake "${project_source_dir}"
+}
+
 task_build () {
 	sync
 	make -j"${job_count}"
@@ -154,6 +159,8 @@ task_fetch_submodules
 task_configure
 
 task_build_builtins
+
+task_discover_builtins
 
 task_build
 
