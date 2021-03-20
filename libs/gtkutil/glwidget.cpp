@@ -33,7 +33,7 @@ unsigned int g_context_count = 0;
 
 ui::GLArea g_shared{ui::null};
 
-void _glwidget_context_created(ui::GLArea self, void *data)
+static void _glwidget_context_created(ui::GLArea self, void *data)
 {
     if (++g_context_count == 1) {
         g_shared = self;
@@ -46,7 +46,7 @@ void _glwidget_context_created(ui::GLArea self, void *data)
     }
 }
 
-void _glwidget_context_destroyed(ui::GLArea self, void *data)
+static void _glwidget_context_destroyed(ui::GLArea self, void *data)
 {
     if (--g_context_count == 0) {
         GlobalOpenGL().contextValid = false;
@@ -70,7 +70,7 @@ void glwidget_create_context(ui::GLArea self)
 
 #include <gtk/gtk.h>
 
-GdkGLContext *glwidget_context_created(ui::GLArea self)
+static GdkGLContext *glwidget_context_created(ui::GLArea self)
 {
     _glwidget_context_created(self, nullptr);
     return gtk_gl_area_get_context(self);
@@ -116,21 +116,21 @@ struct config_t {
 };
 typedef const config_t *configs_iterator;
 
-int config_rgba32[] = {
+static int config_rgba32[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE, 24,
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-int config_rgba[] = {
+static int config_rgba[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE, 16,
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-const config_t configs[] = {
+static const config_t configs[] = {
         {
                 "colour-buffer = 32bpp, depth-buffer = none",
                 config_rgba32,
@@ -141,7 +141,7 @@ const config_t configs[] = {
         }
 };
 
-GdkGLConfig *glconfig_new()
+static GdkGLConfig *glconfig_new()
 {
     for (configs_iterator i = configs, end = configs + 2; i != end; ++i) {
         if (auto glconfig = gdk_gl_config_new(i->attribs)) {
@@ -153,7 +153,7 @@ GdkGLConfig *glconfig_new()
     return gdk_gl_config_new_by_mode((GdkGLConfigMode) (GDK_GL_MODE_RGBA | GDK_GL_MODE_DOUBLE));
 }
 
-int config_rgba32_depth32[] = {
+static int config_rgba32_depth32[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE,
@@ -163,7 +163,7 @@ int config_rgba32_depth32[] = {
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-int config_rgba32_depth24[] = {
+static int config_rgba32_depth24[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE, 24,
@@ -171,7 +171,7 @@ int config_rgba32_depth24[] = {
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-int config_rgba32_depth16[] = {
+static int config_rgba32_depth16[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE, 24,
@@ -179,7 +179,7 @@ int config_rgba32_depth16[] = {
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-int config_rgba32_depth[] = {
+static int config_rgba32_depth[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE, 24,
@@ -187,7 +187,7 @@ int config_rgba32_depth[] = {
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-int config_rgba_depth16[] = {
+static int config_rgba_depth16[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE, 16,
@@ -195,7 +195,7 @@ int config_rgba_depth16[] = {
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-int config_rgba_depth[] = {
+static int config_rgba_depth[] = {
         GDK_GL_RGBA,
         GDK_GL_DOUBLEBUFFER,
         GDK_GL_BUFFER_SIZE, 16,
@@ -203,7 +203,7 @@ int config_rgba_depth[] = {
         GDK_GL_ATTRIB_LIST_NONE,
 };
 
-const config_t configs_with_depth[] =
+static const config_t configs_with_depth[] =
         {
                 {
                         "colour-buffer = 32bpp, depth-buffer = 32bpp",
@@ -231,7 +231,7 @@ const config_t configs_with_depth[] =
                 },
         };
 
-GdkGLConfig *glconfig_new_with_depth()
+static GdkGLConfig *glconfig_new_with_depth()
 {
     for (configs_iterator i = configs_with_depth, end = configs_with_depth + 6; i != end; ++i) {
         if (auto glconfig = gdk_gl_config_new(i->attribs)) {
@@ -243,7 +243,7 @@ GdkGLConfig *glconfig_new_with_depth()
     return gdk_gl_config_new_by_mode((GdkGLConfigMode) (GDK_GL_MODE_RGBA | GDK_GL_MODE_DOUBLE | GDK_GL_MODE_DEPTH));
 }
 
-int glwidget_context_created(ui::GLArea self, void *data)
+static int glwidget_context_created(ui::GLArea self, void *data)
 {
     _glwidget_context_created(self, data);
     return false;
@@ -255,7 +255,7 @@ int glwidget_context_destroyed(ui::GLArea self, void *data)
     return false;
 }
 
-bool glwidget_enable_gl(ui::GLArea self, ui::Widget root, gpointer data)
+static bool glwidget_enable_gl(ui::GLArea self, ui::Widget root, gpointer data)
 {
     if (!root && !gtk_widget_is_gl_capable(self)) {
         const auto zbuffer = g_object_get_data(G_OBJECT(self), "zbuffer");
