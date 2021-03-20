@@ -124,6 +124,8 @@ void Zoom_End();
 bool m_zoom_started;
 guint m_zoom_focusOut;
 
+void Redraw();
+
 void SetActive( bool b ){
 	m_bActive = b;
 };

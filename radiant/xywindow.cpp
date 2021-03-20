@@ -529,6 +529,19 @@ void XYWnd_ZoomOut( XYWnd* xy ){
 	}
 }
 
+void XYWnd::Redraw() {
+	if ( glwidget_make_current( m_gl_widget ) != FALSE ) {
+		if ( Map_Valid( g_map ) && ScreenUpdates_Enabled() ) {
+			GlobalOpenGL_debugAssertNoErrors();
+			XY_Draw();
+			GlobalOpenGL_debugAssertNoErrors();
+
+			m_XORRectangle.set( rectangle_t() );
+		}
+		glwidget_swap_buffers( m_gl_widget );
+	}
+}
+
 VIEWTYPE GlobalXYWnd_getCurrentViewType(){
 	ASSERT_NOTNULL( g_pParentWnd );
 	ASSERT_NOTNULL( g_pParentWnd->ActiveXY() );
@@ -769,19 +782,9 @@ gboolean xywnd_size_allocate( ui::Widget widget, GtkAllocation* allocation, XYWn
 }
 
 gboolean xywnd_expose( ui::Widget widget, GdkEventExpose* event, XYWnd* xywnd ){
-	if ( glwidget_make_current( xywnd->GetWidget() ) != FALSE ) {
-		if ( Map_Valid( g_map ) && ScreenUpdates_Enabled() ) {
-			GlobalOpenGL_debugAssertNoErrors();
-			xywnd->XY_Draw();
-			GlobalOpenGL_debugAssertNoErrors();
-
-			xywnd->m_XORRectangle.set( rectangle_t() );
-		}
-		glwidget_swap_buffers( xywnd->GetWidget() );
-	}
+	xywnd->Redraw();
 	return FALSE;
 }
-
 
 void XYWnd_CameraMoved( XYWnd& xywnd ){
 	if ( g_xywindow_globals_private.m_bCamXYUpdate ) {
@@ -1501,6 +1504,9 @@ void WXY_BackgroundSelect( void ){
 	if ( filename ) {
 		g_pParentWnd->ActiveXY()->XY_LoadBackgroundImage( filename );
 	}
+
+	// Draw the background image immediately (do not wait for user input).
+	g_pParentWnd->ActiveXY()->Redraw();
 }
 
 /*
