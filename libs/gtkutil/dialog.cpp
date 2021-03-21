@@ -86,8 +86,9 @@ gboolean modal_dialog_delete( ui::Widget widget, GdkEvent* event, ModalDialog* d
 }
 
 EMessageBoxReturn modal_dialog_show( ui::Window window, ModalDialog& dialog ){
-	gtk_grab_add( window  );
 	window.show();
+	g_assert( GTK_IS_WINDOW(window) );
+	gtk_grab_add( GTK_WIDGET(window) );
 
 	dialog.loop = true;
 	while ( dialog.loop )

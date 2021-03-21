@@ -98,6 +98,7 @@ bool glwidget_make_current(ui::GLArea self)
 
 void glwidget_swap_buffers(ui::GLArea self)
 {
+    g_assert(GTK_IS_GL_AREA(self));
     gtk_gl_area_queue_render(self);
 }
 
