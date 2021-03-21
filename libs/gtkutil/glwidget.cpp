@@ -80,6 +80,7 @@ ui::GLArea glwidget_new(bool zbuffer)
 {
     auto self = ui::GLArea::from(GTK_GL_AREA(gtk_gl_area_new()));
     gtk_gl_area_set_has_depth_buffer(self, zbuffer);
+    gtk_gl_area_set_auto_render(self, true); // FIXME
 
     self.connect("realize", G_CALLBACK(glwidget_context_created), nullptr);
     return self;
@@ -99,9 +100,6 @@ void glwidget_swap_buffers(ui::GLArea self)
 {
     g_assert(GTK_IS_GL_AREA(self));
     gtk_gl_area_queue_render(self);
-
-    // Process the redraw, why is it needed?
-    ui::process();
 }
 
 #endif
