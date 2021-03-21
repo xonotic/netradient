@@ -14,7 +14,6 @@ add_library(includes
         ifilter.h
         igl.h
         iglrender.h
-        igtkgl.h
         iimage.h
         imap.h
         imodel.h

@@ -92,7 +92,6 @@ bool glwidget_make_current(ui::GLArea self)
 //        glwidget_context_created(self);
 //    }
     gtk_gl_area_make_current(self);
-    auto valid = GlobalOpenGL().contextValid;
     return true;
 }
 
