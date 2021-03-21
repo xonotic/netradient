@@ -1804,9 +1804,11 @@ void Selection_SnapToGrid(){
 
 
 static gint qe_every_second( gpointer data ){
-	GdkModifierType mask;
+	if (g_pParentWnd == nullptr)
+		return TRUE;
 
-	gdk_window_get_pointer( 0, 0, 0, &mask );
+	GdkModifierType mask;
+	gdk_window_get_pointer( gtk_widget_get_window(g_pParentWnd->m_window), nullptr, nullptr, &mask );
 
 	if ( ( mask & ( GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK ) ) == 0 ) {
 		QE_CheckAutoSave();
@@ -1918,15 +1920,18 @@ void ScreenUpdates_Disable( const char* message, const char* title ){
 		bool isActiveApp = MainFrame_isActiveApp();
 
 		g_wait = create_wait_dialog( title, message );
-		gtk_grab_add( g_wait.m_window  );
 
 		if ( isActiveApp ) {
 			g_wait.m_window.show();
+			gtk_grab_add( g_wait.m_window  );
 			ScreenUpdates_process();
 		}
 	}
 	else if ( g_wait.m_window.visible() ) {
 		g_wait.m_label.text(message);
+		if ( GTK_IS_WINDOW(g_wait.m_window) ) {
+			gtk_grab_add(g_wait.m_window);
+		}
 		ScreenUpdates_process();
 	}
 	g_wait_stack.push_back( message );
@@ -3299,7 +3304,7 @@ void MainFrame::SetStatusText( CopiedString& status_text, const char* pText ){
 }
 
 void Sys_Status( const char* status ){
-	if ( g_pParentWnd != 0 ) {
+	if ( g_pParentWnd != nullptr ) {
 		g_pParentWnd->SetStatusText( g_pParentWnd->m_command_status, status );
 	}
 }
@@ -3331,7 +3336,7 @@ void MainFrame::SetGridStatus(){
 }
 
 void GridStatus_onTextureLockEnabledChanged(){
-	if ( g_pParentWnd != 0 ) {
+	if ( g_pParentWnd != nullptr ) {
 		g_pParentWnd->SetGridStatus();
 	}
 }

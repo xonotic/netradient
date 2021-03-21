@@ -326,6 +326,8 @@ namespace ui {
         gtk_text_buffer_set_text(buffer, str, -1);
     }
 
+    IMPL(TreeView, GTK_TREE_VIEW);
+
     TreeView::TreeView(ui::New_t) : TreeView(GTK_TREE_VIEW(gtk_tree_view_new()))
     {}
 

@@ -503,6 +503,10 @@ void user_shortcuts_save(){
 }
 
 int main( int argc, char* argv[] ){
+#if GTK_TARGET == 3
+	// HACK: force legacy GL backend as we don't support GL3 yet
+	setenv("GDK_GL", "LEGACY", 0);
+#endif
 	crt_init();
 
 	streams_init();
