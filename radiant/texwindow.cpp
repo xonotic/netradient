@@ -1517,7 +1517,7 @@ gboolean TextureBrowser_size_allocate( ui::Widget widget, GtkAllocation* allocat
 	return FALSE;
 }
 
-gboolean TextureBrowser_expose( ui::Widget widget, GdkEventExpose* event, TextureBrowser* textureBrowser ){
+void TextureBrowser_redraw( TextureBrowser* textureBrowser ){
 	if ( glwidget_make_current( textureBrowser->m_gl_widget ) != FALSE ) {
 		GlobalOpenGL_debugAssertNoErrors();
 		TextureBrowser_evaluateHeight( *textureBrowser );
@@ -1525,6 +1525,10 @@ gboolean TextureBrowser_expose( ui::Widget widget, GdkEventExpose* event, Textur
 		GlobalOpenGL_debugAssertNoErrors();
 		glwidget_swap_buffers( textureBrowser->m_gl_widget );
 	}
+}
+
+gboolean TextureBrowser_expose( ui::Widget widget, GdkEventExpose* event, TextureBrowser* textureBrowser ){
+	TextureBrowser_redraw( textureBrowser );
 	return FALSE;
 }
 
@@ -2408,8 +2412,7 @@ void TextureBrowser_hideGLWidget(){
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_hframe, FALSE, FALSE, 0, ui::Packing::END );
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_hfiller, TRUE, TRUE, 0, ui::Packing::START);
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_gl_widget, FALSE, FALSE, 0, ui::Packing::END );
-		GdkEventExpose event = {};
-		TextureBrowser_expose( GlobalTextureBrowser().m_gl_widget, &event, &GlobalTextureBrowser() );
+		TextureBrowser_redraw( &GlobalTextureBrowser() );
 		// The hack needs the GL widget to not be hidden to work,
 		// so resizing it triggers the redraw of it with the new size.
 		// GlobalTextureBrowser().m_gl_widget.hide();
