@@ -124,59 +124,59 @@ static inline double idSqrt( double x ) {
 class idVec3 {
 public:
 #ifndef FAT_VEC3
-float x,y,z;
+	float x,y,z;
 #else
-float x,y,z,dist;
+	float x,y,z,dist;
 #endif
 
 #ifndef FAT_VEC3
-idVec3() {};
+	idVec3() {};
 #else
-idVec3() {dist = 0.0f; };
+	idVec3() {dist = 0.0f; };
 #endif
-idVec3( const float x, const float y, const float z );
+	idVec3( const float x, const float y, const float z );
 
-operator float *();
+	operator float *();
 
-float operator[]( const int index ) const;
-float           &operator[]( const int index );
+	float operator[]( const int index ) const;
+	float &operator[]( const int index );
 
-void            set( const float x, const float y, const float z );
+	void set( const float x, const float y, const float z );
 
-idVec3 operator-() const;
+	idVec3 operator-() const;
 
-idVec3          &operator=( const idVec3 &a );
+	idVec3 &operator=( const idVec3 &a );
 
-float operator*( const idVec3 &a ) const;
-idVec3 operator*( const float a ) const;
-friend idVec3 operator*( float a, idVec3 b );
+	float operator*( const idVec3 &a ) const;
+	idVec3 operator*( const float a ) const;
+	friend idVec3 operator*( float a, idVec3 b );
 
-idVec3 operator+( const idVec3 &a ) const;
-idVec3 operator-( const idVec3 &a ) const;
+	idVec3 operator+( const idVec3 &a ) const;
+	idVec3 operator-( const idVec3 &a ) const;
 
-idVec3          &operator+=( const idVec3 &a );
-idVec3          &operator-=( const idVec3 &a );
-idVec3          &operator*=( const float a );
+	idVec3 &operator+=( const idVec3 &a );
+	idVec3 &operator-=( const idVec3 &a );
+	idVec3 &operator*=( const float a );
 
-int operator==( const idVec3 &a ) const;
-int operator!=( const idVec3 &a ) const;
+	int operator==( const idVec3 &a ) const;
+	int operator!=( const idVec3 &a ) const;
 
-idVec3          Cross( const idVec3 &a ) const;
-idVec3          &Cross( const idVec3 &a, const idVec3 &b );
+	idVec3          Cross( const idVec3 &a ) const;
+	idVec3          &Cross( const idVec3 &a, const idVec3 &b );
 
-float           Length( void ) const;
-float           Normalize( void );
+	float           Length( void ) const;
+	float           Normalize( void );
 
-void            Zero( void );
-void            Snap( void );
-void            SnapTowards( const idVec3 &to );
+	void            Zero( void );
+	void            Snap( void );
+	void            SnapTowards( const idVec3 &to );
 
-float           toYaw( void );
-float           toPitch( void );
-angles_t        toAngles( void );
-friend idVec3   LerpVector( const idVec3 &w1, const idVec3 &w2, const float t );
+	float           toYaw( void );
+	float           toPitch( void );
+	angles_t        toAngles( void );
+	friend idVec3   LerpVector( const idVec3 &w1, const idVec3 &w2, const float t );
 
-char            *string( void );
+	char            *string( void );
 };
 
 extern idVec3 vec_zero;
