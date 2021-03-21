@@ -2400,6 +2400,7 @@ void TextureBrowser_showGLWidget(){
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_hframe, TRUE, TRUE, 0, ui::Packing::START );
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_hfiller, FALSE, FALSE, 0, ui::Packing::START );
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_gl_widget, TRUE, TRUE, 0, ui::Packing::START );
+
 		textureBrowser.m_gl_widget.show();
 	}
 }
@@ -2412,10 +2413,14 @@ void TextureBrowser_hideGLWidget(){
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_hframe, FALSE, FALSE, 0, ui::Packing::END );
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_hfiller, TRUE, TRUE, 0, ui::Packing::START);
 		textureBrowser.m_vframe.set_child_packing( textureBrowser.m_gl_widget, FALSE, FALSE, 0, ui::Packing::END );
-		TextureBrowser_redraw( &GlobalTextureBrowser() );
+
 		// The hack needs the GL widget to not be hidden to work,
 		// so resizing it triggers the redraw of it with the new size.
 		// GlobalTextureBrowser().m_gl_widget.hide();
+
+		// Trigger the redraw.
+		TextureBrowser_redraw( &GlobalTextureBrowser() );
+		ui::process();
 	}
 }
 #endif // WORKAROUND_MACOS_GTK2_GLWIDGET
