@@ -53,8 +53,8 @@ public:
 
 	void            set( float pitch, float yaw, float roll );
 
-	void operator=( angles_t const &a );
-	void operator=( idVec3 const &a );
+	angles_t &operator=( angles_t const &a ) = default;
+	angles_t &operator=( idVec3 const &a );
 
 	friend angles_t operator+( const angles_t &a, const angles_t &b );
 	angles_t        &operator+=( angles_t const &a );
@@ -68,7 +68,6 @@ public:
 	angles_t        &operator*=( float a );
 
 	friend int operator==( angles_t &a, angles_t &b );
-
 	friend int operator!=( angles_t &a, angles_t &b );
 
 	void            toVectors( idVec3 *forward, idVec3 *right = NULL, idVec3 *up = NULL );
@@ -116,16 +115,11 @@ inline void angles_t::set( float pitch, float yaw, float roll ) {
 	this->roll  = roll;
 }
 
-inline void angles_t::operator=( angles_t const &a ) {
-	pitch   = a.pitch;
-	yaw     = a.yaw;
-	roll    = a.roll;
-}
-
-inline void angles_t::operator=( idVec3 const &a ) {
+inline angles_t &angles_t::operator=( idVec3 const &a ) {
 	pitch   = a[ 0 ];
 	yaw     = a[ 1 ];
 	roll    = a[ 2 ];
+	return *this;
 }
 
 inline angles_t operator+( const angles_t &a, const angles_t &b ) {

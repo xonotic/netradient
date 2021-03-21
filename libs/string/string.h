@@ -328,6 +328,8 @@ public:
 		: Buffer( range ){
 	}
 
+	String(const String&) = default;
+
 	String& operator=( const String& other ){
 		String temp( other );
 		temp.swap( *this );

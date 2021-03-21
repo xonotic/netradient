@@ -654,6 +654,8 @@ public:
 		return FacePlane::m_type == eBrushTypeDoom3 || FacePlane::m_type == eBrushTypeQuake4;
 	}
 
+	FacePlane& operator=(const FacePlane&) = default;
+
 	class SavedState
 	{
 	public:
