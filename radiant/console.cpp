@@ -54,7 +54,7 @@ struct Gtk_Idle_Print_Data {
 };
 
 // called whenever we need to open/close/check the console log file
-void Sys_LogFile( bool enable ){
+void Sys_EnableLogFile( bool enable ){
 	if ( enable && !g_hLogFile ) {
 		// settings say we should be logging and we don't have a log file .. so create it
 		if ( !SettingsPath_get()[0] ) {
@@ -221,7 +221,7 @@ std::size_t Sys_Print( int level, const char* buf, std::size_t length ){
 	bool contains_newline = std::find( buf, buf + length, '\n' ) != buf + length;
 
 	if ( level == SYS_ERR ) {
-		Sys_LogFile( true );
+		Sys_EnableLogFile( true );
 	}
 
 	if ( g_hLogFile != 0 ) {

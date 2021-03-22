@@ -40,7 +40,7 @@ ui::Widget Console_constructWindow( ui::Window toplevel );
 std::size_t Sys_Print( int level, const char* buf, std::size_t length );
 
 // will open/close the log file based on the parameter
-void Sys_LogFile( bool enable );
+void Sys_EnableLogFile( bool enable );
 extern bool g_Console_enableLogging;
 
 
