@@ -152,8 +152,8 @@ guint m_chasemouse_handler;
 void ChaseMouse();
 bool chaseMouseMotion( int pointx, int pointy );
 
-void updateModelview();
-void updateProjection();
+void updateModelview(bool reconstruct = true);
+void updateProjection(bool reconstruct = true);
 Matrix4 m_projection;
 Matrix4 m_modelview;
 
