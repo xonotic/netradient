@@ -313,7 +313,7 @@ void Eclass_ScanFile( EntityClassCollector& collector, const char *filename ){
 	} state = eParseDefault;
 	const char* quakeEd = "QUAKED";
 	const char* p = 0;
-	StringBuffer buffer;
+	std::string buffer;
 	SingleCharacterInputStream<TextFileInputStream> bufferedInput( inputFile );
 	for (;; )
 	{

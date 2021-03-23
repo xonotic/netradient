@@ -27,7 +27,6 @@
 
 #include "os/file.h"
 #include "generic/callback.h"
-#include "stream/stringstream.h"
 #include "convert.h"
 
 #include "gtkutil/menu.h"
@@ -51,10 +50,10 @@ inline const char* MRU_GetText( std::size_t index ){
 class EscapedMnemonic
 {
 private:
-	StringBuffer m_buffer;
+	std::string m_buffer;
 
 public:
-	EscapedMnemonic( std::size_t capacity ) : m_buffer( capacity ){
+	EscapedMnemonic() : m_buffer(){
 		m_buffer.push_back( '_' );
 	}
 	const char* c_str() const {
@@ -83,7 +82,7 @@ inline EscapedMnemonic& operator<<( EscapedMnemonic& ostream, const T& t ){
 
 
 void MRU_updateWidget( std::size_t index, const char *filename ){
-	EscapedMnemonic mnemonic( 64 );
+	EscapedMnemonic mnemonic;
 	mnemonic << Unsigned( index + 1 ) << "- " << filename;
 	gtk_label_set_text_with_mnemonic( GTK_LABEL( gtk_bin_get_child( GTK_BIN( MRU_items[index] ) ) ), mnemonic.c_str() );
 }
