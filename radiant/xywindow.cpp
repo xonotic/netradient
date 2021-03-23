@@ -799,7 +799,8 @@ XYWnd::XYWnd() :
 	m_parent( ui::null ),
 	m_window_observer( NewWindowObserver() ),
 	m_XORRectangle( m_gl_widget ),
-	m_chasemouse_handler( 0 ){
+	m_chasemouse_handler( 0 ) {
+
 	m_bActive = false;
 	m_buttonstate = 0;
 
@@ -850,8 +851,11 @@ XYWnd::XYWnd() :
 
 	Map_addValidCallback( g_map, DeferredDrawOnMapValidChangedCaller( m_deferredDraw ) );
 
-	updateProjection();
-	updateModelview();
+	// This reconstruct=false argument is used to avoid a circular dependency
+	// between modelview and projection initialization and a valgrind complaint
+	updateProjection( false );
+	updateModelview( false );
+	m_view.Construct( m_projection, m_modelview, m_nWidth, m_nHeight );
 
 	AddSceneChangeCallback( ReferenceCaller<XYWnd, void(), &XYWnd_Update>( *this ) );
 	AddCameraMovedCallback( ReferenceCaller<XYWnd, void(), &XYWnd_CameraMoved>( *this ) );
@@ -2110,7 +2114,7 @@ RenderStateFlags m_globalstate;
 Shader* m_state_selected;
 };
 
-void XYWnd::updateProjection(){
+void XYWnd::updateProjection( bool reconstruct ){
 	m_projection[0] = 1.0f / static_cast<float>( m_nWidth / 2 );
 	m_projection[5] = 1.0f / static_cast<float>( m_nHeight / 2 );
 	m_projection[10] = 1.0f / ( g_MaxWorldCoord * m_fScale );
@@ -2133,11 +2137,13 @@ void XYWnd::updateProjection(){
 
 	m_projection[15] = 1.0f;
 
-	m_view.Construct( m_projection, m_modelview, m_nWidth, m_nHeight );
+	if (reconstruct) {
+		m_view.Construct( m_projection, m_modelview, m_nWidth, m_nHeight );
+	}
 }
 
 // note: modelview matrix must have a uniform scale, otherwise strange things happen when rendering the rotation manipulator.
-void XYWnd::updateModelview(){
+void XYWnd::updateModelview( bool reconstruct ){
 	int nDim1 = ( m_viewType == YZ ) ? 1 : 0;
 	int nDim2 = ( m_viewType == XY ) ? 1 : 2;
 
@@ -2193,7 +2199,9 @@ void XYWnd::updateModelview(){
 	m_modelview[3] = m_modelview[7] = m_modelview[11] = 0;
 	m_modelview[15] = 1;
 
-	m_view.Construct( m_projection, m_modelview, m_nWidth, m_nHeight );
+	if (reconstruct) {
+		m_view.Construct( m_projection, m_modelview, m_nWidth, m_nHeight );
+	}
 }
 
 /*

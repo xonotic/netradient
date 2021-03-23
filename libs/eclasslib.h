@@ -38,48 +38,50 @@ typedef Vector3 Colour3;
 
 class ListAttributeType
 {
-using ListItem = std::pair<CopiedString, CopiedString>;
-using ListItems = std::vector<ListItem>;
-ListItems m_items;
+	using ListItem = std::pair<CopiedString, CopiedString>;
+	using ListItems = std::vector<ListItem>;
+	ListItems m_items;
 public:
 
-typedef ListItems::const_iterator const_iterator;
-const_iterator begin() const {
-	return m_items.begin();
-}
-const_iterator end() const {
-	return m_items.end();
-}
-
-const ListItem& operator[]( std::size_t i ) const {
-	return m_items[i];
-}
-const_iterator findValue( const char* value ) const {
-	for ( ListItems::const_iterator i = m_items.begin(); i != m_items.end(); ++i )
-	{
-		if ( string_equal( value, ( *i ).second.c_str() ) ) {
-			return i;
-		}
+	typedef ListItems::const_iterator const_iterator;
+	const_iterator begin() const {
+		return m_items.begin();
 	}
-	return m_items.end();
-}
+	const_iterator end() const {
+		return m_items.end();
+	}
 
-void push_back( const char* name, const char* value ){
-	m_items.push_back( ListItems::value_type( name, value ) );
-}
+	const ListItem& operator[]( std::size_t i ) const {
+		return m_items[i];
+	}
+	const_iterator findValue( const char* value ) const {
+		for ( ListItems::const_iterator i = m_items.begin(); i != m_items.end(); ++i )
+		{
+			if ( string_equal( value, ( *i ).second.c_str() ) ) {
+				return i;
+			}
+		}
+		return m_items.end();
+	}
+
+	void push_back( const char* name, const char* value ){
+		m_items.push_back( ListItems::value_type( name, value ) );
+	}
 };
 
 class EntityClassAttribute
 {
-public:
-CopiedString m_type;
-CopiedString m_name;
-CopiedString m_value;
-CopiedString m_description;
-EntityClassAttribute(){
-}
-EntityClassAttribute( const char* type, const char* name, const char* value = "", const char* description = "" ) : m_type( type ), m_name( name ), m_value( value ), m_description( description ){
-}
+	public:
+		CopiedString m_type;
+		CopiedString m_name;
+		CopiedString m_value;
+		CopiedString m_description;
+		EntityClassAttribute(){
+		}
+		EntityClassAttribute(const EntityClassAttribute& attr) = default;
+		EntityClassAttribute( const char* type, const char* name, const char* value = "", const char* description = "" ) : m_type( type ), m_name( name ), m_value( value ), m_description( description ){
+		}
+		EntityClassAttribute& operator=(const EntityClassAttribute& attr) = default;
 };
 
 typedef std::pair<CopiedString, EntityClassAttribute> EntityClassAttributePair;
@@ -103,44 +105,44 @@ inline const char* EntityClassAttributePair_getDescription( const EntityClassAtt
 class EntityClass
 {
 public:
-CopiedString m_name;
-StringList m_parent;
-bool fixedsize;
-bool unknown;               // wasn't found in source
-Vector3 mins;
-Vector3 maxs;
+	CopiedString m_name;
+	StringList m_parent;
+	bool fixedsize;
+	bool unknown;               // wasn't found in source
+	Vector3 mins;
+	Vector3 maxs;
 
-Colour3 color;
-Shader* m_state_fill;
-Shader* m_state_wire;
-Shader* m_state_blend;
+	Colour3 color;
+	Shader* m_state_fill;
+	Shader* m_state_wire;
+	Shader* m_state_blend;
 
-CopiedString m_comments;
-char flagnames[MAX_FLAGS][32];
+	CopiedString m_comments;
+	char flagnames[MAX_FLAGS][32];
 
-CopiedString m_modelpath;
-CopiedString m_skin;
+	CopiedString m_modelpath;
+	CopiedString m_skin;
 
-void ( *free )( EntityClass* );
+	void ( *free )( EntityClass* );
 
-EntityClassAttributes m_attributes;
+	EntityClassAttributes m_attributes;
 
-bool inheritanceResolved;
-bool sizeSpecified;
-bool colorSpecified;
+	bool inheritanceResolved;
+	bool sizeSpecified;
+	bool colorSpecified;
 
-const char* name() const {
-	return m_name.c_str();
-}
-const char* comments() const {
-	return m_comments.c_str();
-}
-const char* modelpath() const {
-	return m_modelpath.c_str();
-}
-const char* skin() const {
-	return m_skin.c_str();
-}
+	const char* name() const {
+		return m_name.c_str();
+	}
+	const char* comments() const {
+		return m_comments.c_str();
+	}
+	const char* modelpath() const {
+		return m_modelpath.c_str();
+	}
+	const char* skin() const {
+		return m_skin.c_str();
+	}
 };
 
 inline const char* EntityClass_valueForKey( const EntityClass& entityClass, const char* key ){

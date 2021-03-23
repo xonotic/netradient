@@ -204,13 +204,10 @@ bool Preferences_Save( PreferenceDictionary& preferences, const char* filename )
 }
 
 bool Preferences_Save_Safe( PreferenceDictionary& preferences, const char* filename ){
-	Array<char> tmpName( filename, filename + strlen( filename ) + 1 + 3 );
-	*( tmpName.end() - 4 ) = 'T';
-	*( tmpName.end() - 3 ) = 'M';
-	*( tmpName.end() - 2 ) = 'P';
-	*( tmpName.end() - 1 ) = '\0';
+	std::string tmpName( filename );
+	tmpName += "TMP";
 
-	return Preferences_Save( preferences, tmpName.data() )
+	return Preferences_Save( preferences, tmpName.c_str() )
 		   && ( !file_exists( filename ) || file_remove( filename ) )
 		   && file_move( tmpName.data(), filename );
 }
@@ -704,8 +701,6 @@ PreferencesPage createPage( const char* treeName, const char* frameName ){
 ui::Window PrefsDlg::BuildDialog(){
 	PreferencesDialog_addInterfacePreferences( makeCallbackF(Interface_constructPreferences) );
 	Mouse_registerPreferencesPage();
-
-	ui::Window main_window = MainFrame_getWindow();
 
 	ui::Window dialog = ui::Window(create_floating_window( RADIANT_NAME " Preferences", m_parent ));
 

@@ -36,12 +36,12 @@
 
 const int MRU_MAX = 4;
 namespace {
-GtkMenuItem *MRU_items[MRU_MAX];
-std::size_t MRU_used;
-typedef CopiedString MRU_filename_t;
-MRU_filename_t MRU_filenames[MRU_MAX];
-typedef const char* MRU_key_t;
-MRU_key_t MRU_keys[MRU_MAX] = { "File0", "File1", "File2", "File3" };
+	GtkMenuItem *MRU_items[MRU_MAX];
+	std::size_t MRU_used;
+	typedef CopiedString MRU_filename_t;
+	MRU_filename_t MRU_filenames[MRU_MAX];
+	typedef const char* MRU_key_t;
+	MRU_key_t MRU_keys[MRU_MAX] = { "File0", "File1", "File2", "File3" };
 }
 
 inline const char* MRU_GetText( std::size_t index ){
@@ -50,28 +50,30 @@ inline const char* MRU_GetText( std::size_t index ){
 
 class EscapedMnemonic
 {
-StringBuffer m_buffer;
-public:
-EscapedMnemonic( std::size_t capacity ) : m_buffer( capacity ){
-	m_buffer.push_back( '_' );
-}
-const char* c_str() const {
-	return m_buffer.c_str();
-}
-void push_back( char c ){ // not escaped
-	m_buffer.push_back( c );
-}
-std::size_t write( const char* buffer, std::size_t length ){
-	for ( const char* end = buffer + length; buffer != end; ++buffer )
-	{
-		if ( *buffer == '_' ) {
-			m_buffer.push_back( '_' );
-		}
+private:
+	StringBuffer m_buffer;
 
-		m_buffer.push_back( *buffer );
+public:
+	EscapedMnemonic( std::size_t capacity ) : m_buffer( capacity ){
+		m_buffer.push_back( '_' );
 	}
-	return length;
-}
+	const char* c_str() const {
+		return m_buffer.c_str();
+	}
+	void push_back( char c ){ // not escaped
+		m_buffer.push_back( c );
+	}
+	std::size_t write( const char* buffer, std::size_t length ){
+		for ( const char* end = buffer + length; buffer != end; ++buffer )
+		{
+			if ( *buffer == '_' ) {
+				m_buffer.push_back( '_' );
+			}
+
+			m_buffer.push_back( *buffer );
+		}
+		return length;
+	}
 };
 
 template<typename T>
@@ -173,16 +175,18 @@ void MRU_Activate( std::size_t index ){
 
 class LoadMRU
 {
-std::size_t m_number;
+private:
+	std::size_t m_number;
+
 public:
-LoadMRU( std::size_t number )
-	: m_number( number ){
-}
-void load(){
-	if ( ConfirmModified( "Open Map" ) ) {
-		MRU_Activate( m_number - 1 );
+	LoadMRU( std::size_t number )
+		: m_number( number ){
 	}
-}
+	void load(){
+		if ( ConfirmModified( "Open Map" ) ) {
+			MRU_Activate( m_number - 1 );
+		}
+	}
 };
 
 typedef MemberCaller<LoadMRU, void(), &LoadMRU::load> LoadMRUCaller;
