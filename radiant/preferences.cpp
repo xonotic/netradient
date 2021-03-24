@@ -220,7 +220,7 @@ struct LogConsole {
 
 	static void Import(bool value) {
 		g_Console_enableLogging = value;
-		Sys_LogFile(g_Console_enableLogging);
+		Sys_EnableLogFile(g_Console_enableLogging);
 	}
 };
 

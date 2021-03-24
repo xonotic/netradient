@@ -407,7 +407,7 @@ void create_global_pid(){
 		// set without saving, the class is not in a coherent state yet
 		// just do the value change and call to start logging, CGamesDialog will pickup when relevant
 		g_GamesDialog.m_bForceLogConsole = true;
-		Sys_LogFile( true );
+		Sys_EnableLogFile( true );
 	}
 
 	// create a primary .pid for global init run
@@ -466,7 +466,7 @@ void create_local_pid(){
 
 		// force console logging on! (will go in prefs too)
 		g_GamesDialog.m_bForceLogConsole = true;
-		Sys_LogFile( true );
+		Sys_EnableLogFile( true );
 	}
 	else
 	{
@@ -600,7 +600,7 @@ int main( int argc, char* argv[] ){
 	// we may have the console turned on and want to keep it that way
 	// so we use a latching system
 	if ( g_GamesDialog.m_bForceLogConsole ) {
-		Sys_LogFile( true );
+		Sys_EnableLogFile( true );
 		g_Console_enableLogging = true;
 		g_GamesDialog.m_bForceLogConsole = false;
 	}
@@ -654,7 +654,7 @@ int main( int argc, char* argv[] ){
 	Radiant_Shutdown();
 
 	// close the log file if any
-	Sys_LogFile( false );
+	Sys_EnableLogFile( false );
 
 	return EXIT_SUCCESS;
 }

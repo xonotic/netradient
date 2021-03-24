@@ -130,7 +130,7 @@ void Error( const char *error, ... ){
 	ERROR_MESSAGE( text );
 
 	// force close logging if necessary
-	Sys_LogFile( false );
+	Sys_EnableLogFile( false );
 
 	_exit( 1 );
 }

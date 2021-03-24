@@ -19,15 +19,15 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-// OpenGL widget based on GtkGLExt
+// OpenGL widget based on GtkGLExt / GtkGLArea
 
 #include "glwidget.h"
 
 #include "igl.h"
 
-void (*GLWidget_sharedContextCreated)() = 0;
-
-void (*GLWidget_sharedContextDestroyed)() = 0;
+// Function callbacks
+static void (*sharedContextCreated)() = nullptr;
+static void (*sharedContextDestroyed)() = nullptr;
 
 unsigned int g_context_count = 0;
 
@@ -42,7 +42,7 @@ static void _glwidget_context_created(ui::GLArea self, void *data)
         glwidget_make_current(g_shared);
         GlobalOpenGL().contextValid = true;
 
-        GLWidget_sharedContextCreated();
+        sharedContextCreated();
     }
 }
 
@@ -51,19 +51,18 @@ static void _glwidget_context_destroyed(ui::GLArea self, void *data)
     if (--g_context_count == 0) {
         GlobalOpenGL().contextValid = false;
 
-        GLWidget_sharedContextDestroyed();
+        sharedContextDestroyed();
 
         g_shared.unref();
         g_shared = ui::GLArea(ui::null);
     }
 }
 
-void glwidget_destroy_context(ui::GLArea self)
+void glwidget_set_shared_context_constructors(
+		void created(), void destroyed() )
 {
-}
-
-void glwidget_create_context(ui::GLArea self)
-{
+	sharedContextCreated = created;
+	sharedContextDestroyed = destroyed;
 }
 
 #if GTK_TARGET == 3
@@ -92,7 +91,6 @@ bool glwidget_make_current(ui::GLArea self)
 //        glwidget_context_created(self);
 //    }
     gtk_gl_area_make_current(self);
-    auto valid = GlobalOpenGL().contextValid;
     return true;
 }
 

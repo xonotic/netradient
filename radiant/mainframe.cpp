@@ -3599,8 +3599,7 @@ void MainFrame_Construct(){
 	g_entityCount.setCountChangedCallback( makeCallbackF(QE_entityCountChanged) );
 	GlobalEntityCreator().setCounter( &g_entityCount );
 
-	GLWidget_sharedContextCreated = GlobalGL_sharedContextCreated;
-	GLWidget_sharedContextDestroyed = GlobalGL_sharedContextDestroyed;
+	glwidget_set_shared_context_constructors( GlobalGL_sharedContextCreated, GlobalGL_sharedContextDestroyed);
 
 	GlobalEntityClassManager().attach( g_WorldspawnColourEntityClassObserver );
 }

@@ -31,15 +31,16 @@
 #define SYS_ERR 3 ///< error
 #define SYS_NOCON 4 ///< no console, only print to the file (useful whenever Sys_Printf and output IS the problem)
 
-std::size_t Sys_Print( int level, const char* buf, std::size_t length );
 class TextOutputStream;
 TextOutputStream& getSysPrintOutputStream();
 TextOutputStream& getSysPrintErrorStream();
 
 ui::Widget Console_constructWindow( ui::Window toplevel );
 
+std::size_t Sys_Print( int level, const char* buf, std::size_t length );
+
 // will open/close the log file based on the parameter
-void Sys_LogFile( bool enable );
+void Sys_EnableLogFile( bool enable );
 extern bool g_Console_enableLogging;
 
 

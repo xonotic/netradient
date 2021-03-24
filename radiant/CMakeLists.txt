@@ -36,7 +36,6 @@ set(RADIANTLIST
     filetypes.cpp filetypes.h
     filters.cpp filters.h
     findtexturedialog.cpp findtexturedialog.h
-    glwidget.cpp glwidget.h
     grid.cpp grid.h
     groupdialog.cpp groupdialog.h
     gtkdlgs.cpp gtkdlgs.h

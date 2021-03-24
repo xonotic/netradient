@@ -24,6 +24,7 @@
 #include <time.h>
 #include <uilib/uilib.h>
 #include <gtk/gtk.h>
+#include <mutex>
 
 #include "gtkutil/accelerator.h"
 #include "gtkutil/messagebox.h"
@@ -45,8 +46,15 @@ FILE* g_hLogFile;
 
 bool g_Console_enableLogging = false;
 
+struct Gtk_Idle_Print_Data {
+	int level;
+	char *buf;
+	std::size_t length;
+	bool contains_newline;
+};
+
 // called whenever we need to open/close/check the console log file
-void Sys_LogFile( bool enable ){
+void Sys_EnableLogFile( bool enable ){
 	if ( enable && !g_hLogFile ) {
 		// settings say we should be logging and we don't have a log file .. so create it
 		if ( !SettingsPath_get()[0] ) {
@@ -146,74 +154,95 @@ std::size_t write( const char* buffer, std::size_t length ){
 }
 };
 
+// This function is meant to be used with gtk_idle_add. It will free its argument.
+static gboolean Gtk_Idle_Print( gpointer data ){
+	Gtk_Idle_Print_Data *args = reinterpret_cast<Gtk_Idle_Print_Data *>(data);
+	g_assert(g_console);
+
+	auto buffer = gtk_text_view_get_buffer( g_console );
+
+	GtkTextIter iter;
+	gtk_text_buffer_get_end_iter( buffer, &iter );
+
+	static auto end = gtk_text_buffer_create_mark( buffer, "end", &iter, FALSE );
+
+	const GdkColor yellow = { 0, 0xb0ff, 0xb0ff, 0x0000 };
+	const GdkColor red = { 0, 0xffff, 0x0000, 0x0000 };
+
+	static auto error_tag = gtk_text_buffer_create_tag( buffer, "red_foreground", "foreground-gdk", &red, NULL );
+	static auto warning_tag = gtk_text_buffer_create_tag( buffer, "yellow_foreground", "foreground-gdk", &yellow, NULL );
+	static auto standard_tag = gtk_text_buffer_create_tag( buffer, "black_foreground", NULL );
+	GtkTextTag* tag;
+	switch ( args->level )
+	{
+	case SYS_WRN:
+		tag = warning_tag;
+		break;
+	case SYS_ERR:
+		tag = error_tag;
+		break;
+	case SYS_STD:
+	case SYS_VRB:
+	default:
+		tag = standard_tag;
+		break;
+	}
+
+	{
+		GtkTextBufferOutputStream textBuffer( buffer, &iter, tag );
+		if ( !globalCharacterSet().isUTF8() ) {
+			BufferedTextOutputStream<GtkTextBufferOutputStream> buffered( textBuffer );
+			buffered << StringRange( args->buf, args->buf + args->length );
+		}
+		else
+		{
+			textBuffer << StringRange( args->buf, args->buf + args->length );
+		}
+	}
+
+	// update console widget immediatly if we're doing something time-consuming
+	if ( args->contains_newline ) {
+		gtk_text_view_scroll_mark_onscreen( g_console, end );
+
+		if ( !ScreenUpdates_Enabled() && gtk_widget_get_realized( g_console ) ) {
+			ScreenUpdates_process();
+		}
+	}
+
+	free( args->buf );
+	free( args );
+
+	return FALSE; // call this once, not repeatedly
+}
+
+// Print logs to the in-game console and/or to the log file.
+// This function is thread safe.
 std::size_t Sys_Print( int level, const char* buf, std::size_t length ){
 	bool contains_newline = std::find( buf, buf + length, '\n' ) != buf + length;
 
 	if ( level == SYS_ERR ) {
-		Sys_LogFile( true );
+		Sys_EnableLogFile( true );
 	}
 
 	if ( g_hLogFile != 0 ) {
+		// prevent parallel write
+		static std::mutex log_file_mutex;
+		std::lock_guard<std::mutex> guard(log_file_mutex);
+
 		fwrite( buf, 1, length, g_hLogFile );
 		if ( contains_newline ) {
 			fflush( g_hLogFile );
 		}
 	}
 
-	if ( level != SYS_NOCON ) {
-		if ( g_console ) {
-			auto buffer = gtk_text_view_get_buffer( g_console );
-
-			GtkTextIter iter;
-			gtk_text_buffer_get_end_iter( buffer, &iter );
-
-			static auto end = gtk_text_buffer_create_mark( buffer, "end", &iter, FALSE );
-
-			const GdkColor yellow = { 0, 0xb0ff, 0xb0ff, 0x0000 };
-			const GdkColor red = { 0, 0xffff, 0x0000, 0x0000 };
-
-			static auto error_tag = gtk_text_buffer_create_tag( buffer, "red_foreground", "foreground-gdk", &red, NULL );
-			static auto warning_tag = gtk_text_buffer_create_tag( buffer, "yellow_foreground", "foreground-gdk", &yellow, NULL );
-			static auto standard_tag = gtk_text_buffer_create_tag( buffer, "black_foreground", NULL );
-			GtkTextTag* tag;
-			switch ( level )
-			{
-			case SYS_WRN:
-				tag = warning_tag;
-				break;
-			case SYS_ERR:
-				tag = error_tag;
-				break;
-			case SYS_STD:
-			case SYS_VRB:
-			default:
-				tag = standard_tag;
-				break;
-			}
-
-
-			{
-				GtkTextBufferOutputStream textBuffer( buffer, &iter, tag );
-				if ( !globalCharacterSet().isUTF8() ) {
-					BufferedTextOutputStream<GtkTextBufferOutputStream> buffered( textBuffer );
-					buffered << StringRange( buf, buf + length );
-				}
-				else
-				{
-					textBuffer << StringRange( buf, buf + length );
-				}
-			}
-
-			// update console widget immediatly if we're doing something time-consuming
-			if ( contains_newline ) {
-				gtk_text_view_scroll_mark_onscreen( g_console, end );
-
-				if ( !ScreenUpdates_Enabled() && gtk_widget_get_realized( g_console ) ) {
-					ScreenUpdates_process();
-				}
-			}
+	if ( level != SYS_NOCON && g_console ) {
+		auto data = reinterpret_cast<Gtk_Idle_Print_Data *>( malloc( sizeof(struct Gtk_Idle_Print_Data) ) );
+		if (data != nullptr) {
+			*data = { level, g_strndup(buf, length), length, contains_newline };
+			gdk_threads_add_idle(Gtk_Idle_Print, (gpointer)data);
 		}
 	}
+
 	return length;
 }
 
