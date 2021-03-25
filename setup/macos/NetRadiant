@@ -47,4 +47,11 @@ then
 	export GTK2_RC_FILES="${gtkrc_file}"
 fi
 
-exec ./netradiant "${@}"
+if [ "${1}" = '--debug' ]
+then
+	shift
+	export PATH="/usr/bin:${PATH}"
+	exec lldb ./netradiant "${@}"
+else
+	exec ./netradiant "${@}"
+fi
