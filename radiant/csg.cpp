@@ -358,19 +358,15 @@ void post( const scene::Path& path, scene::Instance& instance ) const {
 			else
 			{
 				++m_before;
-				for ( brush_vector_t::const_iterator i = out.begin(); i != out.end(); ++i )
-				{
+				for ( Brush *b : out ) {
 					++m_after;
-					( *i )->removeEmptyFaces();
-					if ( !( *i )->empty() ) {
+					b->removeEmptyFaces();
+					if ( !b->empty() ) {
 						NodeSmartReference node( ( new BrushNode() )->node() );
-						Node_getBrush( node )->copy( *( *i ) );
-						delete ( *i );
+						Node_getBrush( node )->copy( *b );
 						Node_getTraversable( path.parent() )->insert( node );
 					}
-					else{
-						delete ( *i );
-					}
+					delete b;
 				}
 				Path_deleteTop( path );
 			}
@@ -385,9 +381,7 @@ void CSG_Subtract(){
 
 	if ( selected_brushes.empty() ) {
 		globalOutputStream() << "CSG Subtract: No brushes selected.\n";
-	}
-	else
-	{
+	} else {
 		globalOutputStream() << "CSG Subtract: Subtracting " << Unsigned( selected_brushes.size() ) << " brushes.\n";
 
 		UndoableCommand undo( "brushSubtract" );
@@ -422,50 +416,55 @@ bool pre( const scene::Path& path, scene::Instance& instance ) const {
 }
 
 void post( const scene::Path& path, scene::Instance& instance ) const {
-	if ( path.top().get().visible() ) {
-		Brush* brush = Node_getBrush( path.top() );
-		if ( brush != 0
-			 && Instance_getSelectable( instance )->isSelected() ) {
-			Plane3 plane( plane3_for_points( m_p0, m_p1, m_p2 ) );
-			if ( plane3_valid( plane ) ) {
-				brushsplit_t split = Brush_classifyPlane( *brush, m_split == eFront ? plane3_flipped( plane ) : plane );
-				if ( split.counts[ePlaneBack] && split.counts[ePlaneFront] ) {
-					// the plane intersects this brush
-					if ( m_split == eFrontAndBack ) {
-						NodeSmartReference node( ( new BrushNode() )->node() );
-						Brush* fragment = Node_getBrush( node );
-						fragment->copy( *brush );
-						std::shared_ptr<Face> newFace =
-							fragment->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
-						if ( newFace != 0 && m_split != eFront ) {
-							newFace->flipWinding();
-						}
-						fragment->removeEmptyFaces();
-						ASSERT_MESSAGE( !fragment->empty(), "brush left with no faces after split" );
+	if ( !path.top().get().visible() ) {
+		return;
+	}
 
-						Node_getTraversable( path.parent() )->insert( node );
-						{
-							scene::Path fragmentPath = path;
-							fragmentPath.top() = makeReference( node.get() );
-							selectPath( fragmentPath, true );
-						}
-					}
+	Brush* brush = Node_getBrush( path.top() );
+	if ( brush == nullptr || !Instance_getSelectable( instance )->isSelected() ) {
+		return;
+	}
 
-					std::shared_ptr<Face> newFace = brush->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
-					if ( newFace != 0 && m_split == eFront ) {
-						newFace->flipWinding();
-					}
-					brush->removeEmptyFaces();
-					ASSERT_MESSAGE( !brush->empty(), "brush left with no faces after split" );
-				}
-				else
-				// the plane does not intersect this brush
-				if ( m_split != eFrontAndBack && split.counts[ePlaneBack] != 0 ) {
-					// the brush is "behind" the plane
-					Path_deleteTop( path );
-				}
+	Plane3 plane( plane3_for_points( m_p0, m_p1, m_p2 ) );
+	if ( !plane3_valid( plane ) ) {
+		return;
+	}
+
+	brushsplit_t split = Brush_classifyPlane( *brush, m_split == eFront ? plane3_flipped( plane ) : plane );
+	if ( split.counts[ePlaneBack] && split.counts[ePlaneFront] ) {
+		// the plane intersects this brush
+		if ( m_split == eFrontAndBack ) {
+			NodeSmartReference node( ( new BrushNode() )->node() );
+			Brush* fragment = Node_getBrush( node );
+			fragment->copy( *brush );
+			std::shared_ptr<Face> newFace =
+				fragment->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
+			if ( newFace != 0 && m_split != eFront ) {
+				newFace->flipWinding();
+			}
+			fragment->removeEmptyFaces();
+			ASSERT_MESSAGE( !fragment->empty(), "brush left with no faces after split" );
+
+			Node_getTraversable( path.parent() )->insert( node );
+			{
+				scene::Path fragmentPath = path;
+				fragmentPath.top() = makeReference( node.get() );
+				selectPath( fragmentPath, true );
 			}
 		}
+
+		std::shared_ptr<Face> newFace = brush->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
+		if ( newFace != 0 && m_split == eFront ) {
+			newFace->flipWinding();
+		}
+		brush->removeEmptyFaces();
+		ASSERT_MESSAGE( !brush->empty(), "brush left with no faces after split" );
+	}
+	else
+	// the plane does not intersect this brush
+	if ( m_split != eFrontAndBack && split.counts[ePlaneBack] != 0 ) {
+		// the brush is "behind" the plane
+		Path_deleteTop( path );
 	}
 }
 };
