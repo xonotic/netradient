@@ -20,7 +20,7 @@ if (APPLE)
 endif ()
 
 set(BUILTIN_GTKGLEXT_BUILT OFF CACHE INTERNAL "...")
-if (EXISTS "${BUILTINS_INSTALL_DIR}/lib/pkgconfig/gtkglext-1.0.pc")
+if (EXISTS "${BUILTINS_PKGCONFIG_DIR}gtkglext-1.0.pc")
     set(BUILTIN_GTKGLEXT_BUILT ON)
 endif ()
 
@@ -406,8 +406,8 @@ if (BUILTIN_GTKGLEXT)
         INSTALL_COMMAND $(MAKE) install
     )
 
-    include_directories("${BUILTINS_INSTALL_DIR}/lib/gtkglext-1.0/include")
-    include_directories("${BUILTINS_INSTALL_DIR}/include/gtkglext-1.0")
+    include_directories("${BUILTINS_INCLUDE_DIR}/gtkglext-1.0")
+    include_directories("${BUILTINS_LIB_DIR}/gtkglext-1.0/include")
 
     add_dependencies(builtins gtkglext)
     set_target_properties(gtkglext PROPERTIES EXCLUDE_FROM_ALL ON)
