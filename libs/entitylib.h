@@ -419,18 +419,6 @@ private:
 		}
 		m_observerMutex = false;
 	}
-	void forEachKeyValue_notifyInsert(){
-		for ( KeyValues::const_iterator i = m_keyValues.begin(); i != m_keyValues.end(); ++i )
-		{
-			notifyInsert( ( *i ).first.c_str(), *( *i ).second );
-		}
-	}
-	void forEachKeyValue_notifyErase(){
-		for ( KeyValues::const_iterator i = m_keyValues.begin(); i != m_keyValues.end(); ++i )
-		{
-			notifyErase( ( *i ).first.c_str(), *( *i ).second );
-		}
-	}
 
 	void insert( const char* key, const KeyValuePtr& keyValue ){
 		KeyValues::iterator i = m_keyValues.insert( KeyValues::value_type( key, keyValue ) );
