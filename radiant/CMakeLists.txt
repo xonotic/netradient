@@ -145,8 +145,11 @@ endif ()
 #   warning: allocated section `.dynstr' not in segment
 # and produce an unusable binary, better not strip when using this hack.
 #
-# This hack is only wanted when NetRadiant is not installed system-wide.
-if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux"	AND NOT FHS_INSTALL)
+# This hack is only wanted for release build and
+# when NetRadiant is not installed system-wide.
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux"
+    AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release"
+    AND NOT FHS_INSTALL)
     target_link_libraries(${RADIANT_BASENAME} -no-pie)
 endif()
 
