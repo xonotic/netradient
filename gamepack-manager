@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/bin/sh
 
 # get usage help this way:
 # ./gamepack_manager -h
