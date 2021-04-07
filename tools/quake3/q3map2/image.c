@@ -396,122 +396,137 @@ image_t *ImageLoad( const char *filename ){
 		return NULL;
 	}
 
-	/* strip file extension off name */
-	strcpy( name, filename );
-	StripExtension( name );
-
-	/* try to find existing image */
-	image = ImageFind( name );
-	if ( image != NULL ) {
-		image->refCount++;
-		return image;
-	}
-
-	/* none found, so find first non-null image */
-	image = NULL;
-	for ( i = 0; i < MAX_IMAGES; i++ )
+	/* try with extension then without extension
+	so light.blend will be unfortunately first
+	tried as light.tga like it always did, but
+	then, light.blend.tga will be tried as well */
+	for ( i = 0; i < 2; i++ )
 	{
-		if ( images[ i ].name == NULL ) {
-			image = &images[ i ];
+		strcpy( name, filename );
+
+		if ( i == 0 )
+		{
+			/* strip file extension off name */
+			StripExtension( name );
+		}
+
+		/* try to find existing image */
+		image = ImageFind( name );
+		if ( image != NULL ) {
+			image->refCount++;
+			return image;
+		}
+
+		/* none found, so find first non-null image */
+		image = NULL;
+		for ( i = 0; i < MAX_IMAGES; i++ )
+		{
+			if ( images[ i ].name == NULL ) {
+				image = &images[ i ];
+				break;
+			}
+		}
+
+		/* too many images? */
+		if ( image == NULL ) {
+			Error( "MAX_IMAGES (%d) exceeded, there are too many image files referenced by the map.", MAX_IMAGES );
+		}
+
+		/* set it up */
+		image->name = safe_malloc( strlen( name ) + 1 );
+		strcpy( image->name, name );
+
+		/* add a dummy extension that can be removed */
+		strcat( name, ".tga" );
+
+		/* Sys_FPrintf( SYS_WRN, "==> Looking for %s\n", name ); */
+
+		/* attempt to load tga */
+		StripExtension( name );
+		strcat( name, ".tga" );
+		size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
+		if ( size > 0 ) {
+			LoadTGABuffer( buffer, buffer + size, &image->pixels, &image->width, &image->height );
 			break;
 		}
-	}
 
-	/* too many images? */
-	if ( image == NULL ) {
-		Error( "MAX_IMAGES (%d) exceeded, there are too many image files referenced by the map.", MAX_IMAGES );
-	}
-
-	/* set it up */
-	image->name = safe_malloc( strlen( name ) + 1 );
-	strcpy( image->name, name );
-
-	/* attempt to load tga */
-	StripExtension( name );
-	strcat( name, ".tga" );
-	size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
-	if ( size > 0 ) {
-		LoadTGABuffer( buffer, buffer + size, &image->pixels, &image->width, &image->height );
-		goto image_load_success;
-	}
-
-	/* attempt to load png */
-	StripExtension( name );
-	strcat( name, ".png" );
-	size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
-	if ( size > 0 ) {
-		LoadPNGBuffer( buffer, size, &image->pixels, &image->width, &image->height );
-		goto image_load_success;
-	}
-
-	/* attempt to load jpg */
-	StripExtension( name );
-	strcat( name, ".jpg" );
-	size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
-	if ( size > 0 ) {
-		if ( LoadJPGBuff( buffer, size, &image->pixels, &image->width, &image->height ) == -1 && image->pixels != NULL ) {
-			// On error, LoadJPGBuff might store a pointer to the error message in image->pixels
-			Sys_FPrintf( SYS_WRN, "WARNING: LoadJPGBuff: %s\n", (unsigned char*) image->pixels );
+		/* attempt to load png */
+		StripExtension( name );
+		strcat( name, ".png" );
+		size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
+		if ( size > 0 ) {
+			LoadPNGBuffer( buffer, size, &image->pixels, &image->width, &image->height );
+			break;
 		}
-		alphaHack = qtrue;
-		goto image_load_success;
-	}
 
-	/* attempt to load dds */
-	StripExtension( name );
-	strcat( name, ".dds" );
-	size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
+		/* attempt to load jpg */
+		StripExtension( name );
+		strcat( name, ".jpg" );
+		size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
+		if ( size > 0 ) {
+			if ( LoadJPGBuff( buffer, size, &image->pixels, &image->width, &image->height ) == -1 && image->pixels != NULL ) {
+				// On error, LoadJPGBuff might store a pointer to the error message in image->pixels
+				Sys_FPrintf( SYS_WRN, "WARNING: LoadJPGBuff: %s\n", (unsigned char*) image->pixels );
+			}
+			alphaHack = qtrue;
+			break;
+		}
 
-	/* also look for .dds image in dds/ prefix like Doom3 or DarkPlaces */
-	if ( size <= 0 ) {
-		strcpy( name, "dds/" );
-		strcat( name, image->name );
+		/* attempt to load dds */
 		StripExtension( name );
 		strcat( name, ".dds" );
 		size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
-	}
 
-	if ( size > 0 ) {
-		LoadDDSBuffer( buffer, size, &image->pixels, &image->width, &image->height );
-		goto image_load_success;
-	}
+		/* also look for .dds image in dds/ prefix like Doom3 or DarkPlaces */
+		if ( size <= 0 ) {
+			strcpy( name, "dds/" );
+			strcat( name, image->name );
+			StripExtension( name );
+			strcat( name, ".dds" );
+			size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
+		}
 
-	/* attempt to load ktx */
-	StripExtension( name );
-	strcat( name, ".ktx" );
-	size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
-	if ( size > 0 ) {
-		LoadKTXBufferFirstImage( buffer, size, &image->pixels, &image->width, &image->height );
-		goto image_load_success;
-	}
+		if ( size > 0 ) {
+			LoadDDSBuffer( buffer, size, &image->pixels, &image->width, &image->height );
+			break;
+		}
 
-	#ifdef BUILD_CRUNCH
-	/* attempt to load crn */
-	StripExtension( name );
-	strcat( name, ".crn" );
-	size = vfsLoadFile( ( const char* ) name, ( void** ) &buffer, 0 );
-	if ( size > 0 ) {
-		LoadCRNBuffer( buffer, size, &image->pixels, &image->width, &image->height );
-		goto image_load_success;
-	}
-	#endif // BUILD_CRUNCH
+		/* attempt to load ktx */
+		StripExtension( name );
+		strcat( name, ".ktx" );
+		size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
+		if ( size > 0 ) {
+			LoadKTXBufferFirstImage( buffer, size, &image->pixels, &image->width, &image->height );
+			break;
+		}
 
-	/* attempt to load webp */
-	StripExtension( name );
-	strcat( name, ".webp" );
-	size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
-	if ( size > 0 ) {
-		LoadWEBPBuffer( buffer, size, &image->pixels, &image->width, &image->height );
-		goto image_load_success;
-	}
+		#ifdef BUILD_CRUNCH
+		/* attempt to load crn */
+		StripExtension( name );
+		strcat( name, ".crn" );
+		size = vfsLoadFile( ( const char* ) name, ( void** ) &buffer, 0 );
+		if ( size > 0 ) {
+			LoadCRNBuffer( buffer, size, &image->pixels, &image->width, &image->height );
+			break;
+		}
+		#endif // BUILD_CRUNCH
 
-	image_load_success:
+		/* attempt to load webp */
+		StripExtension( name );
+		strcat( name, ".webp" );
+		size = vfsLoadFile( (const char*) name, (void**) &buffer, 0 );
+		if ( size > 0 ) {
+			LoadWEBPBuffer( buffer, size, &image->pixels, &image->width, &image->height );
+			break;
+		}
+	}
 
 	/* free file buffer */
 	free( buffer );
 
 	/* make sure everything's kosher */
 	if ( size <= 0 || image->width <= 0 || image->height <= 0 || image->pixels == NULL ) {
+		// Sys_FPrintf( SYS_WRN, "WARNING: Image not found: \"%s\"\n", filename );
 		//%	Sys_Printf( "size = %d  width = %d  height = %d  pixels = 0x%08x (%s)\n",
 		//%		size, image->width, image->height, image->pixels, name );
 		free( image->name );
