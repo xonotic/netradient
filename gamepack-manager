@@ -80,6 +80,7 @@ UFOAI           proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/
 Unvanquished    BSD          git     https://github.com/Unvanquished/unvanquished-mapeditor-support.git
 Warsow          GPL          git     https://github.com/Warsow/NetRadiantPack.git
 Wolf            proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/WolfPack/branches/1.5/
+WoP             proprietary  git     https://github.com/PadWorld-Entertainment/wop-mapeditor-support.git
 Xonotic         GPL          git     https://gitlab.com/xonotic/netradiant-xonoticpack.git
 EOF
 }
@@ -440,10 +441,14 @@ installPack () {
 			;;
 	esac
 
-	# mkeditorpacks-based gamepack
 	if [ -d "${download_dir}/${pack}/build/netradiant" ]
 	then
+		# mkeditorpacks-based gamepack
 		pack="${pack}/build/netradiant"
+	elif [ -d "${download_dir}/${pack}/netradiant" ]
+	then
+		# other layout
+		pack="${pack}/netradiant"
 	fi
 
 	path="${download_dir}/${pack}"
