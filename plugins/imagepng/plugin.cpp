@@ -40,7 +40,7 @@ void user_error_fn( png_structp png_ptr, png_const_charp error_msg ){
 	longjmp( png_jmpbuf(png_ptr), 0 );
 }
 
-void user_read_data( png_structp png_ptr, png_bytep data, png_uint_32 length ){
+void user_read_data( png_structp png_ptr, png_bytep data, png_size_t length ){
 	png_bytep *p_p_fbuffer = (png_bytep*)png_get_io_ptr( png_ptr );
 	memcpy( data, *p_p_fbuffer, length );
 	*p_p_fbuffer += length;
@@ -80,7 +80,7 @@ Image* LoadPNGBuff( unsigned char* fbuffer ){
 	}
 
 	// configure the read function
-	png_set_read_fn( png_ptr, ( png_voidp ) & p_fbuffer, ( png_rw_ptr ) & user_read_data );
+	png_set_read_fn( png_ptr, (png_voidp) &p_fbuffer, &user_read_data );
 
 	if ( setjmp( png_jmpbuf(png_ptr) ) ) {
 		png_destroy_read_struct( &png_ptr, &info_ptr,

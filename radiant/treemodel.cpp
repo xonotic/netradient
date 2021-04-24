@@ -984,7 +984,7 @@ static gboolean graph_tree_model_iter_parent( GraphTreeModel *tree_model, GtkTre
 	return FALSE;
 }
 
-static GObjectClass *g_parent_class = 0;
+static GObjectClass *g_parent_class = nullptr;
 
 namespace
 {
