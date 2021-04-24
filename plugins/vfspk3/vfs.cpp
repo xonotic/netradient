@@ -347,6 +347,9 @@ static const char* GetLatestDpkPakVersion( const char* name ){
 }
 
 // release string after using
+// Note: it also contains the version string,
+// for …/src/map-castle_src.dpkdir/maps/castle.map
+// it will return map-castle_src
 static char* GetCurrentMapDpkPakName(){
 	char* mapdir;
 	char* mapname;
@@ -356,21 +359,27 @@ static char* GetCurrentMapDpkPakName(){
 	mapname = string_clone( GlobalRadiant().getMapName() );
 	mapnamelen = string_length( mapname );
 
-	mapdir = strrchr( mapname, '/' );
-	if ( mapdir ) {
-		mapdir -= 12;
-		if ( strncmp( mapdir, ".dpkdir/maps/", 13 ) == 0 ) {
-			*mapdir = '\0';
-			mapdir = strrchr( mapname, '/' );
-			if ( mapdir ) mapdir++;
-			else mapdir = mapname;
-			result = string_clone( mapdir );
+	char pattern[] = ".dpkdir/";
+	char* end = strstr( mapname, ".dpkdir/" );
+	if ( end )
+	{
+		end[ 0 ] = '\0';
+
+		mapdir = strrchr( mapname, '/' );
+		if ( mapdir )
+		{
+			mapdir++;
 		}
+		else
+		{
+			mapdir = mapname;
+		}
+
+		result = string_clone( mapdir );
 	}
 
 	string_release( mapname, mapnamelen );
 	return result;
-
 }
 
 // prevent loading duplicates or circular references
