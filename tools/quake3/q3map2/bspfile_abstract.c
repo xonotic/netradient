@@ -604,6 +604,9 @@ void InjectCommandLine( char **argv, int beginArgs, int endArgs ){
 
 	for ( i = beginArgs; i < endArgs; ++i )
 	{
+		if ( argv[i] == NULL ) {
+			continue;
+		}
 		if ( outpos != sentinel && i != beginArgs ) {
 			*outpos++ = ' ';
 		}

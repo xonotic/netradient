@@ -1155,7 +1155,9 @@ int VisMain( int argc, char **argv ){
 		else if ( !strcmp( argv[ i ], "-prtfile" ) )
 		{
 			strcpy( portalFilePath, argv[i + 1] );
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Use %s as portal file\n", portalFilePath );
 		}
 

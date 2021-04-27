@@ -1020,25 +1020,33 @@ int BSPMain( int argc, char **argv ){
 		else if ( !strcmp( argv[ i ], "-bspfile" ) )
 		{
 			strcpy( BSPFilePath, argv[i + 1] );
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Use %s as bsp file\n", BSPFilePath );
 		}
 		else if ( !strcmp( argv[ i ], "-linfile" ) )
 		{
 			strcpy( lineFilePath, argv[i + 1] );
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Use %s as line file\n", lineFilePath );
 		}
 		else if ( !strcmp( argv[ i ], "-prtfile" ) )
 		{
 			strcpy( portalFilePath, argv[i + 1] );
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Use %s as portal file\n", portalFilePath );
 		}
 		else if ( !strcmp( argv[ i ], "-srffile" ) )
 		{
 			strcpy( surfaceFilePath, argv[i + 1] );
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Use %s as surface file\n", surfaceFilePath );
 		}
 		else{

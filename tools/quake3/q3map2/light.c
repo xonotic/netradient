@@ -2573,7 +2573,9 @@ int LightMain( int argc, char **argv ){
 
 		else if ( !strcmp( argv[ i ], "-lightmapdir" ) ) {
 			lmCustomDir = argv[i + 1];
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Lightmap directory set to %s\n", lmCustomDir );
 			externalLightmaps = qtrue;
 			Sys_Printf( "Storing all lightmaps externally\n" );
@@ -2929,13 +2931,17 @@ int LightMain( int argc, char **argv ){
 		else if ( !strcmp( argv[ i ], "-bspfile" ) )
 		{
 			strcpy( BSPFilePath, argv[i + 1] );
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Use %s as bsp file\n", BSPFilePath );
 		}
 		else if ( !strcmp( argv[ i ], "-srffile" ) )
 		{
 			strcpy( surfaceFilePath, argv[i + 1] );
+			argv[ i ] = NULL;
 			i++;
+			argv[ i ] = NULL;
 			Sys_Printf( "Use %s as surface file\n", surfaceFilePath );
 		}
 		/* unhandled args */
