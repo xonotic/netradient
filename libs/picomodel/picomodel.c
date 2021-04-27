@@ -173,6 +173,8 @@ picoModel_t *PicoModuleLoadModel( const picoModule_t* pm, const char* fileName, 
 			}
 		}
 
+		_pico_deduce_shadernames( model );
+
 		return model;
 	}
 
@@ -484,16 +486,13 @@ void PicoFreeShader( picoShader_t *shader ){
  */
 
 picoShader_t *PicoFindShader( picoModel_t *model, char *name, int caseSensitive ){
-	int i;
-
-
 	/* sanity checks */
 	if ( model == NULL || name == NULL ) { /* sea: null name fix */
 		return NULL;
 	}
 
 	/* walk list */
-	for ( i = 0; i < model->numShaders; i++ )
+	for ( int i = 0; i < model->numShaders; i++ )
 	{
 		/* skip null shaders or shaders with null names */
 		if ( model->shader[ i ] == NULL ||
@@ -991,7 +990,7 @@ void PicoSetSurfaceST( picoSurface_t *surface, int array, int num, picoVec2_t st
 
 
 
-void PicoSetSurfaceColor( picoSurface_t *surface, int array, int num, picoColor_t color ){
+void PicoSetSurfaceColor( picoSurface_t *surface, int array, int num, const picoColor_t color ){
 	if ( surface == NULL || num < 0 || color == NULL ) {
 		return;
 	}
@@ -1603,7 +1602,7 @@ picoVertexCombinationHash_t *PicoAddVertexCombinationToHashTable( picoVertexComb
    fixme: needs non-naive algorithm
  */
 
-int PicoFindSurfaceVertexNum( picoSurface_t *surface, picoVec3_t xyz, picoVec3_t normal, int numSTs, picoVec2_t *st, int numColors, picoColor_t *color, picoIndex_t smoothingGroup ){
+int PicoFindSurfaceVertexNum( picoSurface_t *surface, picoVec3_t xyz, picoVec3_t normal, int numSTs, picoVec2_t *st, int numColors, const picoColor_t *color, picoIndex_t smoothingGroup ){
 	int i, j;
 
 
@@ -1647,7 +1646,7 @@ int PicoFindSurfaceVertexNum( picoSurface_t *surface, picoVec3_t xyz, picoVec3_t
 		if ( numColors > 0 && color != NULL ) {
 			for ( j = 0; j < numSTs; j++ )
 			{
-				if ( *( (int*) surface->color[ j ] ) != *( (int*) color[ j ] ) ) {
+				if ( *( (const int*) surface->color[ j ] ) != *( (const int*) color[ j ] ) ) {
 					break;
 				}
 			}
@@ -2248,7 +2247,7 @@ int PicoRemapModel( picoModel_t *model, char *remapFile ){
  */
 
 void PicoAddTriangleToModel( picoModel_t *model, picoVec3_t** xyz, picoVec3_t** normals,
-							 int numSTs, picoVec2_t **st, int numColors, picoColor_t **colors,
+							 int numSTs, picoVec2_t **st, int numColors, const picoColor_t **colors,
 							 picoShader_t* shader, const char *name, picoIndex_t* smoothingGroup ){
 	int i,j;
 	int vertDataIndex;

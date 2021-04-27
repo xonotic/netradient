@@ -51,9 +51,6 @@
  #define DEBUG_PM_MS3D
  #define DEBUG_PM_MS3D_EX
 
-/* plain white */
-static picoColor_t white = { 255,255,255,255 };
-
 /* ms3d limits */
 const int MS3D_MAX_VERTS      = 8192;
 const int MS3D_MAX_TRIS       = 16384;
@@ -351,7 +348,7 @@ static picoModel_t *_ms3d_load( PM_PARAMS_LOAD ){
 				PicoSetSurfaceXYZ( surface,vertexIndex,vertex->xyz );
 
 				/* store vertex color */
-				PicoSetSurfaceColor( surface,0,vertexIndex,white );
+				PicoSetSurfaceColor( surface, 0, vertexIndex, picoColor_white );
 
 				/* store vertex normal */
 				PicoSetSurfaceNormal( surface,vertexIndex,triangle->vertexNormals[ m ] );

@@ -44,9 +44,6 @@
 #include "time.h"
 #endif
 
-/* plain white */
-static picoColor_t white = { 255, 255, 255, 255 };
-
 /* jhefty - multi-subobject material support */
 
 /* Material/SubMaterial management */
@@ -402,7 +399,7 @@ static void _ase_submit_triangles_unshared( picoModel_t* model, aseMaterial_t* m
 					}
 					else
 					{
-						PicoSetSurfaceColor( surface, 0, numVertexes, white );
+						PicoSetSurfaceColor( surface, 0, numVertexes, picoColor_white );
 					}
 
 					PicoSetSurfaceSmoothingGroup( surface, numVertexes, ( vertices[( *i ).indices[j]].id * ( 1 << 16 ) ) + ( *i ).smoothingGroup );
@@ -431,7 +428,7 @@ static void _ase_submit_triangles( picoModel_t* model, aseMaterial_t* materials,
 			picoVec3_t* xyz[3];
 			picoVec3_t* normal[3];
 			picoVec2_t* st[3];
-			picoColor_t* color[3];
+			const picoColor_t* color[3];
 			picoIndex_t smooth[3];
 			int j;
 			/* we pull the data from the vertex, color and texcoord arrays using the face index data */
@@ -446,7 +443,7 @@ static void _ase_submit_triangles( picoModel_t* model, aseMaterial_t* materials,
 				}
 				else
 				{
-					color[j] = &white;
+					color[j] = &picoColor_white;
 				}
 
 				smooth[j] = ( vertices[( *i ).indices[j]].id * ( 1 << 16 ) ) + ( *i ).smoothingGroup; /* don't merge vertices */
@@ -455,17 +452,6 @@ static void _ase_submit_triangles( picoModel_t* model, aseMaterial_t* materials,
 
 			/* submit the triangle to the model */
 			PicoAddTriangleToModel( model, xyz, normal, 1, st, 1, color, subMtl->shader, name, smooth );
-		}
-	}
-}
-
-static void shadername_convert( char* shaderName ){
-	/* unix-style path separators */
-	char* s = shaderName;
-	for (; *s != '\0'; ++s )
-	{
-		if ( *s == '\\' ) {
-			*s = '/';
 		}
 	}
 }
@@ -525,7 +511,7 @@ static picoModel_t *_ase_load( PM_PARAMS_LOAD ){
 	PicoSetModelFileName( model, fileName );
 
 	/* initialize some stuff */
-	memset( lastNodeName,0,sizeof( lastNodeName ) );
+	memset( lastNodeName, 0, sizeof( lastNodeName ) );
 
 	/* parse ase model file */
 	while ( 1 )
@@ -554,7 +540,7 @@ static picoModel_t *_ase_load( PM_PARAMS_LOAD ){
 			}
 
 			/* remember node name */
-			strncpy( lastNodeName,ptr,sizeof( lastNodeName ) );
+			strncpy( lastNodeName, ptr, sizeof( lastNodeName ) - 1 );
 		}
 		/* model mesh (originally contained within geomobject) */
 		else if ( !_pico_stricmp( p->token,"*mesh" ) ) {
@@ -886,7 +872,7 @@ static picoModel_t *_ase_load( PM_PARAMS_LOAD ){
 				if ( level == subMaterialLevel ) {
 					/* set material name */
 					_pico_first_token( materialName );
-					shadername_convert( materialName );
+					_pico_unixify( materialName );
 					PicoSetShaderName( shader, materialName );
 
 					/* set shader's transparency */
@@ -1055,6 +1041,9 @@ static picoModel_t *_ase_load( PM_PARAMS_LOAD ){
 							if ( name == NULL ) {
 								_ase_error_return( "Missing material map bitmap name" );
 							}
+							else if( !_pico_stricmp( name, "none" ) ){ // standard empty bitmap name
+								name = "";
+							}
 							mapname = _pico_alloc( strlen( name ) + 1 );
 							strcpy( mapname, name );
 							/* skip rest and continue with next token */
@@ -1076,7 +1065,7 @@ static picoModel_t *_ase_load( PM_PARAMS_LOAD ){
 				}
 
 				/* set material name */
-				shadername_convert( materialName );
+				_pico_unixify( materialName );
 				PicoSetShaderName( shader,materialName );
 
 				/* set shader's transparency */
@@ -1099,34 +1088,6 @@ static picoModel_t *_ase_load( PM_PARAMS_LOAD ){
 
 				/* set material map name */
 				PicoSetShaderMapName( shader, mapname );
-
-				/* extract shadername from bitmap path */
-				if ( mapname != NULL ) {
-					char* p = mapname;
-
-					/* convert to shader-name format */
-					shadername_convert( mapname );
-					{
-						/* remove extension */
-						char* last_period = strrchr( p, '.' );
-						if ( last_period != NULL ) {
-							*last_period = '\0';
-						}
-					}
-
-					/* find shader path */
-					for (; *p != '\0'; ++p )
-					{
-						if ( _pico_strnicmp( p, "models/", 7 ) == 0 || _pico_strnicmp( p, "textures/", 9 ) == 0 ) {
-							break;
-						}
-					}
-
-					if ( *p != '\0' ) {
-						/* set material name */
-						PicoSetShaderName( shader,p );
-					}
-				}
 
 				/* this is just a material with 1 submaterial */
 				subMaterial = _ase_add_submaterial( &materials, index, 0, shader );

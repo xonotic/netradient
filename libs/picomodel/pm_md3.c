@@ -186,7 +186,6 @@ static picoModel_t *_md3_load( PM_PARAMS_LOAD ){
 	picoShader_t    *picoShader;
 	picoVec3_t xyz, normal;
 	picoVec2_t st;
-	picoColor_t color;
 
 
 	/* -------------------------------------------------
@@ -341,7 +340,7 @@ static picoModel_t *_md3_load( PM_PARAMS_LOAD ){
 
 		/* detox and set shader name */
 		shader = (md3Shader_t*) ( (picoByte_t*) surface + surface->ofsShaders );
-		_pico_setfext( shader->name, "" );
+		_pico_setfext( shader->name, NULL );
 		_pico_unixify( shader->name );
 		PicoSetShaderName( picoShader, shader->name );
 
@@ -361,7 +360,6 @@ static picoModel_t *_md3_load( PM_PARAMS_LOAD ){
 		/* copy vertexes */
 		texCoord = (md3TexCoord_t*) ( (picoByte_t *) surface + surface->ofsSt );
 		vertex = (md3Vertex_t*) ( (picoByte_t*) surface + surface->ofsVertexes + surface->numVerts * frameNum * sizeof( md3Vertex_t ) );
-		_pico_set_color( color, 255, 255, 255, 255 );
 
 		for ( j = 0; j < surface->numVerts; j++, texCoord++, vertex++ )
 		{
@@ -387,7 +385,7 @@ static picoModel_t *_md3_load( PM_PARAMS_LOAD ){
 			PicoSetSurfaceST( picoSurface, 0, j, st );
 
 			/* set color */
-			PicoSetSurfaceColor( picoSurface, 0, j, color );
+			PicoSetSurfaceColor( picoSurface, 0, j, picoColor_white );
 		}
 
 		/* get next surface */
