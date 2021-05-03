@@ -43,45 +43,45 @@ cat <<\EOF
 # Quake2World was renamed as Quetoo
 # Other gamepacks have better version available
 
-# OpenArena     unknown      zip     http://ingar.intranifty.net/files/netradiant/gamepacks/OpenArenaPack.zip
-# Quake         proprietary  zip     http://ingar.intranifty.net/files/netradiant/gamepacks/QuakePack.zip
-# Quake2World   GPL          svn     svn://jdolan.dyndns.org/quake2world/trunk/gtkradiant
-# Tremulous     proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/TremulousPack/branches/1.5/
-# Unvanquished  unknown      zip     http://ingar.intranifty.net/gtkradiant/files/gamepacks/UnvanquishedPack.zip
-# Warsow        GPL          svn     https://svn.bountysource.com/wswpack/trunk/netradiant/games/WarsowPack/
-# Warsow        GPL          zip     http://ingar.intranifty.net/files/netradiant/gamepacks/WarsowPack.zip
+# OpenArena     no   unknown      zip     http://ingar.intranifty.net/files/netradiant/gamepacks/OpenArenaPack.zip
+# Quake         no   proprietary  zip     http://ingar.intranifty.net/files/netradiant/gamepacks/QuakePack.zip
+# Quake2World   no   GPL          svn     svn://jdolan.dyndns.org/quake2world/trunk/gtkradiant
+# Tremulous     no   proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/TremulousPack/branches/1.5/
+# Unvanquished  no   unknown      zip     http://ingar.intranifty.net/gtkradiant/files/gamepacks/UnvanquishedPack.zip
+# Warsow        no   GPL          svn     https://svn.bountysource.com/wswpack/trunk/netradiant/games/WarsowPack/
+# Warsow        no   GPL          zip     http://ingar.intranifty.net/files/netradiant/gamepacks/WarsowPack.zip
 
 #######################################################
 # Usable packs                                        #
 #######################################################
 
-AlienArena      GPL          svn     https://svn.code.sf.net/p/alienarena-cc/code/trunk/tools/netradiant_gamepack/AlienArenaPack
-DarkPlaces      GPL          svn     svn://svn.icculus.org/gtkradiant-gamepacks/DarkPlacesPack/branches/1.5/
-Doom3           proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Doom3Pack/branches/1.5/
-ET              proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/ETPack/branches/1.5/
-Heretic2        proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Her2Pack/branches/1.5/
-JediAcademy     proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/JAPack/branches/1.5/
-Kingpin         unknown      zip     http://download.kingpin.info/kingpin/editing/maps/map_editors/NetRadiant/addon/Kingpinpack.zip
-Neverball       proprietary  zip     http://ingar.intranifty.net/files/netradiant/gamepacks/NeverballPack.zip
-Nexuiz          GPL          gitdir  git://git.icculus.org/divverent/nexuiz.git misc/netradiant-NexuizPack master
-OpenArena       GPL          git     https://github.com/NeonKnightOA/oagamepack.git
-Osirion         GPL          zip     http://ingar.intranifty.net/files/netradiant/gamepacks/OsirionPack.zip
-Prey            proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/PreyPack/trunk/
-Q3              proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Q3Pack/trunk/ 29
-Q3Rally         proprietary  svn     https://svn.code.sf.net/p/q3rallysa/code/tools/radiant-config/radiant15-netradiant/
-Quake2          proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Q2Pack/branches/1.5/
-Quake4          proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Q4Pack/branches/1.5/
-Quake           GPL          zip     http://ingar.intranifty.net/files/netradiant/gamepacks/Quake1Pack.zip
-Quetoo          GPL          svn     svn://svn.icculus.org/gtkradiant-gamepacks/QuetooPack/branches/1.5/
-SmokinGuns      unknown      git     https://github.com/smokin-guns/smokinguns-mapeditor-support.git
-Tremulous       proprietary  zip     http://ingar.intranifty.net/files/netradiant/gamepacks/TremulousPack.zip
-TurtleArena     proprietary  git     https://github.com/Turtle-Arena/turtle-arena-radiant-pack.git
-UFOAI           proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/UFOAIPack/branches/1.5/
-Unvanquished    BSD          git     https://github.com/Unvanquished/unvanquished-mapeditor-support.git
-Warsow          GPL          git     https://github.com/Warsow/NetRadiantPack.git
-Wolf            proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/WolfPack/branches/1.5/
-WoP             proprietary  git     https://github.com/PadWorld-Entertainment/wop-mapeditor-support.git
-Xonotic         GPL          git     https://gitlab.com/xonotic/netradiant-xonoticpack.git
+AlienArena      yes  GPL          svn     https://svn.code.sf.net/p/alienarena-cc/code/trunk/tools/netradiant_gamepack/AlienArenaPack
+DarkPlaces      yes  GPL          svn     svn://svn.icculus.org/gtkradiant-gamepacks/DarkPlacesPack/branches/1.5/
+Doom3           yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Doom3Pack/branches/1.5/
+ET              yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/ETPack/branches/1.5/
+Heretic2        yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Her2Pack/branches/1.5/
+JediAcademy     no   proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/JAPack/branches/1.5/
+Kingpin         yes  unknown      zip     http://download.kingpin.info/kingpin/editing/maps/map_editors/NetRadiant/addon/Kingpinpack.zip
+Neverball       yes  proprietary  zip     http://ingar.intranifty.net/files/netradiant/gamepacks/NeverballPack.zip
+Nexuiz          yes  GPL          gitdir  git://git.icculus.org/divverent/nexuiz.git misc/netradiant-NexuizPack master
+OpenArena       yes  GPL          git     https://github.com/NeonKnightOA/oagamepack.git
+Osirion         yes  GPL          zip     http://ingar.intranifty.net/files/netradiant/gamepacks/OsirionPack.zip
+Prey            yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/PreyPack/trunk/
+Q3              yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Q3Pack/trunk/ 29
+Q3Rally         yes  proprietary  svn     https://svn.code.sf.net/p/q3rallysa/code/tools/radiant-config/radiant15-netradiant/
+Quake2          yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Q2Pack/branches/1.5/
+Quake4          yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/Q4Pack/branches/1.5/
+Quake           yes  GPL          zip     http://ingar.intranifty.net/files/netradiant/gamepacks/Quake1Pack.zip
+Quetoo          yes  GPL          svn     svn://svn.icculus.org/gtkradiant-gamepacks/QuetooPack/branches/1.5/
+SmokinGuns      yes  unknown      git     https://github.com/smokin-guns/smokinguns-mapeditor-support.git
+Tremulous       yes  proprietary  zip     http://ingar.intranifty.net/files/netradiant/gamepacks/TremulousPack.zip
+TurtleArena     yes  proprietary  git     https://github.com/Turtle-Arena/turtle-arena-radiant-pack.git
+UFOAI           yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/UFOAIPack/branches/1.5/
+Unvanquished    yes  BSD          git     https://github.com/Unvanquished/unvanquished-mapeditor-support.git
+Warsow          yes  GPL          git     https://github.com/Warsow/NetRadiantPack.git
+Wolf            yes  proprietary  svn     svn://svn.icculus.org/gtkradiant-gamepacks/WolfPack/branches/1.5/
+WoP             yes  proprietary  git     https://github.com/PadWorld-Entertainment/wop-mapeditor-support.git
+Xonotic         yes  GPL          git     https://gitlab.com/xonotic/netradiant-xonoticpack.git
 EOF
 }
 
@@ -156,7 +156,7 @@ printGamePackDB () {
 
 printLicenseList () {
 	printGamePackDB \
-	| awk '{ print $2 }' \
+	| awk '{ print $3 }' \
 	| sort -u
 }
 
@@ -203,9 +203,9 @@ printNameListByLicense () {
 	for license in ${license_list}
 	do
 		printGamePackDB \
-		| awk '$2 == "'"${license}"'"' \
+		| awk '$3 == "'"${license}"'"' \
 		| awk '{ print $1 }'
-	done
+	done | sort -u
 }
 
 printNameListByName () {
@@ -223,14 +223,15 @@ printNameListByName () {
 				break
 				;;
 			'all')
-				local name_list
 				name_list="$(printNameList)"
 				break
+				;;
+			'validated')
+				name_list="${name_list} validated"
 				;;
 			*)
 				if printNameList | inList "${name}"
 				then
-					local name_list
 					name_list="${name_list} ${name}"
 				else
 					printError "unknown name: ${name}"
@@ -243,6 +244,13 @@ printNameListByName () {
 
 	for name in ${name_list}
 	do
+		if [ "${name}" = 'validated' ]
+		then
+			printGamePackDB \
+			| awk '$2 == "yes"' \
+			| awk '{ print $1 }'
+		fi
+
 		printGamePackDB \
 		| awk '$1 == "'"${name}"'"' \
 		| awk '{ print $1 }'
@@ -296,9 +304,10 @@ downloadPack () {
 	download_dir="${1}"
 	name="${2}"
 
-	license="$(getValue "${name}" '2')"
-	source_type="$(getValue "${name}" '3')"
-	source_url="$(getValue "${name}" '4')"
+	validation="$(getValue "${name}" 2)"
+	license="$(getValue "${name}" 3)"
+	source_type="$(getValue "${name}" 4)"
+	source_url="$(getValue "${name}" 5)"
 
 	pack="${name}${pack_suffix}"
 
@@ -322,7 +331,7 @@ downloadPack () {
 
 		case "${source_type}" in
 			'svn')
-				reference="$(getValue "${name}" '5')"
+				reference="$(getValue "${name}" 6)"
 				if [ -z "${reference}" ]
 				then
 					reference='HEAD'
@@ -363,8 +372,8 @@ downloadPack () {
 				${RM_R} 'zipdownload'
 				;;
 			'gitdir')
-				local subdir="$(getValue "${name}" '5')"
-				local branch="$(getValue "${name}" '6')"
+				local subdir="$(getValue "${name}" 6)"
+				local branch="$(getValue "${name}" 7)"
 				${RM_R} "${pack}"
 				${GIT} archive --remote="${source_url}" --prefix="${pack}/" "${branch}":"${subdir}" \
 				| ${TAR} xvf -
@@ -515,7 +524,7 @@ printHelp () {
 	SELECTIONS:
 	${tab}-n, --name NAMES…
 	${tab}${tab}select games by name (default: none)
-	${tab}${tab}special keyword: all, none
+	${tab}${tab}special keyword: validated, all, none
 	${tab}${tab}available games:
 	$(printNameList | ${SED} -e 's/^/\t\t\t/')
 
@@ -532,7 +541,7 @@ printHelp () {
 	${tab}-ll, --list-licenses
 	${tab}${tab}list all game licenses
 
-	${tab}-ls, --list
+	${tab}-ls, --list-selected
 	${tab}${tab}list selected games
 
 	${tab}-d, --download
@@ -544,8 +553,12 @@ printHelp () {
 	${tab}-h, --help
 	${tab}${tab}print this help
 
-	Example:
+	Examples:
+	${tab}${prog_name} --license GPL BSD --list-selected
 	${tab}${prog_name} --license GPL BSD --download --install
+
+	${tab}${prog_name} --name validated --list-selected
+	${tab}${prog_name} --name validated --download --install
 
 	EOF
 
@@ -590,14 +603,14 @@ do
 	fi
 
 	case "${1}" in
-		'--list-licenses'|'-ll')
-			arg_type=''
-			list_licenses='true'
-			option_list="${option_list} ${1}"
-			;;
 		'--list-names'|'-ln')
 			arg_type=''
 			list_names='true'
+			option_list="${option_list} ${1}"
+			;;
+		'--list-licenses'|'-ll')
+			arg_type=''
+			list_licenses='true'
 			option_list="${option_list} ${1}"
 			;;
 		'--list-selected'|'-ls')
@@ -641,11 +654,11 @@ do
 			;;
 		*)
 			case "${arg_type}" in
-				'pack-license')
-					license_list="${license_list} ${1}"
-					;;
 				'pack-name')
 					name_list="${name_list} ${1}"
+					;;
+				'pack-license')
+					license_list="${license_list} ${1}"
 					;;
 				'download-dir')
 					if [ -z "${download_dir}" ]
@@ -706,14 +719,14 @@ then
 	install_dir="${default_install_dir}"
 fi
 
-if "${by_license}"
-then
-	selected_list="${selected_list} $(printNameListByLicense "${license_list}")"
-fi
-
 if "${by_name}"
 then
 	selected_list="${selected_list} $(printNameListByName "${name_list}")"
+fi
+
+if "${by_license}"
+then
+	selected_list="${selected_list} $(printNameListByLicense "${license_list}")"
 fi
 
 selected_list="$(dedupeList "${selected_list}")"
@@ -730,15 +743,16 @@ then
 	real_install_dir="$(printRealPath "${install_dir}")"
 fi
 
+if "${list_names}"
+then
+	printNameList
+fi
+
 if "${list_licenses}"
 then
 	printLicenseList
 fi
 
-if "${list_names}"
-then
-	printNameList
-fi
 if "${list_selected}"
 then
 	printList "${selected_list}"
