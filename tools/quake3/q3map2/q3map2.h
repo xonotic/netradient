@@ -2011,6 +2011,10 @@ Q_EXTERN game_t games[]
 	,
 								#include "game_qfusion.h"   /* qfusion game */
 	,
+								#include "game_warsow.h" /* must be after game_qfusion.h as they share defines! */
+	,
+								#include "game_warfork.h" /* must be after game_qfusion.h as they share defines! */
+	,
 								#include "game_reaction.h" /* must be after game_quake3.h */
 	,
 								#include "game_smokinguns.h" /* must be after game_quake3.h */
