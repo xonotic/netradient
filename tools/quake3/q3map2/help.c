@@ -33,6 +33,8 @@
 
 
 
+unsigned terminalColumns = 80;
+
 struct HelpOption
 {
 	const char* name;
@@ -145,7 +147,7 @@ void HelpBsp()
 		{"-verboseentities", "Enable `-v` only for map entities, not for the world"},
 	};
 
-	HelpOptions("BSP Stage", 0, 80, bsp, sizeof(bsp)/sizeof(struct HelpOption));
+	HelpOptions("BSP Stage", 0, terminalColumns, bsp, sizeof(bsp)/sizeof(struct HelpOption));
 }
 
 void HelpVis()
@@ -166,7 +168,7 @@ void HelpVis()
 		{"-v -v", "Extra verbose mode for cluster debug"}, // q3map2 common takes first -v
 	};
 
-	HelpOptions("VIS Stage", 0, 80, vis, sizeof(vis)/sizeof(struct HelpOption));
+	HelpOptions("VIS Stage", 0, terminalColumns, vis, sizeof(vis)/sizeof(struct HelpOption));
 }
 
 void HelpLight()
@@ -284,7 +286,7 @@ void HelpLight()
 		{"-wolf", "Use linear falloff curve by default (like W:ET)"},
 	};
 
-	HelpOptions("Light Stage", 0, 80, light, sizeof(light)/sizeof(struct HelpOption));
+	HelpOptions("Light Stage", 0, terminalColumns, light, sizeof(light)/sizeof(struct HelpOption));
 }
 
 void HelpAnalyze()
@@ -294,7 +296,7 @@ void HelpAnalyze()
 		{"-lumpswap", "Swap byte order in the lumps"},
 	};
 
-	HelpOptions("Analyzing BSP-like file structure", 0, 80, analyze, sizeof(analyze)/sizeof(struct HelpOption));
+	HelpOptions("Analyzing BSP-like file structure", 0, terminalColumns, analyze, sizeof(analyze)/sizeof(struct HelpOption));
 }
 
 void HelpScale()
@@ -306,7 +308,7 @@ void HelpScale()
 		{"-spawn_ref <F>", "Vertical offset for info_player_* entities (adds spawn_ref, scales, subtracts spawn_ref)"},
 	};
 
-	HelpOptions("Scaling", 0, 80, scale, sizeof(scale)/sizeof(struct HelpOption));
+	HelpOptions("Scaling", 0, terminalColumns, scale, sizeof(scale)/sizeof(struct HelpOption));
 }
 
 void HelpConvert()
@@ -325,7 +327,7 @@ void HelpConvert()
 		{"-shadersasbitmap", "Save shader names as bitmap names in the model so it works as a prefab (only when writing ase and obj)"},
 	};
 
-	HelpOptions("Converting & Decompiling", 0, 80, convert, sizeof(convert)/sizeof(struct HelpOption));
+	HelpOptions("Converting & Decompiling", 0, terminalColumns, convert, sizeof(convert)/sizeof(struct HelpOption));
 }
 
 void HelpExport()
@@ -334,7 +336,7 @@ void HelpExport()
 		{"-export <filename.bsp>", "Copies lightmaps from the BSP to `filename/lightmap_0000.tga` ff"}
 	};
 
-	HelpOptions("Exporting lightmaps", 0, 80, exportl, sizeof(exportl)/sizeof(struct HelpOption));
+	HelpOptions("Exporting lightmaps", 0, terminalColumns, exportl, sizeof(exportl)/sizeof(struct HelpOption));
 }
 
 void HelpExportEnts()
@@ -342,7 +344,7 @@ void HelpExportEnts()
 	struct HelpOption exportents[] = {
 		{"-exportents <filename.bsp>", "Exports the entities to a text file (.ent)"},
 	};
-	HelpOptions("ExportEnts Stage", 0, 80, exportents, sizeof(exportents)/sizeof(struct HelpOption));
+	HelpOptions("ExportEnts Stage", 0, terminalColumns, exportents, sizeof(exportents)/sizeof(struct HelpOption));
 }
 
 void HelpFixaas()
@@ -351,7 +353,7 @@ void HelpFixaas()
 		{"-fixaas <filename.bsp>", "Switch that enters this mode"},
 	};
 
-	HelpOptions("Fixing AAS checksum", 0, 80, fixaas, sizeof(fixaas)/sizeof(struct HelpOption));
+	HelpOptions("Fixing AAS checksum", 0, terminalColumns, fixaas, sizeof(fixaas)/sizeof(struct HelpOption));
 }
 
 void HelpInfo()
@@ -360,7 +362,7 @@ void HelpInfo()
 		{"-info <filename.bsp>", "Switch that enters this mode"},
 	};
 
-	HelpOptions("Get info about BSP file", 0, 80, info, sizeof(info)/sizeof(struct HelpOption));
+	HelpOptions("Get info about BSP file", 0, terminalColumns, info, sizeof(info)/sizeof(struct HelpOption));
 }
 
 void HelpImport()
@@ -369,7 +371,7 @@ void HelpImport()
 		{"-import <filename.bsp>", "Copies lightmaps from `filename/lightmap_0000.tga` ff into the BSP"},
 	};
 
-	HelpOptions("Importing lightmaps", 0, 80, import, sizeof(import)/sizeof(struct HelpOption));
+	HelpOptions("Importing lightmaps", 0, terminalColumns, import, sizeof(import)/sizeof(struct HelpOption));
 }
 
 void HelpMinimap()
@@ -395,7 +397,7 @@ void HelpMinimap()
 		{"-white", "Write the minimap as a white-on-transparency RGBA32 image"},
 	};
 
-	HelpOptions("MiniMap", 0, 80, minimap, sizeof(minimap)/sizeof(struct HelpOption));
+	HelpOptions("MiniMap", 0, terminalColumns, minimap, sizeof(minimap)/sizeof(struct HelpOption));
 }
 
 void HelpCommon()
@@ -420,7 +422,7 @@ void HelpCommon()
 		{"-werror", "Make all warnings into errors"}
 	};
 
-	HelpOptions("Common Options", 0, 80, common, sizeof(common)/sizeof(struct HelpOption));
+	HelpOptions("Common Options", 0, terminalColumns, common, sizeof(common)/sizeof(struct HelpOption));
 }
 
 void HelpGames()
@@ -432,7 +434,7 @@ void HelpGames()
 	for ( unsigned i = 0, length = 0; games[ i ].arg != NULL; i++ )
 	{
 		// 3 for two whitespaces at the beginning and one (optional) comma a the end
-		if ( length + 3 + strlen( games[ i ].arg ) > 80 )
+		if ( length + 3 + strlen( games[ i ].arg ) > terminalColumns )
 		{
 			printf(",\n");
 			length = 0;
@@ -508,5 +510,5 @@ void HelpMain(const char* arg)
 			}
 	}
 
-	HelpOptions("Stages", 0, 80, stages, sizeof(stages)/sizeof(struct HelpOption));
+	HelpOptions("Stages", 0, terminalColumns, stages, sizeof(stages)/sizeof(struct HelpOption));
 }
