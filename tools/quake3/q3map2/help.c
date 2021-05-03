@@ -457,10 +457,18 @@ void HelpGames()
 	printf("\n\n");
 }
 
+#include <termcap.h>
+
 void HelpMain(const char* arg)
 {
 	printf("Usage: q3map2 [stage] [common options...] [stage options...] [stage source file]\n");
 	printf("       q3map2 -help [stage]\n\n");
+
+	static char termbuf[2048];
+	char *termtype = getenv("TERM");
+	if (tgetent(termbuf, termtype) >= 0) {
+		terminalColumns = tgetnum("co");
+	}
 
 	HelpCommon();
 

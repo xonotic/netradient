@@ -190,3 +190,5 @@ if (UNIX)
     target_link_libraries(q3map2 pthread m)
     target_link_libraries(q3data m)
 endif ()
+
+target_link_libraries(q3map2 termcap)
