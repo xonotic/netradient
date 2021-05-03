@@ -31,9 +31,8 @@
 /* dependencies */
 #include "q3map2.h"
 
-
-
-unsigned terminalColumns = 80;
+#include <sys/ioctl.h>
+static unsigned terminalColumns = 80;
 
 struct HelpOption
 {
@@ -41,6 +40,7 @@ struct HelpOption
 	const char* description;
 };
 
+// FIXME: low column width cause an endless loop
 void HelpOptions(const char* group_name, int indentation, int width, struct HelpOption* options, int count)
 {
 	indentation *= 2;
@@ -457,18 +457,16 @@ void HelpGames()
 	printf("\n\n");
 }
 
-#include <termcap.h>
-
 void HelpMain(const char* arg)
 {
 	printf("Usage: q3map2 [stage] [common options...] [stage options...] [stage source file]\n");
 	printf("       q3map2 -help [stage]\n");
 	printf("       q3map2 -help all\n\n");
 
-	static char termbuf[2048];
-	char *termtype = getenv("TERM");
-	if (tgetent(termbuf, termtype) >= 0) {
-		terminalColumns = tgetnum("co");
+	struct winsize ws;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+	if (ws.ws_col > 60) {
+		terminalColumns = ws.ws_col;
 	}
 
 	HelpCommon();
