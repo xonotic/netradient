@@ -31,7 +31,10 @@
 /* dependencies */
 #include "q3map2.h"
 
+#if GDEF_OS_POSIX
 #include <sys/ioctl.h>
+#endif // GDEF_OS_POSIX
+
 static unsigned terminalColumns = 80;
 
 struct HelpOption
@@ -463,11 +466,13 @@ void HelpMain(const char* arg)
 	printf("       q3map2 -help [stage]\n");
 	printf("       q3map2 -help all\n\n");
 
+#if GDEF_OS_POSIX
 	struct winsize ws;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
 	if (ws.ws_col > 60) {
 		terminalColumns = ws.ws_col;
 	}
+#endif // GDEF_OS_POSIX
 
 	HelpCommon();
 
