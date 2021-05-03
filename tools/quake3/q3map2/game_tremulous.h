@@ -40,6 +40,7 @@
    content and surface flags - also uses defines from game_quake3.h
 
    ------------------------------------------------------------------------------- */
+
 #define TREM_CONT_NOALIENBUILD         0x1000
 #define TREM_CONT_NOHUMANBUILD         0x2000
 #define TREM_CONT_NOBUILD              0x4000
@@ -57,10 +58,10 @@
    ------------------------------------------------------------------------------- */
 
 {
-	"tremulous",            /* -game x */
-	"base",         /* default base game data dir */
-	".tremulous",               /* unix home sub-dir */
-	"tremulous",            /* magic path word - think this is right for trem*/
+	"tremulous",        /* -game x */
+	"base",             /* default base game data dir */
+	".tremulous",       /* unix home sub-dir */
+	"tremulous",        /* magic path word - think this is right for trem*/
 	"scripts",          /* shader directory */
 	64,                 /* max lightmapped surface verts */
 	999,                /* max surface verts */
