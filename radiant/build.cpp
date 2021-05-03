@@ -75,17 +75,20 @@ const char* c_str() const {
 void setString( const char* string ){
 	m_string = string;
 }
+
 void evaluate( StringBuffer& output ){
 	// replace ".[ExecutableType]" with "[ExecutableExt]"
 	{
 		StringBuffer output;
-		const char *pattern = ".[ExecutableType]";
-		for ( const char *i = m_string.c_str(); *i != '\0'; ++i )
+		const char pattern[] = ".[ExecutableType]";
+		const char *string = m_string.c_str();
+		for ( const char *i = string; *i != '\0'; i++ )
 		{
-			if ( strncmp( pattern, i, sizeof( pattern ) ) == 0 )
+			if ( strncmp( i, pattern, sizeof( pattern ) - 1 ) == 0 )
 			{
 				output.push_string("[ExecutableExt]");
-				i += strlen( pattern ) - 1;
+				// minus 1 because \0, minus 1 because i++ in a replacement
+				i += sizeof( pattern ) - 2;
 			}
 			else
 			{
@@ -93,6 +96,33 @@ void evaluate( StringBuffer& output ){
 			}
 		}
 		setString(output.c_str());
+	}
+
+	// add missing [ExtraQ3map2Args] if "[RadiantPath]q3map2[ExecutableExt]"
+	{
+		const char pattern[] = "\"[RadiantPath]q3map2[ExecutableExt]\"";
+		const char extra[] = "[ExtraQ3map2Args]";
+		const char *string = m_string.c_str();
+		if ( strstr( string, pattern ) != NULL && strstr( string, extra ) == NULL )
+		{
+			StringBuffer output;
+			for ( const char *i = string; *i != '\0'; i++ )
+			{
+				if ( strncmp( i, pattern, sizeof( pattern ) - 1 ) == 0 )
+				{
+					output.push_string(pattern);
+					output.push_string(" ");
+					output.push_string(extra);
+					// minus 1 because \0, no replacement
+					i += strlen( pattern ) - 1;
+				}
+				else
+				{
+					output.push_back(*i);
+				}
+			}
+			setString(output.c_str());
+		}
 	}
 
 	StringBuffer variable;
