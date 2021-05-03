@@ -462,7 +462,8 @@ void HelpGames()
 void HelpMain(const char* arg)
 {
 	printf("Usage: q3map2 [stage] [common options...] [stage options...] [stage source file]\n");
-	printf("       q3map2 -help [stage]\n\n");
+	printf("       q3map2 -help [stage]\n");
+	printf("       q3map2 -help all\n\n");
 
 	static char termbuf[2048];
 	char *termtype = getenv("TERM");
@@ -507,15 +508,29 @@ void HelpMain(const char* arg)
 	if ( arg && strlen(arg) > 0 )
 	{
 		if ( arg[0] == '-' )
+		{
 			arg++;
+		}
 
-		unsigned i;
-		for ( i = 0; i < sizeof(stages)/sizeof(struct HelpOption); i++ )
+		if ( strcmp(arg, "all") == 0 )
+		{
+			HelpOptions("Stages", 0, terminalColumns, stages, sizeof(stages)/sizeof(struct HelpOption));
+
+			for ( unsigned i = 0; i < sizeof(stages)/sizeof(struct HelpOption); i++ )
+			{
+				help_funcs[i]();
+			}
+			return;
+		}
+
+		for ( unsigned i = 0; i < sizeof(stages)/sizeof(struct HelpOption); i++ )
+		{
 			if ( strcmp(arg, stages[i].name+1) == 0 )
 			{
 				help_funcs[i]();
 				return;
 			}
+		}
 	}
 
 	HelpOptions("Stages", 0, terminalColumns, stages, sizeof(stages)/sizeof(struct HelpOption));
