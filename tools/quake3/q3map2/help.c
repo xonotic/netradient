@@ -333,7 +333,7 @@ void HelpConvert()
 void HelpExport()
 {
 	struct HelpOption exportl[] = {
-		{"-export <filename.bsp>", "Copies lightmaps from the BSP to `filename/lightmap_0000.tga` ff"}
+		{"-export <filename.bsp>", "Copies lightmaps from the BSP to `filename/lightmap_0000.tga`"}
 	};
 
 	HelpOptions("Exporting lightmaps", 0, terminalColumns, exportl, sizeof(exportl)/sizeof(struct HelpOption));
