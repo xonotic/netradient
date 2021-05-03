@@ -1977,13 +1977,19 @@ Q_EXTERN game_t games[]
 	{
 								#include "game_quake3.h"
 	,
+								#include "game_oa.h"  /* must be after game_quake3.h as they share defines! */
+	,
+								#include "game_q3rally.h"  /* must be after game_quake3.h as they share defines! */
+	,
+								#include "game_wop.h"  /* must be after game_quake3.h as they share defines! */
+	,
 								#include "game_quakelive.h" /* must be after game_quake3.h as they share defines! */
 	,
 								#include "game_nexuiz.h" /* must be after game_quake3.h as they share defines! */
 	,
 								#include "game_xonotic.h" /* must be after game_quake3.h as they share defines! */
 	,
-								#include "game_tremulous.h" /*LinuxManMikeC: must be after game_quake3.h, depends on #define's set in it */
+								#include "game_tremulous.h" /* LinuxManMikeC: must be after game_quake3.h, depends on #define's set in it */
 	,
 								#include "game_unvanquished.h" /* must be after game_tremulous.h as they share defines! */
 	,

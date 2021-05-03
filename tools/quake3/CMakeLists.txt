@@ -36,7 +36,9 @@ set(q3map2_games
         q3map2/game_ja.h
         q3map2/game_jk2.h
         q3map2/game_nexuiz.h
+        q3map2/game_oa.h
         q3map2/game_prophecy.h
+        q3map2/game_q3rally.h
         q3map2/game_qfusion.h
         q3map2/game_quake3.h
         q3map2/game_quakelive.h
@@ -48,6 +50,7 @@ set(q3map2_games
         q3map2/game_unvanquished.h
         q3map2/game_wolf.h
         q3map2/game_wolfet.h
+        q3map2/game_wop.h
         q3map2/game_xonotic.h
         )
 
