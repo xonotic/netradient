@@ -223,7 +223,7 @@ void HelpLight()
 		{"-fastlightmapsearch", "Deprecated alias for `-fastallocate`"},
 		{"-fast", "Ignore tiny light contributions"},
 		{"-fill", "Fill lightmap colors from surrounding pixels to improve JPEG compression"},
-		{"-filter", "Lightmap filtering"},
+		{"-filter", "Lightmap filtering, doesn't play nice with some other effects, don't use it, use `-samples` instead"},
 		{"-floodlight", "Enable floodlight (zero-effort somewhat decent lighting)"},
 		{"-gamma <F>", "Lightmap gamma"},
 		{"-gridambientdirectionality <F>", "Ambient directional lighting received (default: 0.0)"},
@@ -279,7 +279,7 @@ void HelpLight()
 		{"-sRGBtex", "Treat textures as sRGB colorspace"},
 		{"-style, -styles", "Enable support for light styles"},
 		{"-sunonly", "Only compute sun light"},
-		{"-super <N, `-supersample` N>", "Ordered grid supersampling quality"},
+		{"-super <N, `-supersample` N>", "Ordered grid supersampling quality, much slower than `-samples`"},
 		{"-thresh <F>", "Triangle subdivision threshold"},
 		{"-trianglecheck", "Broken check that should ensure luxels apply to the right triangle"},
 		{"-trisoup", "Convert brush faces to triangle soup"},
@@ -416,8 +416,8 @@ void HelpCommon()
 		{"-fs_nohomepath", "Do not load home path in VFS"},
 		{"-fs_pakpath <path>", "Specify a package directory (can be used more than once to look in multiple paths)"},
 		{"-game <gamename>", "Load settings for the given game (default: quake3)"},
-		{"-subdivisions <F>", "multiplier for patch subdivisions quality"},
-		{"-threads <N>", "number of threads to use"},
+		{"-subdivisions <F>", "Multiplier for patch subdivisions quality"},
+		{"-threads <N>", "Number of threads to use"},
 		{"-v", "Verbose mode"},
 		{"-werror", "Make all warnings into errors"}
 	};
