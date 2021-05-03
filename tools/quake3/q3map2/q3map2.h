@@ -1977,21 +1977,25 @@ Q_EXTERN game_t games[]
 	{
 								#include "game_quake3.h"
 	,
-								#include "game_oa.h"  /* must be after game_quake3.h as they share defines! */
+								#include "game_nexuiz.h" /* must be after game_quake3.h as they share defines! */
 	,
-								#include "game_q3rally.h"  /* must be after game_quake3.h as they share defines! */
+								#include "game_oa.h" /* must be after game_quake3.h as they share defines! */
 	,
-								#include "game_wop.h"  /* must be after game_quake3.h as they share defines! */
+								#include "game_q3rally.h" /* must be after game_quake3.h as they share defines! */
 	,
 								#include "game_quakelive.h" /* must be after game_quake3.h as they share defines! */
 	,
-								#include "game_nexuiz.h" /* must be after game_quake3.h as they share defines! */
+								#include "game_reaction.h" /* must be after game_quake3.h */
 	,
-								#include "game_xonotic.h" /* must be after game_quake3.h as they share defines! */
+								#include "game_smokinguns.h" /* must be after game_quake3.h */
 	,
 								#include "game_tremulous.h" /* LinuxManMikeC: must be after game_quake3.h, depends on #define's set in it */
 	,
 								#include "game_unvanquished.h" /* must be after game_tremulous.h as they share defines! */
+	,
+								#include "game_wop.h" /* must be after game_quake3.h as they share defines! */
+	,
+								#include "game_xonotic.h" /* must be after game_quake3.h as they share defines! */
 	,
 								#include "game_tenebrae.h"
 	,
@@ -2005,23 +2009,19 @@ Q_EXTERN game_t games[]
 	,
 								#include "game_sof2.h"
 	,
-								#include "game_jk2.h"   /* must be after game_sof2.h as they share defines! */
+								#include "game_jk2.h" /* must be after game_sof2.h as they share defines! */
 	,
-								#include "game_ja.h"    /* must be after game_jk2.h as they share defines! */
+								#include "game_ja.h" /* must be after game_jk2.h as they share defines! */
 	,
-								#include "game_qfusion.h"   /* qfusion game */
+								#include "game_qfusion.h" /* qfusion game */
 	,
 								#include "game_warsow.h" /* must be after game_qfusion.h as they share defines! */
 	,
 								#include "game_warfork.h" /* must be after game_qfusion.h as they share defines! */
 	,
-								#include "game_reaction.h" /* must be after game_quake3.h */
+								#include "game_darkplaces.h" /* darkplaces q1 engine */
 	,
-								#include "game_smokinguns.h" /* must be after game_quake3.h */
-	,
-								#include "game_darkplaces.h"    /* vortex: darkplaces q1 engine */
-	,
-								#include "game_dq.h"    /* vortex: deluxe quake game ( darkplaces q1 engine) */
+								#include "game_dq.h" /* deluxe quake game ( darkplaces q1 engine) */
 	,
 								#include "game_prophecy.h"  /* vortex: prophecy game ( darkplaces q1 engine) */
 	,
