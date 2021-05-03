@@ -33,7 +33,7 @@
 void Face_makeBrush( Face& face, const Brush& brush, brush_vector_t& out, float offset ){
 	if ( face.contributes() ) {
 		out.push_back( new Brush( brush ) );
-		Face* newFace = out.back()->addFace( face );
+		std::shared_ptr<Face> newFace = out.back()->addFace( face );
 		if ( newFace != 0 ) {
 			newFace->flipWinding();
 			newFace->getPlane().offset( offset );
@@ -47,7 +47,7 @@ void Face_makeRoom( Face &face, const Brush &brush, brush_vector_t &out, float o
 		face.getPlane().offset( offset );
 		out.push_back( new Brush( brush ) );
 		face.getPlane().offset( -offset );
-		Face* newFace = out.back()->addFace( face );
+		std::shared_ptr<Face> newFace = out.back()->addFace( face );
 		if ( newFace != 0 ) {
 			newFace->flipWinding();
 			newFace->planeChanged();
@@ -204,15 +204,6 @@ inline Dereference<Functor> makeDereference( const Functor& functor ){
 	return Dereference<Functor>( functor );
 }
 
-typedef Face* FacePointer;
-const FacePointer c_nullFacePointer = 0;
-
-template<typename Predicate>
-Face* Brush_findIf( const Brush& brush, const Predicate& predicate ){
-	Brush::const_iterator i = std::find_if( brush.begin(), brush.end(), makeDereference( predicate ) );
-	return i == brush.end() ? c_nullFacePointer : *i; // uses c_nullFacePointer instead of 0 because otherwise gcc 4.1 attempts conversion to int
-}
-
 template<typename Caller>
 class BindArguments1
 {
@@ -262,7 +253,6 @@ typedef Function<bool ( const Face &, const Plane3 &, bool ), Face_testPlane> Fa
 /// \li flipped && brush is FRONT or ON
 bool Brush_testPlane( const Brush& brush, const Plane3& plane, bool flipped ){
 	brush.evaluateBRep();
-#if 1
 	for ( Brush::const_iterator i( brush.begin() ); i != brush.end(); ++i )
 	{
 		if ( Face_testPlane( *( *i ), plane, flipped ) ) {
@@ -270,9 +260,6 @@ bool Brush_testPlane( const Brush& brush, const Plane3& plane, bool flipped ){
 		}
 	}
 	return true;
-#else
-	return Brush_findIf( brush, bindArguments( FaceTestPlane(), makeReference( plane ), flipped ) ) == 0;
-#endif
 }
 
 brushsplit_t Brush_classifyPlane( const Brush& brush, const Plane3& plane ){
@@ -293,24 +280,24 @@ bool Brush_subtract( const Brush& brush, const Brush& other, brush_vector_t& ret
 		fragments.reserve( other.size() );
 		Brush back( brush );
 
-		for ( Brush::const_iterator i( other.begin() ); i != other.end(); ++i )
+		for ( const std::shared_ptr<Face>& b : other )
 		{
-			if ( ( *i )->contributes() ) {
-				brushsplit_t split = Brush_classifyPlane( back, ( *i )->plane3() );
+			if ( b->contributes() ) {
+				brushsplit_t split = Brush_classifyPlane( back, b->plane3() );
 				if ( split.counts[ePlaneFront] != 0
 					 && split.counts[ePlaneBack] != 0 ) {
 					fragments.push_back( new Brush( back ) );
-					Face* newFace = fragments.back()->addFace( *( *i ) );
-					if ( newFace != 0 ) {
+					std::shared_ptr<Face> newFace = fragments.back()->addFace( *b );
+					if ( newFace != nullptr ) {
 						newFace->flipWinding();
 					}
-					back.addFace( *( *i ) );
+					back.addFace( *b );
 				}
 				else if ( split.counts[ePlaneBack] == 0 ) {
-					for ( brush_vector_t::iterator i = fragments.begin(); i != fragments.end(); ++i )
-					{
-						delete( *i );
+					for ( Brush *i : fragments ) {
+						delete( i );
 					}
+					fragments.clear();
 					return false;
 				}
 			}
@@ -371,19 +358,15 @@ void post( const scene::Path& path, scene::Instance& instance ) const {
 			else
 			{
 				++m_before;
-				for ( brush_vector_t::const_iterator i = out.begin(); i != out.end(); ++i )
-				{
+				for ( Brush *b : out ) {
 					++m_after;
-					( *i )->removeEmptyFaces();
-					if ( !( *i )->empty() ) {
+					b->removeEmptyFaces();
+					if ( !b->empty() ) {
 						NodeSmartReference node( ( new BrushNode() )->node() );
-						Node_getBrush( node )->copy( *( *i ) );
-						delete ( *i );
+						Node_getBrush( node )->copy( *b );
 						Node_getTraversable( path.parent() )->insert( node );
 					}
-					else{
-						delete ( *i );
-					}
+					delete b;
 				}
 				Path_deleteTop( path );
 			}
@@ -398,9 +381,7 @@ void CSG_Subtract(){
 
 	if ( selected_brushes.empty() ) {
 		globalOutputStream() << "CSG Subtract: No brushes selected.\n";
-	}
-	else
-	{
+	} else {
 		globalOutputStream() << "CSG Subtract: Subtracting " << Unsigned( selected_brushes.size() ) << " brushes.\n";
 
 		UndoableCommand undo( "brushSubtract" );
@@ -435,49 +416,55 @@ bool pre( const scene::Path& path, scene::Instance& instance ) const {
 }
 
 void post( const scene::Path& path, scene::Instance& instance ) const {
-	if ( path.top().get().visible() ) {
-		Brush* brush = Node_getBrush( path.top() );
-		if ( brush != 0
-			 && Instance_getSelectable( instance )->isSelected() ) {
-			Plane3 plane( plane3_for_points( m_p0, m_p1, m_p2 ) );
-			if ( plane3_valid( plane ) ) {
-				brushsplit_t split = Brush_classifyPlane( *brush, m_split == eFront ? plane3_flipped( plane ) : plane );
-				if ( split.counts[ePlaneBack] && split.counts[ePlaneFront] ) {
-					// the plane intersects this brush
-					if ( m_split == eFrontAndBack ) {
-						NodeSmartReference node( ( new BrushNode() )->node() );
-						Brush* fragment = Node_getBrush( node );
-						fragment->copy( *brush );
-						Face* newFace = fragment->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
-						if ( newFace != 0 && m_split != eFront ) {
-							newFace->flipWinding();
-						}
-						fragment->removeEmptyFaces();
-						ASSERT_MESSAGE( !fragment->empty(), "brush left with no faces after split" );
+	if ( !path.top().get().visible() ) {
+		return;
+	}
 
-						Node_getTraversable( path.parent() )->insert( node );
-						{
-							scene::Path fragmentPath = path;
-							fragmentPath.top() = makeReference( node.get() );
-							selectPath( fragmentPath, true );
-						}
-					}
+	Brush* brush = Node_getBrush( path.top() );
+	if ( brush == nullptr || !Instance_getSelectable( instance )->isSelected() ) {
+		return;
+	}
 
-					Face* newFace = brush->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
-					if ( newFace != 0 && m_split == eFront ) {
-						newFace->flipWinding();
-					}
-					brush->removeEmptyFaces();
-					ASSERT_MESSAGE( !brush->empty(), "brush left with no faces after split" );
-				}
-				else
-				// the plane does not intersect this brush
-				if ( m_split != eFrontAndBack && split.counts[ePlaneBack] != 0 ) {
-					// the brush is "behind" the plane
-					Path_deleteTop( path );
-				}
+	Plane3 plane( plane3_for_points( m_p0, m_p1, m_p2 ) );
+	if ( !plane3_valid( plane ) ) {
+		return;
+	}
+
+	brushsplit_t split = Brush_classifyPlane( *brush, m_split == eFront ? plane3_flipped( plane ) : plane );
+	if ( split.counts[ePlaneBack] && split.counts[ePlaneFront] ) {
+		// the plane intersects this brush
+		if ( m_split == eFrontAndBack ) {
+			NodeSmartReference node( ( new BrushNode() )->node() );
+			Brush* fragment = Node_getBrush( node );
+			fragment->copy( *brush );
+			std::shared_ptr<Face> newFace =
+				fragment->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
+			if ( newFace != 0 && m_split != eFront ) {
+				newFace->flipWinding();
+			}
+			fragment->removeEmptyFaces();
+			ASSERT_MESSAGE( !fragment->empty(), "brush left with no faces after split" );
+
+			Node_getTraversable( path.parent() )->insert( node );
+			{
+				scene::Path fragmentPath = path;
+				fragmentPath.top() = makeReference( node.get() );
+				selectPath( fragmentPath, true );
 			}
 		}
+
+		std::shared_ptr<Face> newFace = brush->addPlane( m_p0, m_p1, m_p2, m_shader, m_projection );
+		if ( newFace != 0 && m_split == eFront ) {
+			newFace->flipWinding();
+		}
+		brush->removeEmptyFaces();
+		ASSERT_MESSAGE( !brush->empty(), "brush left with no faces after split" );
+	}
+	else
+	// the plane does not intersect this brush
+	if ( m_split != eFrontAndBack && split.counts[ePlaneBack] != 0 ) {
+		// the brush is "behind" the plane
+		Path_deleteTop( path );
 	}
 }
 };

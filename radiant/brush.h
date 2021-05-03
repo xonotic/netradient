@@ -1408,8 +1408,7 @@ inline bool plane3_inside( const Plane3& self, const Plane3& other, bool selfIsL
 	return true;
 }
 
-typedef SmartPointer<Face> FaceSmartPointer;
-typedef std::vector<FaceSmartPointer> Faces;
+typedef std::vector<std::shared_ptr<Face>> Faces;
 
 /// \brief Returns the unique-id of the edge adjacent to \p faceVertex in the edge-pair for the set of \p faces.
 inline FaceVertexId next_edge( const Faces& faces, FaceVertexId faceVertex ){
@@ -1888,24 +1887,24 @@ public:
 	}
 
 	/// \brief Appends a copy of \p face to the end of the face list.
-	Face* addFace( const Face& face ){
+	std::shared_ptr<Face> addFace( const Face& face ){
 		if ( m_faces.size() == c_brush_maxFaces ) {
 			return 0;
 		}
 		undoSave();
-		push_back( FaceSmartPointer( new Face( face, this ) ) );
+		push_back( std::make_shared<Face>( face, this ) );
 		m_faces.back()->setDetail( isDetail() );
 		planeChanged();
 		return m_faces.back();
 	}
 
 	/// \brief Appends a new face constructed from the parameters to the end of the face list.
-	Face* addPlane( const Vector3& p0, const Vector3& p1, const Vector3& p2, const char* shader, const TextureProjection& projection ){
+	std::shared_ptr<Face> addPlane( const Vector3& p0, const Vector3& p1, const Vector3& p2, const char* shader, const TextureProjection& projection ){
 		if ( m_faces.size() == c_brush_maxFaces ) {
 			return 0;
 		}
 		undoSave();
-		push_back( FaceSmartPointer( new Face( p0, p1, p2, shader, projection, this ) ) );
+		push_back( std::make_shared<Face>( p0, p1, p2, shader, projection, this ) );
 		m_faces.back()->setDetail( isDetail() );
 		planeChanged();
 		return m_faces.back();
@@ -1949,11 +1948,11 @@ public:
 		return m_faces.end();
 	}
 
-	Face* back(){
+	std::shared_ptr<Face> back(){
 		return m_faces.back();
 	}
 
-	const Face* back() const {
+	const std::shared_ptr<Face> back() const {
 		return m_faces.back();
 	}
 

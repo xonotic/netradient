@@ -1361,9 +1361,11 @@ void PopState(){
 	m_state_stack.pop_back();
 }
 void Highlight( EHighlightMode mode, bool bEnable = true ){
-	( bEnable )
-	? m_state_stack.back().m_highlight |= mode
-										  : m_state_stack.back().m_highlight &= ~mode;
+	if ( bEnable ) {
+		m_state_stack.back().m_highlight |= mode;
+	} else {
+		m_state_stack.back().m_highlight &= ~mode;
+	}
 }
 void setLights( const LightList& lights ){
 	m_state_stack.back().m_lights = &lights;
@@ -1586,7 +1588,7 @@ void CamWnd::BenchMark(){
 		Vector3 angles;
 		angles[CAMERA_ROLL] = 0;
 		angles[CAMERA_PITCH] = 0;
-		angles[CAMERA_YAW] = static_cast<float>( i * ( 360.0 / 100.0 ) );
+		angles[CAMERA_YAW] = i * 360.0f / 100.0f;
 		Camera_setAngles( *this, angles );
 	}
 	double dEnd = Sys_DoubleTime();
@@ -1602,7 +1604,7 @@ void GlobalCamera_ResetAngles(){
 	CamWnd& camwnd = *g_camwnd;
 	Vector3 angles;
 	angles[CAMERA_ROLL] = angles[CAMERA_PITCH] = 0;
-	angles[CAMERA_YAW] = static_cast<float>( 22.5 * floor( ( Camera_getAngles( camwnd )[CAMERA_YAW] + 11 ) / 22.5 ) );
+	angles[CAMERA_YAW] = 22.5f * floorf( ( Camera_getAngles( camwnd )[CAMERA_YAW] + 11 ) / 22.5f );
 	Camera_setAngles( camwnd, angles );
 }
 

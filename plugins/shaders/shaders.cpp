@@ -1112,12 +1112,6 @@ const ShaderLayer* firstLayer() const {
 	}
 	return &m_layers.front();
 }
-void forEachLayer( const ShaderLayerCallback& callback ) const {
-	for ( MapLayers::const_iterator i = m_layers.begin(); i != m_layers.end(); ++i )
-	{
-		callback( *i );
-	}
-}
 
 qtexture_t* lightFalloffImage() const {
 	if ( !string_empty( m_template.m_lightFalloffImage.c_str() ) ) {

@@ -129,8 +129,8 @@ static void FixDOSName( char *src ){
 }
 
 const _QERArchiveTable* GetArchiveTable( ArchiveModules& archiveModules, const char* ext ){
-	StringOutputStream tmp( 16 );
-	tmp << LowerCase( ext );
+	std::string tmp = ext;
+	transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
 	return archiveModules.findModule( tmp.c_str() );
 }
 
@@ -393,9 +393,9 @@ static void LoadDpkPakWithDeps( const char* pakname ){
 
 	if (pakname == NULL) {
 		// load DEPS from game pack
-		StringOutputStream baseDirectory( 256 );
-		const char* basegame = GlobalRadiant().getRequiredGameDescriptionKeyValue( "basegame" );
-		baseDirectory << GlobalRadiant().getGameToolsPath() << basegame << '/';
+		std::string baseDirectory( GlobalRadiant().getGameToolsPath() );
+		baseDirectory += GlobalRadiant().getRequiredGameDescriptionKeyValue( "basegame" );
+		baseDirectory += '/';
 		arc = AddDpkDir( baseDirectory.c_str() );
 		depsFile = arc->openTextFile( "DEPS" );
 	} else {
