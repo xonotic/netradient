@@ -1874,7 +1874,7 @@ int                         ImportLightmapsMain( int argc, char **argv );
 
 void                        SetupSurfaceLightmaps( void );
 void                        StitchSurfaceLightmaps( void );
-void                        StoreSurfaceLightmaps( qboolean fastLightmapSearch, qboolean storeForReal );
+void                        StoreSurfaceLightmaps( qboolean fastAllocate, qboolean storeForReal );
 
 
 /* exportents.c */

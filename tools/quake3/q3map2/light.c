@@ -1895,7 +1895,7 @@ void SetupGrid( void ){
    does what it says...
  */
 
-void LightWorld( const char *BSPFilePath, qboolean fastLightmapSearch, qboolean noBounceStore ){
+void LightWorld( const char *BSPFilePath, qboolean fastAllocate, qboolean noBounceStore ){
 	vec3_t color;
 	float f;
 	int b, bt;
@@ -2041,7 +2041,7 @@ void LightWorld( const char *BSPFilePath, qboolean fastLightmapSearch, qboolean 
 		qboolean storeForReal = !noBounceStore;
 
 		/* store off the bsp between bounces */
-		StoreSurfaceLightmaps( fastLightmapSearch, storeForReal );
+		StoreSurfaceLightmaps( fastAllocate, storeForReal );
 		UnparseEntities();
 
 		if ( storeForReal ) {
@@ -2113,7 +2113,7 @@ void LightWorld( const char *BSPFilePath, qboolean fastLightmapSearch, qboolean 
 	}
 
 	/* ydnar: store off lightmaps */
-	StoreSurfaceLightmaps( fastLightmapSearch, qtrue );
+	StoreSurfaceLightmaps( fastAllocate, qtrue );
 }
 
 
@@ -2153,7 +2153,7 @@ int LightMain( int argc, char **argv ){
 	const char  *value;
 	int lightmapMergeSize = 0;
 	qboolean lightSamplesInsist = qfalse;
-	qboolean fastLightmapSearch = qfalse;
+	qboolean fastAllocate = qfalse;
 	qboolean noBounceStore = qfalse;
 
 	/* note it */
@@ -2682,15 +2682,20 @@ int LightMain( int argc, char **argv ){
 			Sys_Printf( "Faster mode enabled\n" );
 		}
 
-		else if ( !strcmp( argv[ i ], "-fastlightmapsearch" ) || !strcmp( argv[ i ], "-fastallocate") ) {
-			fastLightmapSearch = qtrue;
+		else if ( !strcmp( argv[ i ], "-fastallocate" ) || !strcmp( argv[ i ], "-fastlightmapsearch" ) ) {
+			fastAllocate = qtrue;
 
-			if ( !strcmp( argv[ i ], "-fastallocate" ) ) {
-				Sys_Printf( "The -fastallocate argument is deprecated, use \"-fastlightmapsearch\" instead\n" );
+			if ( !strcmp( argv[ i ], "-fastlightmapsearch" ) ) {
+				Sys_Printf( "The -fastlightmapsearch argument is deprecated, use \"-fastallocate\" instead\n" );
 			}
 			else {
-				Sys_Printf( "Fast lightmap search enabled\n" );
+				Sys_Printf( "Fast lightmap allocation mode enabled\n" );
 			}
+		}
+
+		else if ( !strcmp( argv[ i ], "-slowallocate" ) ) {
+			fastAllocate = qfalse;
+			Sys_Printf( "Slow lightmap allocation mode enabled (default)\n" );
 		}
 
 		else if ( !strcmp( argv[ i ], "-fastgrid" ) ) {
@@ -3059,7 +3064,7 @@ int LightMain( int argc, char **argv ){
 	SetupTraceNodes();
 
 	/* light the world */
-	LightWorld( BSPFilePath, fastLightmapSearch, noBounceStore );
+	LightWorld( BSPFilePath, fastAllocate, noBounceStore );
 
 	/* write out the bsp */
 	UnparseEntities();
