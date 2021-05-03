@@ -423,12 +423,46 @@ void HelpCommon()
 	HelpOptions("Common Options", 0, 80, common, sizeof(common)/sizeof(struct HelpOption));
 }
 
+void HelpGames()
+{
+	printf("Games:\n");
+	qboolean begin = qtrue;
+
+	// TODO: sort alphabetically
+	for ( unsigned i = 0, length = 0; games[ i ].arg != NULL; i++ )
+	{
+		// 3 for two whitespaces at the beginning and one (optional) comma a the end
+		if ( length + 3 + strlen( games[ i ].arg ) > 80 )
+		{
+			printf(",\n");
+			length = 0;
+			begin = qtrue;
+		}
+
+		if ( begin )
+		{
+			printf("  %s", games[ i ].arg );
+			begin = qfalse;
+		}
+		else
+		{
+			printf(", %s", games[ i ].arg );
+		}
+
+		length += 2 + strlen( games[ i ].arg );
+	}
+
+	printf("\n\n");
+}
+
 void HelpMain(const char* arg)
 {
 	printf("Usage: q3map2 [stage] [common options...] [stage options...] [stage source file]\n");
 	printf("       q3map2 -help [stage]\n\n");
 
 	HelpCommon();
+
+	HelpGames();
 
 	struct HelpOption stages[] = {
 		{"-bsp", "BSP Stage"},
