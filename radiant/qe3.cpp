@@ -191,7 +191,7 @@ void bsp_init(){
 	// ".[ExecutableType]" is replaced by "[ExecutableExt]"
 	const char *exe_ext = GDEF_OS_EXE_EXT;
 	build_set_variable( "ExecutableType", exe_ext[0] == '\0' ? exe_ext : exe_ext + 1 );
-	
+
 	build_set_variable( "ExecutableExt", GDEF_OS_EXE_EXT );
 	build_set_variable( "RadiantPath", AppPath_get() );
 	build_set_variable( "EnginePath", EnginePath_get() );
@@ -201,30 +201,31 @@ void bsp_init(){
 
 	build_set_variable( "GameName", gamename_get() );
 
-	StringBuffer ExtraQ3map2Args;
+	std::string ExtraQ3map2Args;
 	// extra pakpaths
 	for ( int i = 0; i < g_pakPathCount; i++ ) {
 		if ( g_strcmp0( g_strPakPath[i].c_str(), "") ) {
-			ExtraQ3map2Args.push_string( " -fs_pakpath \"" );
-			ExtraQ3map2Args.push_string( g_strPakPath[i].c_str() );
-			ExtraQ3map2Args.push_string( "\"" );
+			ExtraQ3map2Args += " -fs_pakpath \"";
+			ExtraQ3map2Args += g_strPakPath[i].c_str();
+			ExtraQ3map2Args += "\"";
 		}
 	}
 
 	// extra switches
 	if ( g_disableEnginePath ) {
-		ExtraQ3map2Args.push_string( " -fs_nobasepath " );
+		ExtraQ3map2Args += " -fs_nobasepath ";
 	}
 
 	if ( g_disableHomePath ) {
-		ExtraQ3map2Args.push_string( " -fs_nohomepath " );
+		ExtraQ3map2Args += " -fs_nohomepath ";
 	}
 
 	build_set_variable( "ExtraQ3map2Args", ExtraQ3map2Args.c_str() );
 
 	const char* mapname = Map_Name( g_map );
-	StringOutputStream name( 256 );
-	name << StringRange( mapname, path_get_filename_base_end( mapname ) ) << ".bsp";
+	std::string name;
+	name.append( mapname, path_get_filename_base_end( mapname ) - mapname );
+	name += ".bsp";
 
 	build_set_variable( "MapFile", mapname );
 	build_set_variable( "BspFile", name.c_str() );

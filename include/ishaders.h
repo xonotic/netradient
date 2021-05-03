@@ -127,7 +127,6 @@ virtual ECull getCull() = 0;
 virtual const char* getShaderFileName() const = 0;
 
 virtual const ShaderLayer* firstLayer() const = 0;
-virtual void forEachLayer( const ShaderLayerCallback& layer ) const = 0;
 
 virtual qtexture_t* lightFalloffImage() const = 0;
 };

@@ -509,59 +509,58 @@ bool importTokens( Tokeniser& tokeniser ){
 
 		tokeniser.ungetToken();
 
-		m_brush.push_back( FaceSmartPointer( new Face( &m_brush ) ) );
+		std::shared_ptr<Face> face = std::make_shared<Face>( &m_brush );
+		m_brush.push_back( face );
 
 		//!todo BP support
 		tokeniser.nextLine();
-
-		Face& face = *m_brush.back();
 
 		switch ( Brush::m_type )
 		{
 		case eBrushTypeDoom3:
 		{
-			Doom3FaceTokenImporter importer( face );
+			Doom3FaceTokenImporter importer( *face );
 			RETURN_FALSE_IF_FAIL( importer.importTokens( tokeniser ) );
 		}
 		break;
 		case eBrushTypeQuake4:
 		{
-			Quake4FaceTokenImporter importer( face );
+			Quake4FaceTokenImporter importer( *face );
 			RETURN_FALSE_IF_FAIL( importer.importTokens( tokeniser ) );
 		}
 		break;
 		case eBrushTypeQuake2:
 		{
-			Quake2FaceTokenImporter importer( face );
+			Quake2FaceTokenImporter importer( *face );
 			RETURN_FALSE_IF_FAIL( importer.importTokens( tokeniser ) );
 		}
 		break;
 		case eBrushTypeQuake3:
 		{
-			Quake3FaceTokenImporter importer( face );
+			Quake3FaceTokenImporter importer( *face );
 			RETURN_FALSE_IF_FAIL( importer.importTokens( tokeniser ) );
 		}
 		break;
 		case eBrushTypeQuake3BP:
 		{
-			Quake3BPFaceTokenImporter importer( face );
+			Quake3BPFaceTokenImporter importer( *face );
 			RETURN_FALSE_IF_FAIL( importer.importTokens( tokeniser ) );
 		}
 		break;
 		case eBrushTypeQuake:
 		{
-			QuakeFaceTokenImporter importer( face );
+			QuakeFaceTokenImporter importer( *face );
 			RETURN_FALSE_IF_FAIL( importer.importTokens( tokeniser ) );
 		}
 		break;
 		case eBrushTypeHalfLife:
 		{
-			HalfLifeFaceTokenImporter importer( face );
+			HalfLifeFaceTokenImporter importer( *face );
 			RETURN_FALSE_IF_FAIL( importer.importTokens( tokeniser ) );
 		}
 		break;
 		}
-		face.planeChanged();
+		face->planeChanged();
 	}
 	if ( Brush::m_type == eBrushTypeQuake3BP || Brush::m_type == eBrushTypeDoom3 || Brush::m_type == eBrushTypeQuake4 ) {
 		tokeniser.nextLine();

@@ -24,10 +24,11 @@
 
 #include "ientity.h"
 
-#include "stream/stringstream.h"
 #include "math/quaternion.h"
 #include "generic/callback.h"
 #include "stringio.h"
+
+#include <sstream>
 
 #include "angle.h"
 
@@ -58,7 +59,7 @@ inline void write_rotation( const Float9 rotation, Entity* entity, const char* k
 	}
 	else
 	{
-		StringOutputStream value( 256 );
+		std::ostringstream value;
 		value << rotation[0] << ' '
 			  << rotation[1] << ' '
 			  << rotation[2] << ' '
@@ -68,7 +69,7 @@ inline void write_rotation( const Float9 rotation, Entity* entity, const char* k
 			  << rotation[6] << ' '
 			  << rotation[7] << ' '
 			  << rotation[8];
-		entity->setKeyValue( key, value.c_str() );
+		entity->setKeyValue( key, value.str().c_str() );
 	}
 }
 inline void read_rotation( Float9 rotation, const char* value ){

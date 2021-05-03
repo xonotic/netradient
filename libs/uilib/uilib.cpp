@@ -440,7 +440,7 @@ namespace ui {
 
 #if GTK_TARGET == 3
 
-    IMPL(GLArea, (void *));
+    IMPL(GLArea, GTK_GL_AREA);
 
 #elif GTK_TARGET == 2
 

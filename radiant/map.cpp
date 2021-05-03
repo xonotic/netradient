@@ -1578,55 +1578,55 @@ tryDecompile:
 	const char *type = GlobalRadiant().getGameDescriptionKeyValue( "q3map2_type" );
 	int n = string_length( path_get_extension( filename ) );
 	if ( n && ( extension_equal( path_get_extension( filename ), "bsp" ) || extension_equal( path_get_extension( filename ), "map" ) ) ) {
-		StringBuffer output;
-		output.push_string( AppPath_get() );
-		output.push_string( "q3map2" );
-		output.push_string( GDEF_OS_EXE_EXT );
+		std::string output;
+		output += AppPath_get();
+		output += "q3map2";
+		output += GDEF_OS_EXE_EXT;
 
-		output.push_string( " -v -game " );
-		output.push_string( ( type && *type ) ? type : "quake3" );
-		output.push_string( " -fs_basepath \"" );
-		output.push_string( EnginePath_get() );
-		output.push_string( "\" -fs_homepath \"" );
-		output.push_string( g_qeglobals.m_userEnginePath.c_str() );
-		output.push_string( "\"" );
+		output += " -v -game ";
+		output += ( type && *type ) ? type : "quake3";
+		output += " -fs_basepath \"";
+		output += EnginePath_get();
+		output += "\" -fs_homepath \"";
+		output += g_qeglobals.m_userEnginePath.c_str();
+		output += "\"";
 
 		// extra pakpaths
 		for ( int i = 0; i < g_pakPathCount; i++ ) {
 			if ( g_strcmp0( g_strPakPath[i].c_str(), "") ) {
-				output.push_string( " -fs_pakpath \"" );
-				output.push_string( g_strPakPath[i].c_str() );
-				output.push_string( "\"" );
+				output += " -fs_pakpath \"";
+				output += g_strPakPath[i].c_str();
+				output += "\"";
 			}
 		}
 
 		// extra switches
 		if ( g_disableEnginePath ) {
-			output.push_string( " -fs_nobasepath " );
+			output += " -fs_nobasepath ";
 		}
 
 		if ( g_disableHomePath ) {
-			output.push_string( " -fs_nohomepath " );
+			output += " -fs_nohomepath ";
 		}
 
-		output.push_string( " -fs_game " );
-		output.push_string( gamename_get() );
-		output.push_string( " -convert -format " );
-		output.push_string( Brush::m_type == eBrushTypeQuake3BP ? "map_bp" : "map" );
+		output += " -fs_game ";
+		output += gamename_get();
+		output += " -convert -format ";
+		output += Brush::m_type == eBrushTypeQuake3BP ? "map_bp" : "map";
 		if ( extension_equal( path_get_extension( filename ), "map" ) ) {
-			output.push_string( " -readmap " );
+			output += " -readmap ";
 		}
-		output.push_string( " \"" );
-		output.push_string( filename );
-		output.push_string( "\"" );
+		output += " \"";
+		output += filename;
+		output += "\"";
 
 		// run
 		Q_Exec( NULL, output.c_str(), NULL, false, true );
 
 		// rebuild filename as "filenamewithoutext_converted.map"
-		output.clear();
-		output.push_range( filename, filename + string_length( filename ) - ( n + 1 ) );
-		output.push_string( "_converted.map" );
+		output = "";
+		output.append( filename, string_length( filename ) - ( n + 1 ) );
+		output += "_converted.map";
 		filename = output.c_str();
 
 		// open

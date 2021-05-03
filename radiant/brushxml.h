@@ -351,7 +351,7 @@ void pushElement( const XMLElement& element ){
 	case xml_state_t::eBrush:
 		ASSERT_MESSAGE( strcmp( element.name(), "plane" ) == 0, "parse error" );
 		m_xml_state.push_back( xml_state_t::eFace );
-		m_brush.push_back( FaceSmartPointer( new Face( &m_brush ) ) );
+		m_brush.push_back( std::make_shared<Face>( &m_brush ) );
 		constructor( faceImporter(), makeReference( *m_brush.back() ) );
 		m_brush.planeChanged();
 		m_brush.shaderChanged();

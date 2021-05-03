@@ -506,7 +506,10 @@ int main( int argc, char* argv[] ){
 #if GTK_TARGET == 3
 	// HACK: force legacy GL backend as we don't support GL3 yet
 	setenv("GDK_GL", "LEGACY", 0);
+#if GDEF_OS_LINUX || GDEF_OS_BSD
+	setenv("GDK_BACKEND", "x11", 0);
 #endif
+#endif // GTK_TARGET == 3
 	crt_init();
 
 	streams_init();

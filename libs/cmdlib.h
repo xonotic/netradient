@@ -44,7 +44,7 @@
 //   if the spawn was fine
 //   TODO TTimo add functionality to track the process until it dies
 
-bool Q_Exec( const char *cmd, char *cmdline, const char *execdir, bool bCreateConsole, bool waitfor );
+bool Q_Exec( const char *cmd, const char *cmdline, const char *execdir, bool bCreateConsole, bool waitfor );
 
 // some easy portability crap
 

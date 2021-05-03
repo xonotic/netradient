@@ -41,12 +41,12 @@ void build_set_variable( const char* name, const char* value ){
 	g_build_variables[name] = value;
 }
 
-const char* build_get_variable( const char* name ){
-	Variables::iterator i = g_build_variables.find( name );
+const char* build_get_variable( const std::string& name ){
+	Variables::iterator i = g_build_variables.find( name.c_str() );
 	if ( i != g_build_variables.end() ) {
 		return ( *i ).second.c_str();
 	}
-	globalErrorStream() << "undefined build variable: " << makeQuoted( name ) << "\n";
+	globalErrorStream() << "undefined build variable: " << makeQuoted( name.c_str() ) << "\n";
 	return "";
 }
 
@@ -57,104 +57,80 @@ class Evaluatable
 {
 public:
 virtual ~Evaluatable() = default;
-virtual void evaluate( StringBuffer& output ) = 0;
+virtual std::string evaluate() = 0;
 virtual void exportXML( XMLImporter& importer ) = 0;
 };
 
 class VariableString : public Evaluatable
 {
-CopiedString m_string;
+std::string m_string;
 public:
 VariableString() : m_string(){
 }
-VariableString( const char* string ) : m_string( string ){
+VariableString( std::string string ) : m_string( std::move(string) ){
 }
 const char* c_str() const {
 	return m_string.c_str();
 }
-void setString( const char* string ){
+void setString( const std::string& string ){
 	m_string = string;
 }
-
-void evaluate( StringBuffer& output ){
+std::string evaluate(){
 	// replace ".[ExecutableType]" with "[ExecutableExt]"
 	{
-		StringBuffer output;
-		const char pattern[] = ".[ExecutableType]";
-		const char *string = m_string.c_str();
-		for ( const char *i = string; *i != '\0'; i++ )
-		{
-			if ( strncmp( i, pattern, sizeof( pattern ) - 1 ) == 0 )
-			{
-				output.push_string("[ExecutableExt]");
-				// minus 1 because \0, minus 1 because i++ in a replacement
-				i += sizeof( pattern ) - 2;
-			}
-			else
-			{
-				output.push_back(*i);
-			}
+		size_t pos;
+		const std::string pattern = ".[ExecutableType]";
+		while ( ( pos = m_string.find(pattern) ) != std::string::npos ) {
+			m_string.replace(pos, pattern.length(), "[ExecutableExt]");
 		}
-		setString(output.c_str());
 	}
 
 	// add missing [ExtraQ3map2Args] if "[RadiantPath]q3map2[ExecutableExt]"
 	{
-		const char pattern[] = "\"[RadiantPath]q3map2[ExecutableExt]\"";
-		const char extra[] = "[ExtraQ3map2Args]";
-		const char *string = m_string.c_str();
-		if ( strstr( string, pattern ) != NULL && strstr( string, extra ) == NULL )
+		size_t pos;
+		const std::string pattern = "\"[RadiantPath]q3map2[ExecutableExt]\"";
+		const std::string extra = "[ExtraQ3map2Args]";
+		if ( ( pos = m_string.find(pattern) ) != std::string::npos
+				&& m_string.find(extra) == std::string::npos )
 		{
-			StringBuffer output;
-			for ( const char *i = string; *i != '\0'; i++ )
-			{
-				if ( strncmp( i, pattern, sizeof( pattern ) - 1 ) == 0 )
-				{
-					output.push_string(pattern);
-					output.push_string(" ");
-					output.push_string(extra);
-					// minus 1 because \0, no replacement
-					i += strlen( pattern ) - 1;
-				}
-				else
-				{
-					output.push_back(*i);
-				}
-			}
-			setString(output.c_str());
+			m_string.insert(pos + pattern.size(), " ");
+			m_string.insert(pos + pattern.size() + 1, extra);
 		}
 	}
 
-	StringBuffer variable;
+	std::string output;
+	std::string variable_name;
 	bool in_variable = false;
-	for ( const char* i = m_string.c_str(); *i != '\0'; ++i )
+	for ( const char c : m_string )
 	{
 		if ( !in_variable ) {
-			switch ( *i )
+			switch ( c )
 			{
 			case '[':
 				in_variable = true;
 				break;
 			default:
-				output.push_back( *i );
+				output += c;
 				break;
 			}
 		}
 		else
 		{
-			switch ( *i )
+			switch ( c )
 			{
 			case ']':
 				in_variable = false;
-				output.push_string( build_get_variable( variable.c_str() ) );
-				variable.clear();
+				output += build_get_variable( variable_name );
+				variable_name.clear();
 				break;
 			default:
-				variable.push_back( *i );
+				variable_name += c;
 				break;
 			}
 		}
 	}
+
+	return output;
 }
 void exportXML( XMLImporter& importer ){
 	importer << c_str();
@@ -172,12 +148,12 @@ Conditional( VariableString* test ) : m_test( test ){
 	delete m_test;
 	delete m_result;
 }
-void evaluate( StringBuffer& output ){
-	StringBuffer buffer;
-	m_test->evaluate( buffer );
-	if ( !string_empty( buffer.c_str() ) ) {
-		m_result->evaluate( output );
+std::string evaluate(){
+	std::string result = m_test->evaluate();
+	if ( result.empty() ) {
+		return result;
 	}
+	return m_result->evaluate();
 }
 void exportXML( XMLImporter& importer ){
 	StaticElement conditionElement( "cond" );
@@ -203,11 +179,13 @@ public:
 void push_back( Evaluatable* evaluatable ){
 	m_evaluatables.push_back( evaluatable );
 }
-void evaluate( StringBuffer& output ){
+std::string evaluate(){
+	std::string result;
 	for ( Evaluatables::iterator i = m_evaluatables.begin(); i != m_evaluatables.end(); ++i )
 	{
-		( *i )->evaluate( output );
+		result += ( *i )->evaluate();
 	}
+	return result;
 }
 void exportXML( XMLImporter& importer ){
 	for ( Evaluatables::iterator i = m_evaluatables.begin(); i != m_evaluatables.end(); ++i )
@@ -229,16 +207,16 @@ virtual void popElement( const char* name ) = 0;
 
 class VariableStringXMLConstructor : public XMLElementParser
 {
-StringBuffer m_buffer;
+std::string m_buffer;
 VariableString& m_variableString;
 public:
 VariableStringXMLConstructor( VariableString& variableString ) : m_variableString( variableString ){
 }
 ~VariableStringXMLConstructor(){
-	m_variableString.setString( m_buffer.c_str() );
+	m_variableString.setString( std::move(m_buffer) );
 }
 std::size_t write( const char* buffer, std::size_t length ){
-	m_buffer.push_range( buffer, buffer + length );
+	m_buffer.append( buffer, length );
 	return length;
 }
 XMLElementParser& pushElement( const XMLElement& element ){
@@ -251,16 +229,16 @@ void popElement( const char* name ){
 
 class ConditionalXMLConstructor : public XMLElementParser
 {
-StringBuffer m_buffer;
+std::string m_buffer;
 Conditional& m_conditional;
 public:
 ConditionalXMLConstructor( Conditional& conditional ) : m_conditional( conditional ){
 }
 ~ConditionalXMLConstructor(){
-	m_conditional.m_result = new VariableString( m_buffer.c_str() );
+	m_conditional.m_result = new VariableString( std::move( m_buffer ) );
 }
 std::size_t write( const char* buffer, std::size_t length ){
-	m_buffer.push_range( buffer, buffer + length );
+	m_buffer.append( buffer, length );
 	return length;
 }
 XMLElementParser& pushElement( const XMLElement& element ){
@@ -273,7 +251,7 @@ void popElement( const char* name ){
 
 class ToolXMLConstructor : public XMLElementParser
 {
-StringBuffer m_buffer;
+std::string m_buffer;
 Tool& m_tool;
 ConditionalXMLConstructor* m_conditional;
 public:
@@ -283,7 +261,7 @@ ToolXMLConstructor( Tool& tool ) : m_tool( tool ){
 	flush();
 }
 std::size_t write( const char* buffer, std::size_t length ){
-	m_buffer.push_range( buffer, buffer + length );
+	m_buffer.append( buffer, length );
 	return length;
 }
 XMLElementParser& pushElement( const XMLElement& element ){
@@ -308,7 +286,7 @@ void popElement( const char* name ){
 
 void flush(){
 	if ( !m_buffer.empty() ) {
-		m_tool.push_back( new VariableString( m_buffer.c_str() ) );
+		m_tool.push_back( new VariableString( std::move( m_buffer ) ) );
 		m_buffer.clear();
 	}
 }
@@ -523,8 +501,7 @@ void project_verify( Project& project, Tools& tools ){
 void build_run( const char* name, CommandListener& listener ){
 	for ( Tools::iterator i = g_build_tools.begin(); i != g_build_tools.end(); ++i )
 	{
-		StringBuffer output;
-		( *i ).second.evaluate( output );
+		std::string output = ( *i ).second.evaluate();
 		build_set_variable( ( *i ).first.c_str(), output.c_str() );
 	}
 
@@ -534,8 +511,7 @@ void build_run( const char* name, CommandListener& listener ){
 			Build& build = ( *i ).second;
 			for ( Build::iterator j = build.begin(); j != build.end(); ++j )
 			{
-				StringBuffer output;
-				( *j ).evaluate( output );
+				std::string output = ( *j ).evaluate();
 				listener.execute( output.c_str() );
 			}
 		}
@@ -806,7 +782,7 @@ gboolean project_selection_changed( ui::TreeSelection selection, ui::ListStore s
 	return FALSE;
 }
 
-gboolean commands_cell_edited(ui::CellRendererText cell, gchar* path_string, gchar* new_text, ui::ListStore store ){
+gboolean commands_cell_edited(ui::CellRendererText cell, const gchar* path_string, const gchar* new_text, ui::ListStore store ){
 	if ( g_current_build == 0 ) {
 		return FALSE;
 	}
