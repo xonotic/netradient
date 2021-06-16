@@ -188,6 +188,7 @@ void vfsInitDirectory( const char *path ){
 	}
 
 	if ( g_numDirs == VFS_MAXDIRS ) {
+		Sys_FPrintf( SYS_WRN, "WARNING: too many VFS directories, can't init %s\n", path );
 		return;
 	}
 

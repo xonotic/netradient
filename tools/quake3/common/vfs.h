@@ -54,7 +54,9 @@
 #include <sys/syslimits.h>
 #endif
 
-#define VFS_MAXDIRS 64
+// Multiple pakpaths with many pk3dirs can lead
+// to high list of VFS directories
+#define VFS_MAXDIRS 256
 
 void vfsInitDirectory( const char *path );
 void vfsShutdown();
