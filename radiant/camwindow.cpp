@@ -76,6 +76,7 @@ void CameraMovedNotify(){
 
 struct camwindow_globals_private_t
 {
+	int m_nFOV;
 	int m_nMoveSpeed;
 	bool m_bCamLinkSpeed;
 	int m_nAngleSpeed;
@@ -86,6 +87,7 @@ struct camwindow_globals_private_t
 	int m_nStrafeMode;
 
 	camwindow_globals_private_t() :
+		m_nFOV( 110 ),
 		m_nMoveSpeed( 100 ),
 		m_bCamLinkSpeed( true ),
 		m_nAngleSpeed( 3 ),
@@ -151,8 +153,6 @@ struct camera_t
 	guint m_keymove_handler;
 
 
-	float fieldOfView;
-
 	DeferredMotionDelta m_mouseMove;
 
 	static void motionDelta( int x, int y, void* data ){
@@ -176,7 +176,6 @@ struct camera_t
 		movementflags( 0 ),
 		m_keycontrol_timer(),
 		m_keymove_handler( 0 ),
-		fieldOfView( 90.0f ),
 		m_mouseMove( motionDelta, this ),
 		m_view( view ),
 		m_update( update ){
@@ -205,7 +204,7 @@ float Camera_getFarClipPlane( camera_t& camera ){
 
 void Camera_updateProjection( camera_t& camera ){
 	float farClip = Camera_getFarClipPlane( camera );
-	camera.projection = projection_for_camera( farClip / 4096.0f, farClip, camera.fieldOfView, camera.width, camera.height );
+	camera.projection = projection_for_camera( farClip / 4096.0f, farClip, (float)g_camwindow_globals_private.m_nFOV, camera.width, camera.height );
 
 	camera.m_view->Construct( camera.projection, camera.modelview, camera.width, camera.height );
 }
@@ -530,6 +529,9 @@ typedef ReferenceCaller<camera_t, void(), &Camera_MoveDown_KeyDown> FreeMoveCame
 typedef ReferenceCaller<camera_t, void(), &Camera_MoveDown_KeyUp> FreeMoveCameraMoveDownKeyUpCaller;
 
 
+const float MIN_FOV = 60;
+const float MAX_FOV = 179;
+const float FOV_STEP = 10;
 const float SPEED_MOVE = 32;
 const float SPEED_TURN = 22.5;
 const float MIN_CAM_SPEED = 10;
@@ -1632,8 +1634,8 @@ void Camera_CubeIn(){
 void Camera_CubeOut(){
 	CamWnd& camwnd = *g_camwnd;
 	g_camwindow_globals.m_nCubicScale++;
-	if ( g_camwindow_globals.m_nCubicScale > 23 ) {
-		g_camwindow_globals.m_nCubicScale = 23;
+	if ( g_camwindow_globals.m_nCubicScale > 46 ) {
+		g_camwindow_globals.m_nCubicScale = 46;
 	}
 	Camera_updateProjection( camwnd.getCamera() );
 	CamWnd_Update( camwnd );
@@ -1681,6 +1683,8 @@ void CamWnd_registerShortcuts(){
 		command_connect_accelerator( "TogglePreview" );
 	}
 
+	command_connect_accelerator( "FOVInc" );
+	command_connect_accelerator( "FOVDec" );
 	command_connect_accelerator( "CameraSpeedInc" );
 	command_connect_accelerator( "CameraSpeedDec" );
 }
@@ -1798,6 +1802,7 @@ struct RenderMode {
 };
 
 void Camera_constructPreferences( PreferencesPage& page ){
+	page.appendSlider( "FOV", g_camwindow_globals_private.m_nFOV, TRUE, 0, 0, 100, MIN_FOV, MAX_FOV, 1, 10 );
 	page.appendSlider( "Movement Speed", g_camwindow_globals_private.m_nMoveSpeed, TRUE, 0, 0, 100, MIN_CAM_SPEED, MAX_CAM_SPEED, 1, 10 );
 	page.appendCheckBox( "", "Link strafe speed to movement speed", g_camwindow_globals_private.m_bCamLinkSpeed );
 	page.appendSlider( "Rotation Speed", g_camwindow_globals_private.m_nAngleSpeed, TRUE, 0, 0, 3, 1, 180, 1, 10 );
@@ -1851,6 +1856,31 @@ void Camera_registerPreferencesPage(){
 #include "stringio.h"
 #include "dialog.h"
 
+void FOV_increase(){
+	CamWnd& camwnd = *g_camwnd;
+	if ( g_camwindow_globals_private.m_nFOV <= ( MAX_FOV - FOV_STEP - 10 ) ) {
+		g_camwindow_globals_private.m_nFOV += FOV_STEP;
+	}
+	else {
+		g_camwindow_globals_private.m_nFOV = MAX_FOV - 10;
+	}
+	Camera_updateProjection( camwnd.getCamera() );
+	CamWnd_Update( camwnd );
+}
+
+void FOV_decrease(){
+	CamWnd& camwnd = *g_camwnd;
+	if ( g_camwindow_globals_private.m_nFOV >= ( MIN_FOV + FOV_STEP ) ) {
+		g_camwindow_globals_private.m_nFOV -= FOV_STEP;
+	}
+	else {
+		g_camwindow_globals_private.m_nFOV = MIN_FOV;
+	}
+	Camera_updateProjection( camwnd.getCamera() );
+	CamWnd_Update( camwnd );
+}
+
+
 void CameraSpeed_increase(){
 	if ( g_camwindow_globals_private.m_nMoveSpeed <= ( MAX_CAM_SPEED - CAM_SPEED_STEP - 10 ) ) {
 		g_camwindow_globals_private.m_nMoveSpeed += CAM_SPEED_STEP;
@@ -1888,6 +1918,9 @@ void CamWnd_Construct(){
 		GlobalCommands_insert( "TogglePreview", makeCallbackF(CamWnd_TogglePreview), Accelerator( GDK_KEY_F3 ) );
 	}
 
+	GlobalCommands_insert( "FOVInc", makeCallbackF(FOV_increase), Accelerator( GDK_KEY_KP_Multiply, (GdkModifierType)GDK_SHIFT_MASK ) );
+	GlobalCommands_insert( "FOVDec", makeCallbackF(FOV_decrease), Accelerator( GDK_KEY_KP_Divide, (GdkModifierType)GDK_SHIFT_MASK ) );
+
 	GlobalCommands_insert( "CameraSpeedInc", makeCallbackF(CameraSpeed_increase), Accelerator( GDK_KEY_KP_Add, (GdkModifierType)GDK_SHIFT_MASK ) );
 	GlobalCommands_insert( "CameraSpeedDec", makeCallbackF(CameraSpeed_decrease), Accelerator( GDK_KEY_KP_Subtract, (GdkModifierType)GDK_SHIFT_MASK ) );
 
@@ -1911,6 +1944,7 @@ void CamWnd_Construct(){
 	GlobalToggles_insert( "ShowStats", makeCallbackF(ShowStatsToggle), ToggleItem::AddCallbackCaller( g_show_stats ) );
 
 	GlobalPreferenceSystem().registerPreference( "ShowStats", make_property_string( g_camwindow_globals_private.m_showStats ) );
+	GlobalPreferenceSystem().registerPreference( "FOV", make_property_string( g_camwindow_globals_private.m_nFOV ) );
 	GlobalPreferenceSystem().registerPreference( "MoveSpeed", make_property_string( g_camwindow_globals_private.m_nMoveSpeed ) );
 	GlobalPreferenceSystem().registerPreference( "CamLinkSpeed", make_property_string( g_camwindow_globals_private.m_bCamLinkSpeed ) );
 	GlobalPreferenceSystem().registerPreference( "AngleSpeed", make_property_string( g_camwindow_globals_private.m_nAngleSpeed ) );
