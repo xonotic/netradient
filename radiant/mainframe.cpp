@@ -2151,6 +2151,9 @@ ui::MenuItem create_view_menu( MainFrame::EViewStyle style ){
 		create_menu_item_with_mnemonic( camera_menu, "Far Clip Plane In", "CubicClipZoomIn" );
 		create_menu_item_with_mnemonic( camera_menu, "Far Clip Plane Out", "CubicClipZoomOut" );
 		menu_separator( camera_menu );
+		create_menu_item_with_mnemonic( camera_menu, "Decrease FOV", "FOVDec" );
+		create_menu_item_with_mnemonic( camera_menu, "Increase FOV", "FOVInc" );
+		menu_separator( camera_menu );
 		create_menu_item_with_mnemonic( camera_menu, "Next leak spot", "NextLeakSpot" );
 		create_menu_item_with_mnemonic( camera_menu, "Previous leak spot", "PrevLeakSpot" );
 		menu_separator( camera_menu );
