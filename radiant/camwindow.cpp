@@ -1634,8 +1634,8 @@ void Camera_CubeIn(){
 void Camera_CubeOut(){
 	CamWnd& camwnd = *g_camwnd;
 	g_camwindow_globals.m_nCubicScale++;
-	if ( g_camwindow_globals.m_nCubicScale > 46 ) {
-		g_camwindow_globals.m_nCubicScale = 46;
+	if ( g_camwindow_globals.m_nCubicScale > 23 ) {
+		g_camwindow_globals.m_nCubicScale = 23;
 	}
 	Camera_updateProjection( camwnd.getCamera() );
 	CamWnd_Update( camwnd );
